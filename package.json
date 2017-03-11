@@ -1,0 +1,24 @@
+{
+  "name": "gluey",
+  "version": "0.0.1",
+  "description": "A lightweight task runner",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skarfacegc/Gluey.git"
+  },
+  "keywords": [
+    "node",
+    "task-runner",
+    "task"
+  ],
+  "author": "Andrew Williams",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/skarfacegc/Gluey/issues"
+  },
+  "homepage": "https://github.com/skarfacegc/Gluey#readme"
+}
