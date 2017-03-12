@@ -4,7 +4,7 @@
   "description": "A lightweight task runner",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "nyc mocha test/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,18 @@
   "bugs": {
     "url": "https://github.com/skarfacegc/Gluey/issues"
   },
-  "homepage": "https://github.com/skarfacegc/Gluey#readme"
+  "homepage": "https://github.com/skarfacegc/Gluey#readme",
+  "dependencies": {
+    "is-array": "^1.0.1",
+    "lodash.template": "^4.4.0",
+    "node-cmd": "^2.0.0",
+    "orchestrator": "^0.3.8"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "nyc": "^10.1.2",
+    "sinon": "^1.17.7",
+    "sinon-chai": "^2.8.0"
+  }
 }
