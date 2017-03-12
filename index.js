@@ -45,5 +45,9 @@ class Gluey extends Orchestrator {
       throw new Error('Can\'t concat non arrays');
     }
   }
+
+  taskList() {
+    return Object.keys(this.tasks);
+  }
 }
 module.exports = Gluey;

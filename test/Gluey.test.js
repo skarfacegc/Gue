@@ -69,4 +69,12 @@ describe('Gluey', () => {
     });
   });
 
+  describe('taskList', () => {
+    it('should return the list of tasks', () => {
+      const glue = new Gluey();
+      glue.task('testTask', () => {});
+      expect(glue.taskList()).to.deep.equal(['testTask']);
+    });
+  });
+
 });
