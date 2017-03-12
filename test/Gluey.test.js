@@ -6,19 +6,17 @@ const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 chai.use(sinonChai);
 
-const Gluey = require('../index.js');
-
 describe('Gluey', () => {
   describe('constructor', () => {
     it('should have an options property', () => {
-      const glue = new Gluey();
+      const glue = require('../index.js');
       expect(glue).to.have.property('options');
     });
   });
 
   describe('task', () => {
     it('should successfully create a task', () => {
-      const glue = new Gluey();
+      const glue = require('../index.js');
       glue.task('foo', ['bar'], () => {});
 
       expect(glue.tasks).to.have.property('foo');
@@ -29,7 +27,7 @@ describe('Gluey', () => {
 
   describe('setOption', () => {
     it('should add an option', () => {
-      const glue = new Gluey();
+      const glue = require('../index.js');
       glue.setOption('foo', 'bar');
       expect(glue.options.foo).to.equal('bar');
     });
@@ -37,7 +35,7 @@ describe('Gluey', () => {
 
   describe('concatOption', () => {
     it('should concat options correctly', () => {
-      const glue = new Gluey();
+      const glue = require('../index.js');
       glue.setOption('x', ['a','b']);
       glue.setOption('y', ['c','d']);
       glue.concatOptions('z', ['x','y']);
@@ -46,7 +44,7 @@ describe('Gluey', () => {
     });
 
     it('should reject non array options', ()=> {
-      const glue = new Gluey();
+      const glue = require('../index.js');
       glue.setOption('foo', 'bar');
       expect(() => {
         glue.concatOptions('baz', ['foo']);
@@ -60,7 +58,7 @@ describe('Gluey', () => {
 
   describe('shell', () => {
     it('should run the command with replacement', () => {
-      const glue = new Gluey();
+      const glue = require('../index.js');
       glue.setOption('test', 'TestString');
       return glue.shell('echo {{test}}')
       .then((data)=> {
@@ -71,9 +69,9 @@ describe('Gluey', () => {
 
   describe('taskList', () => {
     it('should return the list of tasks', () => {
-      const glue = new Gluey();
+      const glue = require('../index.js');
       glue.task('testTask', () => {});
-      expect(glue.taskList()).to.deep.equal(['testTask']);
+      expect(glue.taskList()).to.contain('testTask');
     });
   });
 

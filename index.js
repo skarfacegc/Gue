@@ -50,4 +50,4 @@ class Gluey extends Orchestrator {
     return Object.keys(this.tasks);
   }
 }
-module.exports = Gluey;
+module.exports = new Gluey();
