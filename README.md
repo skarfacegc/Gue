@@ -1,5 +1,7 @@
 Gluey
 ==
+[![Build Status](https://travis-ci.org/skarfacegc/Gluey.svg?branch=master)](https://travis-ci.org/skarfacegc/Gluey)
+
 A lightweight task runner.  This is little more than a thin wrapper on orchestrator.  Goal is to provide the task composition / dependency chaining of Gulp without having to deal with streams. The only task type is currently a shell command.  Since Gluey is really geared towards executing shell commands it shouldn't need much in the way of plugins.
 
 
