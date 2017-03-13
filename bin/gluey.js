@@ -26,6 +26,12 @@ function invoke(env) {
     process.exit(1);
   }
 
+  // add node_modules/.bin to the path.
+  // this should be relative to the project root
+  // if liftoff is working correctly.  :)
+  process.env.PATH = env.configBase + '/node_modules/.bin:' +
+    process.env.PATH;
+
   require(env.configPath);
   const glueInst = require(env.modulePath);
   const actions = argv._;
