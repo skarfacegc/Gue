@@ -33,29 +33,6 @@ describe('Gluey', () => {
     });
   });
 
-  describe('concatOption', () => {
-    it('should concat options correctly', () => {
-      const glue = require('../index.js');
-      glue.setOption('x', ['a','b']);
-      glue.setOption('y', ['c','d']);
-      glue.concatOptions('z', ['x','y']);
-
-      expect(glue.options.z).to.deep.equal(['a','b','c','d']);
-    });
-
-    it('should reject non array options', ()=> {
-      const glue = require('../index.js');
-      glue.setOption('foo', 'bar');
-      expect(() => {
-        glue.concatOptions('baz', ['foo']);
-      }).to.throw();
-
-      expect(()=> {
-        glue.concatOptions('baz', 'bar');
-      }).to.throw();
-    });
-  });
-
   describe('shell', () => {
     it('should run the command with replacement', () => {
       const glue = require('../index.js');

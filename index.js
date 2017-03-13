@@ -30,22 +30,6 @@ class Gluey extends Orchestrator {
     this.options[name] = value;
   }
 
-  concatOptions(name, optionList) {
-    this.options[name] = [];
-    if (isArray(optionList)) {
-      optionList.forEach((element)=> {
-        if (isArray(this.options[element])) {
-          this.options[name] =
-            this.options[name].concat(this.options[element]);
-        } else {
-          throw new Error('Can\'t concat non arrays');
-        }
-      });
-    } else {
-      throw new Error('Can\'t concat non arrays');
-    }
-  }
-
   taskList() {
     return Object.keys(this.tasks);
   }
