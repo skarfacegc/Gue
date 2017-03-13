@@ -1,9 +1,6 @@
 Gluey
 ==
-A lightweight task runner.  This is little more than a thin wrapper on
-orchestrator.  Goal is to provide the task composition / dependency chaining of
-Gulp without having to deal with streams. The only task type is currently a shell command.  
-Shouldn't need much in the way of plugins.
+A lightweight task runner.  This is little more than a thin wrapper on orchestrator.  Goal is to provide the task composition / dependency chaining of Gulp without having to deal with streams. The only task type is currently a shell command.  Since Gluey is really geared towards executing shell commands it shouldn't need much in the way of plugins.
 
 
 [Gluey-test](https://github.com/skarfacegc/Gluey-test) is a sample project using Gluey.
@@ -46,7 +43,9 @@ Create a new task.  `['deps']` are run before the task, order is not guaranteed.
 
 Executes the shell command, returns a promise with the command's output.  
 Shell command is a lodash template with `{{}}` as the tags.  The Gluey.options object is passed
-to the lodash render.  Allowing for variable substitution as seen in the example above with `{{files}}`
+to the lodash render.  This allows for variable substitution as seen in the example above with `{{files}}`
+
+
 
 **gluey.setOption('name','value')**
 
