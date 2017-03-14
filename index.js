@@ -3,7 +3,6 @@ const Orchestrator = require('orchestrator');
 const cmd = require('node-cmd');
 const template = require('lodash.template');
 const templateSettings = require('lodash.templatesettings');
-const isArray = require('is-array');
 
 class Gluey extends Orchestrator {
 
