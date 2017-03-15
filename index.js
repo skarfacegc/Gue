@@ -1,6 +1,6 @@
 'use strict';
 const Orchestrator = require('orchestrator');
-const cmd = require('node-cmd');
+const execa = require('execa');
 const template = require('lodash.template');
 const templateSettings = require('lodash.templatesettings');
 
@@ -18,11 +18,10 @@ class Gluey extends Orchestrator {
   shell(command) {
     templateSettings.interpolate = /{{([\s\S]+?)}}/g;
     const compiledCmd = template(command);
-    return new Promise((resolve,reject) => {
-      cmd.get(compiledCmd(this.options), (data, err, stderr) => {
-        resolve(data);
+    return execa.shell(compiledCmd(this.options), {env: {FORCE_COLOR: 'true'}})
+      .then((result) => {
+        return result.stdout;
       });
-    });
   }
 
   setOption(name, value) {

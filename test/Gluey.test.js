@@ -39,7 +39,7 @@ describe('Gluey', () => {
       glue.setOption('test', 'TestString');
       return glue.shell('echo {{test}}')
       .then((data)=> {
-        expect(data).to.equal('TestString\n');
+        expect(data).to.equal('TestString');
       });
     });
   });
