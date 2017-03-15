@@ -30,7 +30,8 @@
     "liftoff": "^2.3.0",
     "lodash.template": "^4.4.0",
     "minimist": "^1.2.0",
-    "orchestrator": "^0.3.8"
+    "orchestrator": "^0.3.8",
+    "pretty-ms": "^2.1.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",

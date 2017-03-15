@@ -618,7 +618,7 @@ is-extglob@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-extglob/-/is-extglob-1.0.0.tgz#ac468177c4943405a092fc8f29760c6ffc6206c0"
 
-is-finite@^1.0.0:
+is-finite@^1.0.0, is-finite@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-finite/-/is-finite-1.0.2.tgz#cc6677695602be550ef11e8b4aa6305342b6d0aa"
   dependencies:
@@ -1103,6 +1103,10 @@ parse-json@^2.2.0:
   dependencies:
     error-ex "^1.2.0"
 
+parse-ms@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/parse-ms/-/parse-ms-1.0.1.tgz#56346d4749d78f23430ca0c713850aef91aa361d"
+
 parse-passwd@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/parse-passwd/-/parse-passwd-1.0.0.tgz#6d5b934a456993b23d37f40a382d6f1666a8e5c6"
@@ -1163,9 +1167,21 @@ pkg-dir@^1.0.0:
   dependencies:
     find-up "^1.0.0"
 
+plur@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/plur/-/plur-1.0.0.tgz#db85c6814f5e5e5a3b49efc28d604fec62975156"
+
 preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
+
+pretty-ms@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/pretty-ms/-/pretty-ms-2.1.0.tgz#4257c256df3fb0b451d6affaab021884126981dc"
+  dependencies:
+    is-finite "^1.0.1"
+    parse-ms "^1.0.0"
+    plur "^1.0.0"
 
 pseudomap@^1.0.1:
   version "1.0.2"

@@ -5,6 +5,7 @@
 const Liftoff = require('liftoff');
 const argv = require('minimist')(process.argv.slice(2));
 const chalk = require('chalk');
+var prettyMs = require('pretty-ms');
 
 const glueyCli = new Liftoff({
   name: 'gluey',
@@ -42,6 +43,15 @@ function invoke(env) {
     console.log(availableTasks.join('\n'));
     process.exit(0);
   }
+
+  glueInst.on('task_start', (event) => {
+    console.log(chalk.green('[' + event.task + ']') + chalk.blue('started'));
+  });
+
+  glueInst.on('task_stop', (event) => {
+    console.log(chalk.green('[' + event.task + ']') +
+      chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
+  });
 
   // Now lets make do stuff
   glueInst.start(actionList);
