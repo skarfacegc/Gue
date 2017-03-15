@@ -27,8 +27,6 @@ Current issues
 --
 This is very early in development.  Not sure if this will end up being useful or not.
 
-- Color seems to get swallowed during task execution
-  - Suspect I need to roll my own child_process.spawn or simlar so I can control the stdio mode
 - Error logging doesn't really exist / isn't tested at the moment
   - Everything will probably print the error and exit
 - Would like to add task timers etc
