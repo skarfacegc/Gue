@@ -10,7 +10,7 @@ describe('Gluey', () => {
   describe('constructor', () => {
     it('should have an options property', () => {
       const glue = require('../index.js');
-      expect(glue).to.have.property('options');
+      expect(glue.options).to.exist;
     });
   });
 
