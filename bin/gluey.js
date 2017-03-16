@@ -44,13 +44,33 @@ function invoke(env) {
     process.exit(0);
   }
 
+  // Setup orcestrator event listeners
   glueInst.on('task_start', (event) => {
-    console.log(chalk.green('[' + event.task + ']') + chalk.blue('started'));
+    console.log(chalk.green('[' + event.task + '] ') + chalk.blue('started'));
   });
 
   glueInst.on('task_stop', (event) => {
-    console.log(chalk.green('[' + event.task + ']') +
+    console.log(chalk.green('[' + event.task + '] ') +
       chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
+  });
+
+  glueInst.on('task_err', (event)=> {
+    console.log(chalk.green('[' + event.task + '] ') +
+      chalk.red(event.err.stderr));
+    console.log(chalk.green('[' + event.task + '] ') +
+      chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
+  });
+
+  glueInst.on('err', (event) => {
+    glueInst.exitCode = 1;
+  });
+
+  // setup process event listener so we can
+  // exit with the right code
+  process.once('exit', function(code) {
+    if (code === 0 && glueInst.exitCode === 1) {
+      process.exit(1);
+    }
   });
 
   // Now lets make do stuff
