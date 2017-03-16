@@ -42,6 +42,18 @@ describe('Gluey', () => {
         expect(data).to.equal('TestString');
       });
     });
+
+    it('should handle command failures', (done) => {
+      const glue = require('../index.js');
+      glue.shell('badcommand')
+        .then(()=> {
+          done(new Error('Should not have succeeded'));
+        })
+        .catch((err) => {
+          expect(err.stderr).to.contain('badcommand');
+          done();
+        });
+    });
   });
 
   describe('taskList', () => {
