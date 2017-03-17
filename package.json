@@ -4,7 +4,8 @@
   "description": "A lightweight task runner",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha test/**/*.js"
+    "test": "nyc mocha test/**/*.js",
+    "clean": "rm -rf node_modules coverage"
   },
   "repository": {
     "type": "git",
