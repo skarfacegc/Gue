@@ -43,6 +43,16 @@ describe('Gluey', () => {
       });
     });
 
+    it('should run a command with passed replacement', () => {
+      const glue = require('../index.js');
+      return glue.shell('echo {{foo}}', {
+        foo: 'woot'
+      })
+      .then((data) => {
+        expect(data).to.equal('woot');
+      });
+    });
+
     it('should handle command failures', (done) => {
       const glue = require('../index.js');
       glue.shell('badcommand')

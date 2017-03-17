@@ -18,10 +18,14 @@ class Gluey extends Orchestrator {
     super.add(name, deps, func);
   }
 
-  shell(command) {
+  shell(command, values) {
+
+    const lodashVars = (values && typeof values != undefined) ? values :
+      this.options;
+
     templateSettings.interpolate = /{{([\s\S]+?)}}/g;
     const compiledCmd = template(command);
-    return execa.shell(compiledCmd(this.options), {env: {FORCE_COLOR: 'true'}})
+    return execa.shell(compiledCmd(lodashVars), {env: {FORCE_COLOR: 'true'}})
       .then((result) => {
         return trim(result.stdout);
       })
