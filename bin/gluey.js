@@ -22,8 +22,14 @@ glueyCli.launch({
 }, invoke);
 
 function invoke(env) {
+  require(env.configPath);
+  const glueInst = require(env.modulePath);
+  const actions = argv._;
+  const actionList = actions.length ? actions : ['default'];
+  const availableTasks = glueInst.taskList();
+
   if (!env.configPath) {
-    console.log(chalk.red('No gulpfile found'));
+    glueInst.log(chalk.red('No gulpfile found'));
     process.exit(1);
   }
 
@@ -33,31 +39,25 @@ function invoke(env) {
   process.env.PATH = env.configBase + '/node_modules/.bin:' +
     process.env.PATH;
 
-  require(env.configPath);
-  const glueInst = require(env.modulePath);
-  const actions = argv._;
-  const actionList = actions.length ? actions : ['default'];
-  const availableTasks = glueInst.taskList();
-
   if (argv.l) {
-    console.log(availableTasks.join('\n'));
+    glueInst.log(availableTasks.join('\n'));
     process.exit(0);
   }
 
   // Setup orcestrator event listeners
   glueInst.on('task_start', (event) => {
-    console.log(chalk.green('[' + event.task + '] ') + chalk.blue('started'));
+    glueInst.log(chalk.green('[' + event.task + '] ') + chalk.blue('started'));
   });
 
   glueInst.on('task_stop', (event) => {
-    console.log(chalk.green('[' + event.task + '] ') +
+      glueInst.log(chalk.green('[' + event.task + '] ') +
       chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
-  });
+    });
 
   glueInst.on('task_err', (event)=> {
-    console.log(chalk.green('[' + event.task + '] ') +
+    glueInst.log(chalk.green('[' + event.task + '] ') +
       chalk.red(event.err.stderr));
-    console.log(chalk.green('[' + event.task + '] ') +
+    glueInst.log(chalk.green('[' + event.task + '] ') +
       chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
   });
 

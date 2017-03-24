@@ -37,6 +37,7 @@ describe('Gluey', () => {
     it('should run the command with replacement', () => {
       const glue = require('../index.js');
       glue.setOption('test', 'TestString');
+      glue.printBuffer = false;
       return glue.shell('echo {{test}}')
       .then((data)=> {
         expect(data).to.equal('TestString');
@@ -45,6 +46,7 @@ describe('Gluey', () => {
 
     it('should run a command with passed replacement', () => {
       const glue = require('../index.js');
+      this.printBuffer = false;
       return glue.shell('echo {{foo}}', {
         foo: 'woot'
       })
@@ -64,6 +66,29 @@ describe('Gluey', () => {
           done();
         });
     });
+
+    it('should print messages when printBuffer is true', () => {
+      const glue = require('../index.js');
+      const logStub = sinon.stub();
+      glue.log = logStub;
+      glue.printBuffer = true;
+      return glue.shell('echo HelloWorld')
+        .then(() => {
+          expect(logStub).to.have.been.calledWith('HelloWorld');
+        });
+    });
+
+    it('should not print messages when printBuffer is false', () => {
+      const glue = require('../index.js');
+      const logStub = sinon.stub();
+      glue.log = logStub;
+      glue.printBuffer = false;
+      return glue.shell('echo HelloWorld')
+        .then(() => {
+          expect(logStub).to.have.not.been.called;
+        });
+    });
+
   });
 
   describe('taskList', () => {

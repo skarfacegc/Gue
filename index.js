@@ -12,6 +12,8 @@ class Gluey extends Orchestrator {
     super(...args);
     this.exitCode = 0;
     this.options = {};
+    this.printBuffer = true;
+    this.printSummary = false;
   }
 
   task(name, deps, func) {
@@ -27,6 +29,9 @@ class Gluey extends Orchestrator {
     const compiledCmd = template(command);
     return execa.shell(compiledCmd(lodashVars), {env: {FORCE_COLOR: 'true'}})
       .then((result) => {
+        if (this.printBuffer) {
+          this.log(result.stdout);
+        }
         return trim(result.stdout);
       })
       .catch((err) => {
@@ -41,6 +46,10 @@ class Gluey extends Orchestrator {
 
   taskList() {
     return Object.keys(this.tasks);
+  }
+
+  log(message) {
+    console.log(message);
   }
 }
 module.exports = new Gluey();
