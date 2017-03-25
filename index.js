@@ -27,11 +27,13 @@ class Gluey extends Orchestrator {
     const compiledCmd = template(command);
     return execa.shell(compiledCmd(lodashVars), {env: {FORCE_COLOR: 'true'}})
       .then((result) => {
+        result.stdout = trim(result.stdout);
         this.log(result.stdout);
-        return trim(result.stdout);
+        return result.stdout;
       })
       .catch((err) => {
         this.exitCode = 1;
+        err.stderr = trim(err.stderr);
         return Promise.reject(err);
       });
   }
