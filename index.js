@@ -6,7 +6,7 @@ const templateSettings = require('lodash.templatesettings');
 const chalk = require('chalk');
 const trim = require('trim');
 
-class Gluey extends Orchestrator {
+class Gue extends Orchestrator {
 
   constructor(...args) {
     super(...args);
@@ -50,4 +50,4 @@ class Gluey extends Orchestrator {
     console.log(message);
   }
 }
-module.exports = new Gluey();
+module.exports = new Gue();

@@ -7,14 +7,14 @@ const argv = require('minimist')(process.argv.slice(2));
 const chalk = require('chalk');
 var prettyMs = require('pretty-ms');
 
-const glueyCli = new Liftoff({
-  name: 'gluey',
-  processTitle: 'gluey',
-  moduleName: 'gluey',
-  configName: 'glueyfile',
+const gueCli = new Liftoff({
+  name: 'gue',
+  processTitle: 'gue',
+  moduleName: 'gue',
+  configName: 'guefile',
 });
 
-glueyCli.launch({
+gueCli.launch({
   cwd: argv.cwd,
   configPath: argv.myappfile,
   require: argv.require,

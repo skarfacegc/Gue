@@ -8,7 +8,7 @@ const sandbox = sinon.sandbox.create();
 
 chai.use(sinonChai);
 
-describe('Gluey', () => {
+describe('Gue', () => {
   describe('constructor', () => {
     it('should have an options property', () => {
       const glue = require('../index.js');

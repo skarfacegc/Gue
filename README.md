@@ -1,17 +1,17 @@
-Gluey
+Gue
 ==
-[![Build Status](https://travis-ci.org/skarfacegc/Gluey.svg?branch=master)](https://travis-ci.org/skarfacegc/Gluey)
+[![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue)
 
-[![NPM](https://nodei.co/npm/gluey.png?downloads=true)](https://nodei.co/npm/gluey/)
+[![NPM](https://nodei.co/npm/gue.png?downloads=true)](https://nodei.co/npm/gue/)
 
-A lightweight task runner.  This is little more than a thin wrapper on orchestrator.  Goal is to provide the task composition / dependency chaining of Gulp without having to deal with streams. The only task type is currently a shell command.  Since Gluey is really geared towards executing shell commands it shouldn't need much in the way of plugins.
-
-
-[Gluey-test](https://github.com/skarfacegc/Gluey-test) is a sample project using Gluey.
+A lightweight task runner.  This is little more than a thin wrapper on orchestrator.  Goal is to provide the task composition / dependency chaining of Gulp without having to deal with streams. The only task type is currently a shell command.  Since Gue is really geared towards executing shell commands it shouldn't need much in the way of plugins.
 
 
-    // glueyfile.js
-    const glue = require('gluey');
+[Gue-test](https://github.com/skarfacegc/Gue-test) is a sample project using Gue.
+
+
+    // guefile.js
+    const glue = require('gue');
     glue.setOption('files', 'test/**/*.test.js');
     glue.task('coverage', () => {
       glue.shell('nyc mocha {{files}}')
@@ -37,26 +37,26 @@ This is very early in development.  Not sure if this will end up being useful or
 
 API
 --
-**gluey.task(name, ['deps'], () => {})**
+**gue.task(name, ['deps'], () => {})**
 
 Create a new task.  `['deps']` are run before the task, order is not guaranteed.
 
-**gluey.shell('shell command')**
+**gue.shell('shell command')**
 
 Executes the shell command, returns a promise with the command's output.  
-Shell command is a lodash template with `{{}}` as the tags.  The Gluey.options object is passed
+Shell command is a lodash template with `{{}}` as the tags.  The Gue.options object is passed
 to the lodash render.  This allows for variable substitution as seen in the example above with `{{files}}`
 
 
 
-**gluey.setOption('name','value')**
+**gue.setOption('name','value')**
 
-Programatic way to set values in Gluey.options.
+Programatic way to set values in Gue.options.
 
 CLI
 --
     # Run a task
-    % gluey <task name>
+    % gue <task name>
 
     # Get a list of tasks
-    % gluey -l
+    % gue -l
