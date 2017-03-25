@@ -44,16 +44,22 @@ function invoke(env) {
     process.exit(0);
   }
 
+  //
   // Setup orcestrator event listeners
+  //
+
+  // Log task start
   glueInst.on('task_start', (event) => {
     glueInst.log(chalk.green('[' + event.task + '] ') + chalk.blue('started'));
   });
 
+  // Log task stop and task duration
   glueInst.on('task_stop', (event) => {
       glueInst.log(chalk.green('[' + event.task + '] ') +
       chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
     });
 
+  // Print stderr and the task finish notification on error
   glueInst.on('task_err', (event)=> {
     glueInst.log(chalk.green('[' + event.task + '] ') +
       chalk.red(event.err.stderr));
@@ -61,14 +67,15 @@ function invoke(env) {
       chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
   });
 
+  // If there was an error in any of the tasks set the exit code
   glueInst.on('err', (event) => {
     glueInst.exitCode = 1;
   });
 
   // setup process event listener so we can
   // exit with the right code
-  process.once('exit', function(code) {
-    if (code === 0 && glueInst.exitCode === 1) {
+  process.once('exit', (code) => {
+    if (glueInst.exitCode === 1) {
       process.exit(1);
     }
   });
