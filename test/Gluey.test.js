@@ -35,24 +35,6 @@ describe('Gluey', () => {
     });
   });
 
-  describe('enableOutput', () => {
-    it('should correctly set the cmdOutput flag to true', () => {
-      const glue = require('../index.js');
-      glue.cmdOutput = false;
-      glue.enableOutput();
-      expect(glue.cmdOutput).to.be.true;
-    });
-  });
-
-  describe('disableOutput', () => {
-    it('should correctly set the cmdOutput flag to true', () => {
-      const glue = require('../index.js');
-      glue.cmdOutput = true;
-      glue.disableOutput();
-      expect(glue.cmdOutput).to.be.false;
-    });
-  });
-
   describe('log', () => {
     it('should call console.log correctly', () => {
       const glue = require('../index.js');
@@ -67,7 +49,6 @@ describe('Gluey', () => {
     it('should run the command with replacement', () => {
       const glue = require('../index.js');
       glue.setOption('test', 'TestString');
-      glue.disableOutput();
       return glue.shell('echo {{test}}')
       .then((data)=> {
         expect(data).to.equal('TestString');
@@ -76,7 +57,6 @@ describe('Gluey', () => {
 
     it('should run a command with passed replacement', () => {
       const glue = require('../index.js');
-      glue.disableOutput();
       return glue.shell('echo {{foo}}', {
         foo: 'woot'
       })
@@ -96,29 +76,6 @@ describe('Gluey', () => {
           done();
         });
     });
-
-    it('should print messages when printBuffer is true', () => {
-      const glue = require('../index.js');
-      const logStub = sandbox.stub(glue, 'log');
-      glue.cmdOutput = true;
-      return glue.shell('echo HelloWorld')
-        .then(() => {
-          expect(logStub).to.have.been.calledWith('HelloWorld');
-          sandbox.restore();
-        });
-    });
-
-    it('should not print messages when printBuffer is false', () => {
-      const glue = require('../index.js');
-      const logStub = sandbox.stub(glue, 'log');
-      glue.cmdOutput = false;
-      return glue.shell('echo HelloWorld')
-        .then(() => {
-          expect(logStub).to.have.not.been.called;
-          sandbox.restore();
-        });
-    });
-
   });
 
   describe('taskList', () => {

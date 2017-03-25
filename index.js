@@ -12,7 +12,6 @@ class Gluey extends Orchestrator {
     super(...args);
     this.exitCode = 0;
     this.options = {};
-    this.cmdOutput = true;
   }
 
   task(name, deps, func) {
@@ -28,9 +27,7 @@ class Gluey extends Orchestrator {
     const compiledCmd = template(command);
     return execa.shell(compiledCmd(lodashVars), {env: {FORCE_COLOR: 'true'}})
       .then((result) => {
-        if (this.cmdOutput) {
-          this.log(result.stdout);
-        }
+        this.log(result.stdout);
         return trim(result.stdout);
       })
       .catch((err) => {
@@ -41,14 +38,6 @@ class Gluey extends Orchestrator {
 
   setOption(name, value) {
     this.options[name] = value;
-  }
-
-  // Toggle automatic printing
-  enableOutput() {
-    this.cmdOutput = true;
-  }
-  disableOutput() {
-    this.cmdOutput = false;
   }
 
   taskList() {
