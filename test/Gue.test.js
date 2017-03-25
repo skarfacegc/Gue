@@ -11,35 +11,35 @@ chai.use(sinonChai);
 describe('Gue', () => {
   describe('constructor', () => {
     it('should have an options property', () => {
-      const glue = require('../index.js');
-      expect(glue.options).to.exist;
+      const gue = require('../index.js');
+      expect(gue.options).to.exist;
     });
   });
 
   describe('task', () => {
     it('should successfully create a task', () => {
-      const glue = require('../index.js');
-      glue.task('foo', ['bar'], () => {});
+      const gue = require('../index.js');
+      gue.task('foo', ['bar'], () => {});
 
-      expect(glue.tasks).to.have.property('foo');
-      expect(glue.tasks.foo.dep).to.deep.equal(['bar']);
-      expect(glue.tasks.foo.name).to.equal('foo');
+      expect(gue.tasks).to.have.property('foo');
+      expect(gue.tasks.foo.dep).to.deep.equal(['bar']);
+      expect(gue.tasks.foo.name).to.equal('foo');
     });
   });
 
   describe('setOption', () => {
     it('should add an option', () => {
-      const glue = require('../index.js');
-      glue.setOption('foo', 'bar');
-      expect(glue.options.foo).to.equal('bar');
+      const gue = require('../index.js');
+      gue.setOption('foo', 'bar');
+      expect(gue.options.foo).to.equal('bar');
     });
   });
 
   describe('log', () => {
     it('should call console.log correctly', () => {
-      const glue = require('../index.js');
+      const gue = require('../index.js');
       const logStub = sandbox.stub(console, 'log');
-      glue.log('Hello');
+      gue.log('Hello');
       expect(logStub).to.be.calledWith('Hello');
       sandbox.restore();
     });
@@ -47,17 +47,17 @@ describe('Gue', () => {
 
   describe('shell', () => {
     it('should run the command with replacement', () => {
-      const glue = require('../index.js');
-      glue.setOption('test', 'TestString');
-      return glue.shell('echo {{test}}')
+      const gue = require('../index.js');
+      gue.setOption('test', 'TestString');
+      return gue.shell('echo {{test}}')
       .then((data)=> {
         expect(data).to.equal('TestString');
       });
     });
 
     it('should run a command with passed replacement', () => {
-      const glue = require('../index.js');
-      return glue.shell('echo {{foo}}', {
+      const gue = require('../index.js');
+      return gue.shell('echo {{foo}}', {
         foo: 'woot'
       })
       .then((data) => {
@@ -66,8 +66,8 @@ describe('Gue', () => {
     });
 
     it('should handle command failures', (done) => {
-      const glue = require('../index.js');
-      glue.shell('badcommand')
+      const gue = require('../index.js');
+      gue.shell('badcommand')
         .then(()=> {
           done(new Error('Should not have succeeded'));
         })
@@ -80,9 +80,9 @@ describe('Gue', () => {
 
   describe('taskList', () => {
     it('should return the list of tasks', () => {
-      const glue = require('../index.js');
-      glue.task('testTask', () => {});
-      expect(glue.taskList()).to.contain('testTask');
+      const gue = require('../index.js');
+      gue.task('testTask', () => {});
+      expect(gue.taskList()).to.contain('testTask');
     });
   });
 

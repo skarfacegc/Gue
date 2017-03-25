@@ -23,13 +23,13 @@ gueCli.launch({
 
 function invoke(env) {
   require(env.configPath);
-  const glueInst = require(env.modulePath);
+  const gueInst = require(env.modulePath);
   const actions = argv._;
   const actionList = actions.length ? actions : ['default'];
-  const availableTasks = glueInst.taskList();
+  const availableTasks = gueInst.taskList();
 
   if (!env.configPath) {
-    glueInst.log(chalk.red('No gulpfile found'));
+    gueInst.log(chalk.red('No gulpfile found'));
     process.exit(1);
   }
 
@@ -40,7 +40,7 @@ function invoke(env) {
     process.env.PATH;
 
   if (argv.l) {
-    glueInst.log(availableTasks.join('\n'));
+    gueInst.log(availableTasks.join('\n'));
     process.exit(0);
   }
 
@@ -49,38 +49,38 @@ function invoke(env) {
   //
 
   // Log task start
-  glueInst.on('task_start', (event) => {
-    glueInst.log(chalk.green('[' + event.task + '] ') + chalk.blue('started'));
+  gueInst.on('task_start', (event) => {
+    gueInst.log(chalk.green('[' + event.task + '] ') + chalk.blue('started'));
   });
 
   // Log task stop and task duration
-  glueInst.on('task_stop', (event) => {
-      glueInst.log(chalk.green('[' + event.task + '] ') +
+  gueInst.on('task_stop', (event) => {
+      gueInst.log(chalk.green('[' + event.task + '] ') +
       chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
     });
 
   // Print stderr and the task finish notification on error
-  glueInst.on('task_err', (event)=> {
-    glueInst.log(chalk.green('[' + event.task + '] ') +
+  gueInst.on('task_err', (event)=> {
+    gueInst.log(chalk.green('[' + event.task + '] ') +
       chalk.red(event.err.stderr));
-    glueInst.log(chalk.green('[' + event.task + '] ') +
+    gueInst.log(chalk.green('[' + event.task + '] ') +
       chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
   });
 
   // If there was an error in any of the tasks set the exit code
-  glueInst.on('err', (event) => {
-    glueInst.exitCode = 1;
+  gueInst.on('err', (event) => {
+    gueInst.exitCode = 1;
   });
 
   // setup process event listener so we can
   // exit with the right code
   process.once('exit', (code) => {
-    if (glueInst.exitCode === 1) {
+    if (gueInst.exitCode === 1) {
       process.exit(1);
     }
   });
 
   // Now lets make do stuff
-  glueInst.start(actionList);
+  gueInst.start(actionList);
 }
 //
