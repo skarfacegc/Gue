@@ -33,7 +33,7 @@ exit with 1 if any of the tasks fail.
 You can install gue globally with ```npm install -g gue``` and locally with
 ```npm install --save-deps gue```.  The global ```gue``` command will use the
 version of gue in the local ```node_modules``` if available.
-```
+```shell
 # run the task named 'default'
 % gue
 
@@ -48,7 +48,7 @@ version of gue in the local ```node_modules``` if available.
 
 [Gue-test](https://github.com/skarfacegc/Gue-test) is a sample project using Gue.
 
-```
+```javascript
 const gue = require('gue');
 
 // Set the value for 'files'
@@ -95,7 +95,7 @@ third argument, or they may be loaded from the values specified
 with ```gue.setOption()```. If ```templateValue``` is set, it
 overrides ```gue.setOption```.
 
-```Shell
+```javascript
 gue.setOption('myString', 'foobar');
 
 // foobar
