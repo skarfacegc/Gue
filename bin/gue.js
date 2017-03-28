@@ -38,6 +38,11 @@ function invoke(env) {
   process.env.PATH = env.configBase + '/node_modules/.bin:' +
     process.env.PATH;
 
+  // Change directory to configBase to make sure everything
+  // is relative to the project root
+  // Fixes issue #4
+  process.chdir(env.configBase);
+
   if (argv.l) {
     gueInst.log(availableTasks.join('\n'));
     process.exit(0);
