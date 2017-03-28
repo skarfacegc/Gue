@@ -5,7 +5,6 @@
 const Liftoff = require('liftoff');
 const argv = require('minimist')(process.argv.slice(2));
 const chalk = require('chalk');
-var prettyMs = require('pretty-ms');
 
 const gueCli = new Liftoff({
   name: 'gue',
@@ -50,21 +49,18 @@ function invoke(env) {
 
   // Log task start
   gueInst.on('task_start', (event) => {
-    gueInst.log(chalk.green('[' + event.task + '] ') + chalk.blue('started'));
+    gueInst.log('started', event.task, 'normal');
   });
 
   // Log task stop and task duration
   gueInst.on('task_stop', (event) => {
-      gueInst.log(chalk.green('[' + event.task + '] ') +
-      chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
-    });
+    gueInst.log('finished in', event.task, 'normal', event.duration);
+  });
 
   // Print stderr and the task finish notification on error
   gueInst.on('task_err', (event)=> {
-    gueInst.log(chalk.green('[' + event.task + '] ') +
-      chalk.red(event.err.stderr));
-    gueInst.log(chalk.green('[' + event.task + '] ') +
-      chalk.blue('finished in ') + chalk.magenta(prettyMs(event.duration)));
+    gueInst.log(event.err.stderr, event.task, 'error');
+    gueInst.log('finished in', event.task, 'normal', event.duration);
   });
 
   // If there was an error in any of the tasks set the exit code

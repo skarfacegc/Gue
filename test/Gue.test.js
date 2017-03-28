@@ -38,10 +38,12 @@ describe('Gue', () => {
   describe('log', () => {
     it('should call console.log correctly', () => {
       const gue = require('../index.js');
+
       const logStub = sandbox.stub(console, 'log');
       gue.log('Hello');
-      expect(logStub).to.be.calledWith('Hello');
       sandbox.restore();
+
+      expect(logStub).to.be.calledWith('Hello');
     });
   });
 
@@ -83,6 +85,14 @@ describe('Gue', () => {
       const gue = require('../index.js');
       gue.task('testTask', () => {});
       expect(gue.taskList()).to.contain('testTask');
+    });
+  });
+
+  describe('runlist', () => {
+    it('should return the run list without default', () => {
+      const gue = require('../index.js');
+      gue.seq = ['a','b','default'];
+      expect(gue.runList()).to.deep.equal(['a','b']);
     });
   });
 

@@ -5,6 +5,8 @@ const template = require('lodash.template');
 const templateSettings = require('lodash.templatesettings');
 const chalk = require('chalk');
 const trim = require('trim');
+const util = require('./lib/Util');
+const prettyMs = require('pretty-ms');
 
 class Gue extends Orchestrator {
 
@@ -20,7 +22,7 @@ class Gue extends Orchestrator {
 
   shell(command, values) {
 
-    const lodashVars = (values && typeof values != undefined) ? values :
+    const lodashVars = (values && typeof values !== undefined) ? values :
       this.options;
 
     templateSettings.interpolate = /{{([\s\S]+?)}}/g;
@@ -46,8 +48,42 @@ class Gue extends Orchestrator {
     return Object.keys(this.tasks);
   }
 
-  log(message) {
-    console.log(message);
+  // Display the list of tasks to run
+  // removes default if it exists
+  runList() {
+    let myArr = this.seq;
+    let indexToRemove = myArr.indexOf('default');
+    if (indexToRemove > 0) {
+      myArr.splice(indexToRemove, 1);
+    }
+    return myArr;
   }
+
+  log(message, taskname, type, duration) {
+    let composedMessage = '';
+
+    // If we should use colored logging
+    if (taskname || type || duration) {
+      if (taskname !== undefined) {
+
+        composedMessage += chalk.bold.green(
+          util.leftPad('[' + taskname + '] ', 3 + util.maxLen(this.runList())));
+      }
+
+      if (type === 'error') {
+        composedMessage += chalk.red(message);
+      } else {
+        composedMessage += chalk.cyan(message);
+      }
+
+      if (duration) {
+        composedMessage += ' ' + chalk.white(prettyMs(duration));
+      }
+    } else {
+      composedMessage += message;
+    }
+    console.log(composedMessage);
+  }
+
 }
 module.exports = new Gue();
