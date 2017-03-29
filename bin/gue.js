@@ -64,7 +64,9 @@ function invoke(env) {
 
   // Print stderr and the task finish notification on error
   gueInst.on('task_err', (event)=> {
-    gueInst.log(event.err.stderr, event.task, 'error');
+    if (event.err.stderr) {
+      gueInst.log(event.err.stderr, event.task, 'error');
+    }
     gueInst.log('finished in', event.task, 'normal', event.duration);
   });
 

@@ -33,10 +33,11 @@ class Gue extends Orchestrator {
         this.log(result.stdout);
         return result.stdout;
       })
-      .catch((err) => {
+      .catch((result) => {
         this.exitCode = 1;
-        err.stderr = trim(err.stderr);
-        return Promise.reject(err);
+        result.stderr = trim(result.stderr);
+        this.log(trim(result.stdout));
+        return Promise.reject(result);
       });
   }
 
@@ -61,6 +62,10 @@ class Gue extends Orchestrator {
 
   log(message, taskname, type, duration) {
     let composedMessage = '';
+
+    if (!message || message === '') {
+      return;
+    }
 
     // If we should use colored logging
     if (taskname || type || duration) {
