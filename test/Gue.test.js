@@ -6,6 +6,7 @@ const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 const sandbox = sinon.sandbox.create();
 const gue = require('../index');
+const chalk = require('chalk');
 
 chai.use(sinonChai);
 
@@ -41,6 +42,40 @@ describe('Gue', () => {
 
       expect(logStub).to.be.calledWith('Hello');
     });
+
+    it('should correctly color the taskname and message', () => {
+      var compareString = chalk.bold.green('[taskname] ');
+      compareString += chalk.cyan('foo');
+
+      const logStub = sandbox.stub(console, 'log');
+      gue.log('foo', 'taskname');
+      sandbox.restore();
+
+      expect(logStub).to.be.calledWith(compareString);
+    });
+
+    it('should print a colored duration if provided', () => {
+      var compareString = chalk.bold.green('[taskname] ');
+      compareString += chalk.cyan('foo');
+      compareString += ' ' + chalk.white('1ms');
+
+      const logStub = sandbox.stub(console, 'log');
+      gue.log('foo', 'taskname', null, 1);
+      sandbox.restore();
+
+      expect(logStub).to.be.calledWith(compareString);
+    });
+
+    it('should correctly color errors', () => {
+      var compareString = chalk.red('foo');
+
+      const logStub = sandbox.stub(console, 'log');
+      gue.log('foo', null, 'error');
+      sandbox.restore();
+
+      expect(logStub).to.be.calledWith(compareString);
+    });
+
   });
 
   describe('shell', () => {

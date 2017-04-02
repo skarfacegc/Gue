@@ -69,7 +69,7 @@ class Gue extends Orchestrator {
 
     // If we should use colored logging
     if (taskname || type || duration) {
-      if (taskname !== undefined) {
+      if (taskname && taskname !== undefined) {
 
         composedMessage += chalk.bold.green(
           util.leftPad('[' + taskname + '] ', 3 + util.maxLen(this.runList())));
