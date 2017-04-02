@@ -1,6 +1,6 @@
 # Gue
 
-[![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue)
+[![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue) [![Coverage Status](https://coveralls.io/repos/github/skarfacegc/Gue/badge.svg)](https://coveralls.io/github/skarfacegc/Gue)
 
 [![NPM](https://nodei.co/npm/gue.png?downloads=true)](https://nodei.co/npm/gue/)
 
