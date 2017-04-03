@@ -59,15 +59,15 @@ function invoke(env) {
 
   // Log task stop and task duration
   gueInst.on('task_stop', (event) => {
-    gueInst.log('finished in', event.task, 'normal', event.duration);
+    gueInst.log('finished in', event.task, event.duration);
   });
 
   // Print stderr and the task finish notification on error
   gueInst.on('task_err', (event)=> {
     if (event.err.stderr) {
-      gueInst.log(event.err.stderr, event.task, 'error');
+      gueInst.errLog(event.err.stderr, event.task);
     }
-    gueInst.log('finished in', event.task, 'normal', event.duration);
+    gueInst.log('finished in', event.task, event.duration);
   });
 
   // If there was an error in any of the tasks set the exit code

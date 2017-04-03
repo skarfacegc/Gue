@@ -60,7 +60,7 @@ describe('Gue', () => {
       compareString += ' ' + chalk.white('1ms');
 
       const logStub = sandbox.stub(console, 'log');
-      gue.log('foo', 'taskname', null, 1);
+      gue.log('foo', 'taskname', 1);
       sandbox.restore();
 
       expect(logStub).to.be.calledWith(compareString);
@@ -70,7 +70,7 @@ describe('Gue', () => {
       var compareString = chalk.red('foo');
 
       const logStub = sandbox.stub(console, 'log');
-      gue.log('foo', null, 'error');
+      gue.errLog('foo');
       sandbox.restore();
 
       expect(logStub).to.be.calledWith(compareString);
