@@ -4,7 +4,7 @@ const execa = require('execa');
 const template = require('lodash.template');
 const templateSettings = require('lodash.templatesettings');
 const chalk = require('chalk');
-const trim = require('trim');
+const trimNewlines = require('trim-newlines');
 const util = require('./lib/Util');
 const prettyMs = require('pretty-ms');
 
@@ -29,14 +29,14 @@ class Gue extends Orchestrator {
     const compiledCmd = template(command);
     return execa.shell(compiledCmd(lodashVars), {env: {FORCE_COLOR: 'true'}})
       .then((result) => {
-        result.stdout = trim(result.stdout);
+        result.stdout = trimNewlines(result.stdout);
         this.log(result.stdout);
         return result.stdout;
       })
       .catch((result) => {
         this.exitCode = 1;
-        result.stderr = trim(result.stderr);
-        this.log(trim(result.stdout));
+        result.stderr = trimNewlines(result.stderr);
+        this.log(trimNewlines(result.stdout));
         return Promise.reject(result);
       });
   }
