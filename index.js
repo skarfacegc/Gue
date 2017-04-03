@@ -4,7 +4,7 @@ const execa = require('execa');
 const template = require('lodash.template');
 const templateSettings = require('lodash.templatesettings');
 const chalk = require('chalk');
-const trim = require('trim');
+const trimNewlines = require('trim-newlines');
 const util = require('./lib/Util');
 const prettyMs = require('pretty-ms');
 
@@ -20,6 +20,18 @@ class Gue extends Orchestrator {
     super.add(name, deps, func);
   }
 
+  log(message, taskname, duration) {
+    if (!taskname && !duration) {
+      this._log('clean', message);
+    } else {
+      this._log('normal', message, taskname, duration);
+    }
+  }
+
+  errLog(message, taskname, duration) {
+    this._log('error', message, taskname, duration);
+  }
+
   shell(command, values) {
 
     const lodashVars = (values && typeof values !== undefined) ? values :
@@ -29,14 +41,14 @@ class Gue extends Orchestrator {
     const compiledCmd = template(command);
     return execa.shell(compiledCmd(lodashVars), {env: {FORCE_COLOR: 'true'}})
       .then((result) => {
-        result.stdout = trim(result.stdout);
+        result.stdout = trimNewlines(result.stdout);
         this.log(result.stdout);
         return result.stdout;
       })
       .catch((result) => {
         this.exitCode = 1;
-        result.stderr = trim(result.stderr);
-        this.log(trim(result.stdout));
+        result.stderr = trimNewlines(result.stderr);
+        this.log(trimNewlines(result.stdout));
         return Promise.reject(result);
       });
   }
@@ -60,32 +72,30 @@ class Gue extends Orchestrator {
     return myArr;
   }
 
-  log(message, taskname, type, duration) {
+  _log(type, message, taskname, duration) {
     let composedMessage = '';
 
     if (!message || message === '') {
       return;
     }
 
-    // If we should use colored logging
-    if (taskname || type || duration) {
-      if (taskname && taskname !== undefined) {
+    if (taskname && taskname !== undefined) {
+      composedMessage += chalk.bold.green(
+        util.leftPad('[' + taskname + '] ', 3 + util.maxLen(this.runList())));
+    }
 
-        composedMessage += chalk.bold.green(
-          util.leftPad('[' + taskname + '] ', 3 + util.maxLen(this.runList())));
-      }
-
-      if (type === 'error') {
-        composedMessage += chalk.red(message);
-      } else {
-        composedMessage += chalk.cyan(message);
-      }
-
-      if (duration) {
-        composedMessage += ' ' + chalk.white(prettyMs(duration));
-      }
+    if (type === 'error') {
+      composedMessage += chalk.red(message);
+    } else if (type === 'normal') {
+      composedMessage += chalk.cyan(message);
+    } else if (type === 'clean') {
+      composedMessage += message;
     } else {
       composedMessage += message;
+    }
+
+    if (duration !== undefined && duration > 0.0) {
+      composedMessage += ' ' + chalk.white(prettyMs(duration));
     }
     console.log(composedMessage);
   }

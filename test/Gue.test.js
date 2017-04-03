@@ -34,10 +34,18 @@ describe('Gue', () => {
     });
   });
 
-  describe('log', () => {
-    it('should call console.log correctly', () => {
+  describe('_log', () => {
+    it('should not decorate in clean mode', () => {
       const logStub = sandbox.stub(console, 'log');
-      gue.log('Hello');
+      gue._log('clean', 'Hello');
+      sandbox.restore();
+
+      expect(logStub).to.be.calledWith('Hello');
+    });
+
+    it('should not decorate if an invalid mode is passed', () => {
+      const logStub = sandbox.stub(console, 'log');
+      gue._log('', 'Hello');
       sandbox.restore();
 
       expect(logStub).to.be.calledWith('Hello');
@@ -48,7 +56,7 @@ describe('Gue', () => {
       compareString += chalk.cyan('foo');
 
       const logStub = sandbox.stub(console, 'log');
-      gue.log('foo', 'taskname');
+      gue._log('normal', 'foo', 'taskname');
       sandbox.restore();
 
       expect(logStub).to.be.calledWith(compareString);
@@ -60,7 +68,7 @@ describe('Gue', () => {
       compareString += ' ' + chalk.white('1ms');
 
       const logStub = sandbox.stub(console, 'log');
-      gue.log('foo', 'taskname', null, 1);
+      gue._log('normal', 'foo', 'taskname', 1);
       sandbox.restore();
 
       expect(logStub).to.be.calledWith(compareString);
@@ -70,12 +78,36 @@ describe('Gue', () => {
       var compareString = chalk.red('foo');
 
       const logStub = sandbox.stub(console, 'log');
-      gue.log('foo', null, 'error');
+      gue._log('error', 'foo');
       sandbox.restore();
 
       expect(logStub).to.be.calledWith(compareString);
     });
+  });
 
+  describe('log', () => {
+    it('should call _log correctly if all fields are defined', () => {
+      const _logStub = sandbox.stub(gue, '_log');
+      gue.log('foo', 'bar', 1);
+      sandbox.restore();
+      expect(_logStub).to.be.calledWith('normal', 'foo', 'bar', 1);
+    });
+
+    it('should call _log correctly if just message is passed', () => {
+      const _logStub = sandbox.stub(gue, '_log');
+      gue.log('plain');
+      sandbox.restore();
+      expect(_logStub).to.be.calledWith('clean', 'plain');
+    });
+  });
+
+  describe('errLog', () => {
+    it('should call _log correctly', () => {
+      const _logStub = sandbox.stub(gue, '_log');
+      gue.errLog('err');
+      sandbox.restore();
+      expect(_logStub).to.be.calledWith('error', 'err');
+    });
   });
 
   describe('shell', () => {
