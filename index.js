@@ -88,6 +88,8 @@ class Gue extends Orchestrator {
       composedMessage += chalk.red(message);
     } else if (type === 'normal') {
       composedMessage += chalk.cyan(message);
+    } else if (type === 'clean') {
+      composedMessage += message;
     } else {
       composedMessage += message;
     }
