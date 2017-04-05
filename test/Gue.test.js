@@ -115,7 +115,7 @@ describe('Gue', () => {
       gue.setOption('test', 'TestString');
       return gue.shell('echo {{test}}')
       .then((data)=> {
-        expect(data).to.equal('TestString');
+        expect(data.stdout).to.equal('TestString');
       });
     });
 
@@ -124,7 +124,7 @@ describe('Gue', () => {
         foo: 'woot'
       })
       .then((data) => {
-        expect(data).to.equal('woot');
+        expect(data.stdout).to.equal('woot');
       });
     });
 
