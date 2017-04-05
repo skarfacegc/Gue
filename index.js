@@ -45,13 +45,11 @@ class Gue extends Orchestrator {
     const compiledCmd = template(command);
     return execa.shell(compiledCmd(lodashVars), {env: {FORCE_COLOR: 'true'}})
       .then((result) => {
-        result.stdout = trimNewlines(result.stdout);
-        this.log(result.stdout);
+        this.log(trimNewlines(result.stdout));
         return result.stdout;
       })
       .catch((result) => {
         this.exitCode = 1;
-        result.stderr = trimNewlines(result.stderr);
         this.log(trimNewlines(result.stdout));
         return Promise.reject(result);
       });
