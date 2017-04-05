@@ -33,7 +33,6 @@
     "minimist": "^1.2.0",
     "orchestrator": "^0.3.8",
     "pretty-ms": "^2.1.0",
-    "trim": "^0.0.1",
     "trim-newlines": "^1.0.0"
   },
   "devDependencies": {
