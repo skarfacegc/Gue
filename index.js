@@ -49,7 +49,7 @@ class Gue extends Orchestrator {
           this.errLog(trimNewlines(result.stderr));
           this.log(trimNewlines(result.stdout));
         }
-        return result.stdout;
+        return Promise.resolve(result);
       })
       .catch((result) => {
         this.exitCode = 1;
