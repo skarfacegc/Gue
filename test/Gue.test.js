@@ -191,7 +191,7 @@ describe('Gue', () => {
         })
         .catch((data) => {
           expect(logStub).to.be
-            .calledWith('/bin/sh: badcommand: command not found');
+            .calledWithMatch(/badcommand.*not found/);
           done();
         });
       sandbox.restore();
