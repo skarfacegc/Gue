@@ -36,6 +36,10 @@ class Gue extends Orchestrator {
     return this._shell('print', command, value);
   }
 
+  silentShell(command, value) {
+    return this._shell('silent', command, value);
+  }
+
   _shell(mode, command, values) {
 
     const lodashVars = (values && typeof values !== undefined) ? values :

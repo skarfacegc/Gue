@@ -110,17 +110,17 @@ describe('Gue', () => {
     });
   });
 
-  describe('shell', () => {
+  describe('_shell', () => {
     it('should run the command with replacement', () => {
       gue.setOption('test', 'TestString');
-      return gue.shell('echo {{test}}')
+      return gue._shell('silent', 'echo {{test}}')
       .then((data)=> {
         expect(data.stdout).to.equal('TestString');
       });
     });
 
     it('should run a command with passed replacement', () => {
-      return gue.shell('echo {{foo}}', {
+      return gue._shell('silent', 'echo {{foo}}', {
         foo: 'woot'
       })
       .then((data) => {
@@ -129,7 +129,7 @@ describe('Gue', () => {
     });
 
     it('should handle command failures', (done) => {
-      gue.shell('badcommand')
+      gue._shell('silent', 'badcommand')
         .then(()=> {
           done(new Error('Should not have succeeded'));
         })
@@ -137,6 +137,81 @@ describe('Gue', () => {
           expect(err.stderr).to.contain('badcommand');
           done();
         });
+    });
+
+    it('should not print on successs when called in silent mode', (done) => {
+      const logStub = sandbox.stub();
+      gue.log = logStub;
+      gue._shell('silent', 'echo foo')
+        .then((data) => {
+          expect(logStub).to.not.be.called;
+          done();
+        })
+        .catch((data) => {
+          done(new Error('Should not have gotten here'));
+        });
+      sandbox.restore();
+    });
+
+    it('should not print on failure when called in silent mode', (done) => {
+      const logStub = sandbox.stub();
+      gue.log = logStub;
+      gue._shell('silent', 'bad command')
+        .then((data) => {
+          done(new Error('Should not have gotten here'));
+        })
+        .catch((data) => {
+          expect(logStub).to.not.be.called;
+          done();
+        });
+      sandbox.restore();
+    });
+
+    it('should print on success when called in print mode', (done) => {
+      const logStub = sandbox.stub();
+      gue.log = logStub;
+      gue._shell('print', 'echo foo')
+        .then((data) => {
+          expect(logStub).to.be.calledWith('foo');
+          done();
+        })
+        .catch((data) => {
+          done(new Error('Should not have gotten here'));
+        });
+      sandbox.restore();
+    });
+
+    it('should print on failure when called in print mode', (done) => {
+      const logStub = sandbox.stub();
+      sandbox.stub(console, 'log');
+      gue.errLog = logStub;
+      gue._shell('print', 'badcommand')
+        .then((data) => {
+          done(new Error('Should not have gotten here'));
+        })
+        .catch((data) => {
+          expect(logStub).to.be
+            .calledWith('/bin/sh: badcommand: command not found');
+          done();
+        });
+      sandbox.restore();
+    });
+  });
+
+  describe('shell', () => {
+    it('should call _shell with the print mode set', () => {
+      const _shellStub = sandbox.stub(gue, '_shell');
+      gue.shell('/bin/ls');
+      expect(_shellStub).to.be.calledWith('print', '/bin/ls');
+      sandbox.restore();
+    });
+  });
+
+  describe('silentShell', () => {
+    it('should call _shell with the silent mode set', () => {
+      const _shellStub = sandbox.stub(gue, '_shell');
+      gue.silentShell('/bin/ls');
+      expect(_shellStub).to.be.calledWith('silent', '/bin/ls');
     });
   });
 
