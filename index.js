@@ -33,10 +33,10 @@ class Gue extends Orchestrator {
   }
 
   shell(command, value) {
-    return this._shell(command, value);
+    return this._shell('print', command, value);
   }
 
-  _shell(command, values) {
+  _shell(mode, command, values) {
 
     const lodashVars = (values && typeof values !== undefined) ? values :
       this.options;
@@ -45,12 +45,18 @@ class Gue extends Orchestrator {
     const compiledCmd = template(command);
     return execa.shell(compiledCmd(lodashVars), {env: {FORCE_COLOR: 'true'}})
       .then((result) => {
-        this.log(trimNewlines(result.stdout));
+        if (mode === 'print') {
+          this.errLog(trimNewlines(result.stderr));
+          this.log(trimNewlines(result.stdout));
+        }
         return result.stdout;
       })
       .catch((result) => {
         this.exitCode = 1;
-        this.log(trimNewlines(result.stdout));
+        if (mode === 'print') {
+          this.errLog(trimNewlines(result.stderr));
+          this.log(trimNewlines(result.stdout));
+        }
         return Promise.reject(result);
       });
   }
