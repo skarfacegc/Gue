@@ -32,7 +32,11 @@ class Gue extends Orchestrator {
     this._log('error', message, taskname, duration);
   }
 
-  shell(command, values) {
+  shell(command, value) {
+    return this._shell(command, value);
+  }
+
+  _shell(command, values) {
 
     const lodashVars = (values && typeof values !== undefined) ? values :
       this.options;
