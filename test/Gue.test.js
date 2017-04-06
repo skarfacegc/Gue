@@ -222,10 +222,10 @@ describe('Gue', () => {
     });
   });
 
-  describe('runlist', () => {
+  describe('_runlist', () => {
     it('should return the run list without default', () => {
       gue.seq = ['a','b','default'];
-      expect(gue.runList()).to.deep.equal(['a','b']);
+      expect(gue._runList()).to.deep.equal(['a','b']);
     });
   });
 

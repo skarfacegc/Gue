@@ -71,30 +71,92 @@ gue.task('fail', () => {
 ```
 ![Run Example](http://i.imgur.com/f8J5toD.png?1)
 
-### API
-Your ```guefile.js``` defines the tasks and their dependencies.
+#
 
-#### setOption(name, value)
-- **name** name of the option to set
-- **value** value of the option
+<!-- Start index.js -->
+## API Documentation
 
-Sets values to be used in ```gue.shell()``` for the [lodash](https://www.npmjs.com/package/lodash.template) template replacement.
+### constructor
 
-#### shell(command, templateValue)
-- **command** string to be executed ```echo helloWorld```
-- **templateValue** object to override values set by setOption
-- **returns** Promise with stdout on success or stderr on failure
+This doesn't take anything interesting.
+
+Returns a gue instance
+
+     const Gue = require('gue');
+     const gue = new Gue();
+----
+### task(name, deps, func)
+
+Create a new task
+
+Tasks are the core of gue.  They are the bits that contain the
+work you want done.  A gue task consists of a name and one or more
+things to do.  Each task may define a list of dependencies that will
+run to completion prior to running the current task.  Each task may
+also specify a function to run.
+
+- Tasks should return a promise or call the callback that is passed
+to the function.
+- Dependencies will run to completion prior to executing the current task.
+These tasks will run asynchronously (order is not guaranteed)
+
+#### Params:
+
+* **string** *name* Name of the task
+* **array** *deps* Array of task dependencies
+* **function** *func* The function to execute for this task
+
+       // Create a task that just calls dep1 and dep2
+       task('mytask', ['dep1','dep2']);
+
+       // Create a task that runs tests and code coverage
+       task('coverage', () =>{
+          return gue.shell('nyc mocha tests/*.js')
+       })
+
+       // Create a task that calls a linter task prior to coverage
+       task('coverage', ['lint'], () =>{
+          return gue.shell('nyc mocha tests/*.js')
+       })
+
+       // Example of using a callback
+       task('nonPromise', (done) => {
+           plainFunction();
+           done();
+       })
+----
+### setOption(name, value)
+
+setOption - Sets a name value binding for use in the lodash expansion
+in the shell commands
+
+#### Params:
+
+* **string** *name* name of the value
+* **literal** *value* the value itself
+----
+### taskList()
+
+Return an array of the defined tasks
+
+#### Return:
+
+* **array** Array of the defined tasks
+
+----
+### shell(command, value)
+
+Runs a shell command and prints the output
 
 Shell commands print their buffer when the task is completed.  If a shell
-command exits with a non zero status a flag is set so that gue exits with 1.  A
-shell command that errors will have it's stderr printed in red.  See the fail
-task in the output above.
-
-Shell commands are run through the [lodash](https://www.npmjs.com/package/lodash.template) template system using ```{{}}``` as
-the replacement tokens.  The substitution values may be passed in as an optional
-third argument, or they may be loaded from the values specified
-with ```gue.setOption()```. If ```templateValue``` is set, it
-overrides ```gue.setOption```.
+command exits with a non zero status a flag is set so that gue exits
+with 1. A shell command that errors will have it's stderr printed in red.
+See the fail task in the output above. Shell commands are run through the
+ [lodash](https://www.npmjs.com/package/lodash.template) template system
+ using ```{{}}``` as the replacement tokens.  The substitution values
+may be passed in as an optional third argument, or they may be loaded from
+ the values specified with ```gue.setOption()```. If ```templateValue``` is
+ set, it overrides ```gue.setOption```.
 
 ```javascript
 gue.setOption('myString', 'foobar');
@@ -106,42 +168,103 @@ gue.shell('echo {{myString}}');
 gue.shell('echo {{myString}}', {myString: 'woot'});
 ```
 
-#### task(name, deps, function(callback))
-- **name** name of the task
-- **deps** array of tasks to complete prior to executing this task
-- **function** the content of the task
+#### Params:
 
-Tasks should either return a promise or execute the callback to let gue know
-that the task is done.  Orchestrator guarantees that the dependencies will
-finish prior to running the task, but the dependencies will run concurrently.
-See the
-[orchestrator](https://www.npmjs.com/package/orchestrator#orchestratoraddname-deps-function)
-docs for the add method for more details. Task is just a
-passthrough to ```orchestrator.add```.
+* **string** *command* The shell command to run
+* **literal** *value* An optional override of the values set with setOption
+
+#### Return:
+
+* **promise** Promise containing the
+[execa](https://www.npmjs.com/package/execa) result
+----
+### silentShell(command, value)
+
+same as shell but doesn't print any output
+
+#### Params:
+
+* **string** *command* The shell command to run
+* **literal** *value* An optional override of the values set with setOption
+
+#### Return:
+
+* **promise** Promise containing the
+[execa](https://www.npmjs.com/package/execa) result
+----
+### log(message, taskname, duration)
+
+Prints a log message
+
+If only the message is passed it behaves like console.log
+If duration isn't passed it isn't printed
+
+#### Params:
+
+* **string** *message* The string to log
+* **string** *taskname* The name of the task
+* **type** *duration* The task duration in ms
+----
+### errLog(message, taskname, duration)
+
+Prints an error message
+
+Message is printed in red
+If only the message is passed it behaves like console.log
+If duration isn't passed it isn't printed
+
+#### Params:
+
+* **string** *message* The string to log
+* **string** *taskname* The name of the task
+* **int** *duration* The task duration in ms
 
 
-```javascript
-// task that calls an async method that uses promises
-gue.task('myPromiseTask', ['dep1','dep2'], () =>{
-  return methodThatReturnsAPromise();
-});
+----
+## Private Methods
+Not really private, but you shouldn't need to call them
 
-// task that calls an async method that takes a callback
-gue.task('myCallbackTask', ['dep1','dep2'], (done) => {
-  somethingAsync(() =>{
-    //... do stuff
-    done();
-  });
-});
+----
+### \_shell(mode, command, values)
 
-// Task alias
-gue.task('runTests', ['lint','test','coverage']);
+This is what actually does the shell execution for ```shell```
+and ```silentShell```
 
-// No dependencies
-gue.task('myTask', () =>{
-  console.log('foo');
-});
-```
+See the documentation for '''shell''' for more information
 
-#### taskList()
-Returns an array of the defined tasks.
+#### Params:
+
+* **string** *mode* 'print' or 'silent'
+* **type** *command* The shell command to run
+* **type** *values* an optional override of the values set with setOption
+
+#### Return:
+
+* **promise** Promise containing the
+[execa](https://www.npmjs.com/package/execa) result
+----
+### \_log(type, message, taskname, duration)
+
+does the acutal printing for ```log``` and ```errLog```
+
+- Error type prints the message in red
+- Normal type prints the message in cyan
+- Clean type prints the message without any coloring
+
+#### Params:
+
+* **string** *type* error|normal|clean
+* **string** *message* The string to log
+* **string** *taskname* The name of the task
+* **int** *duration* The task duration in ms
+----
+### \_runList()
+
+Returns the list of active tasks without 'default' if it's there
+Used mainly to set the width of taskname in ```_log```
+
+#### Return:
+
+* **type** Description
+
+<!-- End index.js -->
