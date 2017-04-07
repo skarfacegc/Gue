@@ -12,10 +12,9 @@ class Gue extends Orchestrator {
 
   /**
    * This doesn't take anything interesting.
-   * @returns {object} Gue instance
+   *
    * @example
-   * const Gue = require('gue');
-   * const gue = new Gue();
+   * const gue = require('gue');
    */
   constructor(...args) {
     super(...args);
