@@ -18,3 +18,7 @@ gue.task('docs', () => {
 
   return gue.shell(command);
 });
+
+gue.task('clean', () => {
+  return gue.shell('rm -rf node_modules');
+});

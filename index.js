@@ -188,9 +188,16 @@ class Gue extends Orchestrator {
     const lodashVars = (values && typeof values !== undefined) ? values :
       this.options;
 
+    const shellOpts = {
+      env: {
+        FORCE_COLOR: 'true',
+        PATH: process.env.PATH
+      }
+    };
+
     templateSettings.interpolate = /{{([\s\S]+?)}}/g;
     const compiledCmd = template(command);
-    return execa.shell(compiledCmd(lodashVars), {env: {FORCE_COLOR: 'true'}})
+    return execa.shell(compiledCmd(lodashVars), shellOpts)
       .then((result) => {
         if (mode === 'print') {
           this.errLog(trimNewlines(result.stderr));
