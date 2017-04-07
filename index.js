@@ -8,18 +8,14 @@ const trimNewlines = require('trim-newlines');
 const util = require('./lib/Util');
 const prettyMs = require('pretty-ms');
 
-/**
- * ### API Documentation
- */
 class Gue extends Orchestrator {
 
   /**
    * This doesn't take anything interesting.
-   *
-   * Returns a gue instance
-   *
-   *      const Gue = require('gue');
-   *      const gue = new Gue();
+   * @returns {object} Gue instance
+   * @example
+   * const Gue = require('gue');
+   * const gue = new Gue();
    */
   constructor(...args) {
     super(...args);
@@ -46,33 +42,80 @@ class Gue extends Orchestrator {
    * @param {array} deps Array of task dependencies
    * @param {function} func The function to execute for this task
    *
+   * @example
+   * // Create a task that just calls dep1 and dep2
+   * task('mytask', ['dep1','dep2']);
    *
-   *        // Create a task that just calls dep1 and dep2
-   *        task('mytask', ['dep1','dep2']);
+   * // Create a task that runs tests and code coverage
+   * task('coverage', () =>{
+   *   return gue.shell('nyc mocha tests/*.js')
+   * })
    *
-   *        // Create a task that runs tests and code coverage
-   *        task('coverage', () =>{
-   *           return gue.shell('nyc mocha tests/*.js')
-   *        })
+   * // Create a task that calls a linter task prior to coverage
+   * task('coverage', ['lint'], () =>{
+   *   return gue.shell('nyc mocha tests/*.js')
+   * })
    *
-   *        // Create a task that calls a linter task prior to coverage
-   *        task('coverage', ['lint'], () =>{
-   *           return gue.shell('nyc mocha tests/*.js')
-   *        })
-   *
-   *        // Example of using a callback
-   *        task('nonPromise', (done) => {
-   *            plainFunction();
-   *            done();
-   *        })
-   *
+   * // Example of using a callback
+   * task('nonPromise', (done) => {
+   *   plainFunction();
+   *   done();
+   * })
    */
   task(name, deps, func) {
     super.add(name, deps, func);
   }
 
   /**
-   * setOption - Sets a name value binding for use in the lodash expansion
+   * Runs a shell command and prints the output
+   *
+   * Shell commands print their buffer when the task is completed.  If a shell
+   * command exits with a non zero status a flag is set so that gue exits
+   * with 1. A shell command that errors will have it's stderr printed in red.
+   * See the fail task in the output above. Shell commands are run through the
+   *  [lodash](https://www.npmjs.com/package/lodash.template) template system
+   *  using ```{{}}``` as the replacement tokens.  The substitution values
+   * may be passed in as an optional third argument, or they may be loaded from
+   *  the values specified with ```gue.setOption()```. If ```templateValue``` is
+   *  set, it overrides ```gue.setOption```.
+   *
+
+   *
+   * @param {string} command The shell command to run
+   * @param {literal} value An optional override of the values set with
+   * setOption
+   * @returns {promise} Promise containing the
+   * [execa](https://www.npmjs.com/package/execa) result
+   *
+   * @example
+   * gue.setOption('myString', 'foobar');
+   *
+   * // foobar
+   * gue.shell('echo {{myString}}');
+   *
+   * // woot
+   * gue.shell('echo {{myString}}', {myString: 'woot'});
+   */
+  shell(command, value) {
+    return this._shell('print', command, value);
+  }
+
+  /**
+   * same as shell but doesn't print any output
+   *
+   * @param {string} command The shell command to run
+   * @param {literal} value An optional override of the values set with
+   * setOption
+   *
+   * @returns {promise} Promise containing the
+   * [execa](https://www.npmjs.com/package/execa) result
+   */
+  silentShell(command, value) {
+    return this._shell('silent', command, value);
+  }
+
+  /**
+   * Sets a name value binding for use in the lodash expansion
    * in the shell commands
    *
    * @param {string} name  name of the value
@@ -93,52 +136,38 @@ class Gue extends Orchestrator {
   }
 
   /**
-   * Runs a shell command and prints the output
+   * Prints a log message
    *
-   * Shell commands print their buffer when the task is completed.  If a shell
-   * command exits with a non zero status a flag is set so that gue exits
-   * with 1. A shell command that errors will have it's stderr printed in red.
-   * See the fail task in the output above. Shell commands are run through the
-   *  [lodash](https://www.npmjs.com/package/lodash.template) template system
-   *  using ```{{}}``` as the replacement tokens.  The substitution values
-   * may be passed in as an optional third argument, or they may be loaded from
-   *  the values specified with ```gue.setOption()```. If ```templateValue``` is
-   *  set, it overrides ```gue.setOption```.
+   * If only the message is passed it behaves like console.log
+   * If duration isn't passed it isn't printed
    *
-   * ```javascript
-   * gue.setOption('myString', 'foobar');
-   *
-   * // foobar
-   * gue.shell('echo {{myString}}');
-   *
-   * // woot
-   * gue.shell('echo {{myString}}', {myString: 'woot'});
-   * ```
-   *
-   * @param {string} command The shell command to run
-   * @param {literal} value An optional override of the values set with
-   * setOption
-   *
-   * @returns {promise} Promise containing the
-   * [execa](https://www.npmjs.com/package/execa) result
+   * @param {string} message  The string to log
+   * @param {string} taskname The name of the task
+   * @param {type} duration The task duration in ms
    *
    */
-  shell(command, value) {
-    return this._shell('print', command, value);
+  log(message, taskname, duration) {
+    if (!taskname && !duration) {
+      this._log('clean', message);
+    } else {
+      this._log('normal', message, taskname, duration);
+    }
   }
 
   /**
-   * same as shell but doesn't print any output
+   * Prints an error message
    *
-   * @param {string} command The shell command to run
-   * @param {literal} value An optional override of the values set with
-   * setOption
+   * Message is printed in red
+   * If only the message is passed it behaves like console.log
+   * If duration isn't passed it isn't printed
    *
-   * @returns {promise} Promise containing the
-   * [execa](https://www.npmjs.com/package/execa) result
+   * @param {string} message  The string to log
+   * @param {string} taskname The name of the task
+   * @param {int} duration The task duration in ms
+   *
    */
-  silentShell(command, value) {
-    return this._shell('silent', command, value);
+  errLog(message, taskname, duration) {
+    this._log('error', message, taskname, duration);
   }
 
   /**
@@ -181,48 +210,13 @@ class Gue extends Orchestrator {
   }
 
   /**
-   * Prints a log message
-   *
-   * If only the message is passed it behaves like console.log
-   * If duration isn't passed it isn't printed
-   *
-   * @param {string} message  The string to log
-   * @param {string} taskname The name of the task
-   * @param {type} duration The task duration in ms
-   *
-   */
-  log(message, taskname, duration) {
-    if (!taskname && !duration) {
-      this._log('clean', message);
-    } else {
-      this._log('normal', message, taskname, duration);
-    }
-  }
-
-  /**
-   * Prints an error message
-   *
-   * Message is printed in red
-   * If only the message is passed it behaves like console.log
-   * If duration isn't passed it isn't printed
-   *
-   * @param {string} message  The string to log
-   * @param {string} taskname The name of the task
-   * @param {int} duration The task duration in ms
-   *
-   */
-  errLog(message, taskname, duration) {
-    this._log('error', message, taskname, duration);
-  }
-
-  /**
    * does the acutal printing for ```log``` and ```errLog```
    *
    * - Error type prints the message in red
    * - Normal type prints the message in cyan
    * - Clean type prints the message without any coloring
    *
-   * @param {string} type     error|normal|clean
+   * @param {string} type     error normal clean
    * @param {string} message  The string to log
    * @param {string} taskname The name of the task
    * @param {int} duration The task duration in ms
