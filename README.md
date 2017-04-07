@@ -108,11 +108,9 @@ This will generate output as shown below
 This doesn't take anything interesting.
 
 <!-- don't display the scope information -->
-**Returns**: <code>object</code> - Gue instance  
 **Example**  
 ```js
-const Gue = require('gue');
-const gue = new Gue();
+const gue = require('gue');
 ```
 
 * * *
