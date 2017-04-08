@@ -7,6 +7,7 @@ const chalk = require('chalk');
 const trimNewlines = require('trim-newlines');
 const util = require('./lib/Util');
 const prettyMs = require('pretty-ms');
+const chokidar = require('chokidar');
 
 class Gue extends Orchestrator {
 
@@ -114,6 +115,29 @@ class Gue extends Orchestrator {
   }
 
   /**
+   * Watch the specified files and run taskList when a change is detected
+   *
+   * This is just a passthrough to _watch.  Done to make it easier to
+   * maintain API compatibility.
+   *
+   * @param {glob} files [chokidar](https://github.com/paulmillr/chokidar)
+   *  compatible glob
+   * @param {tasklist} taskList  tasks to run when a file in files changes
+   *
+   * @example
+   * // Run lint and coverage tasks if a file matching src/*.js changes
+   * gue.watch('src/*.js', ['lint','coverage']);
+   *
+   * // Run coverage task if a file matching tests/*.js changes
+   * gue.watch('tests/*.js', 'coverage');
+   *
+   */
+  watch(glob, taskList) {
+    this.log('Started. ^c to stop', 'watch');
+    return this._watch(glob, taskList);
+  }
+
+  /**
    * Sets a name value binding for use in the lodash expansion
    * in the shell commands
    *
@@ -213,6 +237,43 @@ class Gue extends Orchestrator {
         }
         return Promise.reject(result);
       });
+  }
+
+  /**
+   * Watch the specified files and run taskList when a change is detected
+   *
+   * @param {glob} files [chokidar](https://github.com/paulmillr/chokidar)
+   *  compatible glob
+   * @param {tasklist} taskList  tasks to run when a file in files changes
+   *
+   * @example
+   * // Run lint and coverage tasks if a file matching src/*.js changes
+   * gue.watch('src/*.js', ['lint','coverage']);
+   *
+   * // Run coverage task if a file matching tests/*.js changes
+   * gue.watch('tests/*.js', 'coverage');
+   *
+   */
+  _watch(glob, taskList) {
+
+    const chokidarOpts = {
+      ignoreInitial: true
+    };
+
+    const watcher = chokidar.watch(glob, chokidarOpts);
+
+    watcher.on('all', (event, path) => {
+      this.log('\n');
+      this.log(path + ' ' + event, 'watch');
+
+      // Stop the watch, then restart after tasks have run
+      // this fixes looping issues if files are modified
+      // during the run (as with jscs fix)
+      watcher.close();
+      this.start(taskList, () => {
+        this._watch(glob, taskList);
+      });
+    });
   }
 
   /**

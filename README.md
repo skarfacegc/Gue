@@ -91,11 +91,13 @@ This will generate output as shown below
     * [.task(name, deps, func)](#Gue+task)
     * [.shell(command, value)](#Gue+shell) ⇒ <code>promise</code>
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
+    * [.watch(files, taskList)](#Gue+watch)
     * [.setOption(name, value)](#Gue+setOption)
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
     * [._shell(mode, command, values)](#Gue+_shell) ⇒ <code>promise</code>
+    * [._watch(files, taskList)](#Gue+_watch)
     * [._log(type, message, taskname, duration)](#Gue+_log)
     * [._runList()](#Gue+_runList) ⇒ <code>array</code>
 
@@ -218,6 +220,32 @@ same as shell but doesn't print any output
 
 * * *
 
+<a name="Gue+watch"></a>
+
+### gue.watch(files, taskList)
+Watch the specified files and run taskList when a change is detected
+
+This is just a passthrough to _watch.  Done to make it easier to
+maintain API compatibility.
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| files | <code>glob</code> | [chokidar](https://github.com/paulmillr/chokidar)  compatible glob |
+| taskList | <code>tasklist</code> | tasks to run when a file in files changes |
+
+**Example**  
+```js
+// Run lint and coverage tasks if a file matching src/*.js changes
+gue.watch('src/*.js', ['lint','coverage']);
+
+// Run coverage task if a file matching tests/*.js changes
+gue.watch('tests/*.js', 'coverage');
+```
+
+* * *
+
 <a name="Gue+setOption"></a>
 
 ### gue.setOption(name, value)
@@ -301,6 +329,29 @@ See the documentation for '''shell''' for more information
 | command | <code>type</code> | The shell command to run |
 | values | <code>type</code> | an optional override of the values set with setOption |
 
+
+* * *
+
+<a name="Gue+_watch"></a>
+
+### gue._watch(files, taskList)
+Watch the specified files and run taskList when a change is detected
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| files | <code>glob</code> | [chokidar](https://github.com/paulmillr/chokidar)  compatible glob |
+| taskList | <code>tasklist</code> | tasks to run when a file in files changes |
+
+**Example**  
+```js
+// Run lint and coverage tasks if a file matching src/*.js changes
+gue.watch('src/*.js', ['lint','coverage']);
+
+// Run coverage task if a file matching tests/*.js changes
+gue.watch('tests/*.js', 'coverage');
+```
 
 * * *
 

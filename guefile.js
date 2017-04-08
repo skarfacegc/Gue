@@ -22,3 +22,8 @@ gue.task('docs', () => {
 gue.task('clean', () => {
   return gue.shell('rm -rf node_modules');
 });
+
+gue.task('watch', () => {
+  gue.watch(['lib/**/*.js', 'test/**/*.test.js', 'bin/gue.js',
+    'index.js','guefile.js'], ['lint', 'test']);
+});
