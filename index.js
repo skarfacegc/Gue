@@ -79,8 +79,6 @@ class Gue extends Orchestrator {
    *  the values specified with ```gue.setOption()```. If ```templateValue``` is
    *  set, it overrides ```gue.setOption```.
    *
-
-   *
    * @param {string} command The shell command to run
    * @param {literal} value An optional override of the values set with
    * setOption
@@ -297,8 +295,7 @@ class Gue extends Orchestrator {
     }
 
     if (taskname && taskname !== undefined) {
-      composedMessage += chalk.bold.green(
-        util.leftPad('[' + taskname + '] ', 3 + util.maxLen(this._runList())));
+      composedMessage += chalk.bold.green('[' + taskname + '] ');
     }
 
     if (type === 'error') {
@@ -316,21 +313,5 @@ class Gue extends Orchestrator {
     }
     console.log(composedMessage);
   }
-
-  /**
-   * Returns the list of active tasks without 'default' if it's there
-   * Used mainly to set the width of taskname in ```_log```
-   *
-   * @returns {array} Array of the active tasks
-   */
-  _runList() {
-    let myArr = this.seq;
-    let indexToRemove = myArr.indexOf('default');
-    if (indexToRemove > 0) {
-      myArr.splice(indexToRemove, 1);
-    }
-    return myArr;
-  }
-
 }
 module.exports = new Gue();
