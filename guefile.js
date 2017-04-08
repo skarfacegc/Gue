@@ -2,8 +2,9 @@ const gue = require('./index.js');
 
 gue.task('default', ['lint','test']);
 
-gue.task('test', () => {
-  return gue.shell('nyc mocha test/**/*.test.js');
+gue.task('test', ['clean'], () => {
+  return gue.shell('nyc --reporter lcov --reporter text ' +
+  'mocha test/**/*.test.js');
 });
 
 gue.task('lint', () => {
@@ -20,5 +21,5 @@ gue.task('docs', () => {
 });
 
 gue.task('clean', () => {
-  return gue.shell('rm -rf node_modules');
+  return gue.shell('rm -rf coverage .nyc_output');
 });
