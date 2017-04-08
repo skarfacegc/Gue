@@ -221,12 +221,4 @@ describe('Gue', () => {
       expect(gue.taskList()).to.contain('testTask');
     });
   });
-
-  describe('_runlist', () => {
-    it('should return the run list without default', () => {
-      gue.seq = ['a','b','default'];
-      expect(gue._runList()).to.deep.equal(['a','b']);
-    });
-  });
-
 });
