@@ -21,16 +21,17 @@ gueCli.launch({
 }, invoke);
 
 function invoke(env) {
+
+  if (!env.configPath) {
+    console.error(chalk.red('No gulpfile found'));
+    process.exit(1);
+  }
+
   require(env.configPath);
   const gueInst = require(env.modulePath);
   const actions = argv._;
   const actionList = actions.length ? actions : ['default'];
   const availableTasks = gueInst.taskList();
-
-  if (!env.configPath) {
-    gueInst.log(chalk.red('No gulpfile found'));
-    process.exit(1);
-  }
 
   // add node_modules/.bin to the path.
   // this should be relative to the project root
@@ -67,7 +68,7 @@ function invoke(env) {
   });
 
   // Print stderr and the task finish notification on error
-  gueInst.on('task_err', (event)=> {
+  gueInst.on('task_err', (event) => {
     gueInst.errLog('finished with error in', event.task, event.duration);
   });
 
