@@ -20,6 +20,13 @@ gue.task('docs', () => {
   return gue.shell(command);
 });
 
+gue.task('rebuild', ()=> {
+  return gue.shell('rm -rf node_modules && yarn')
+    .then(()=> {
+      return gue.start(['test','docs']);
+    });
+});
+
 gue.task('clean', () => {
   return gue.shell('rm -rf coverage .nyc_output');
 });

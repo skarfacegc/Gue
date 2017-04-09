@@ -243,7 +243,7 @@ class Gue extends Orchestrator {
    * @param {glob} files [chokidar](https://github.com/paulmillr/chokidar)
    *  compatible glob
    * @param {tasklist} taskList  tasks to run when a file in files changes
-   *
+   * @returns {object} Returns the chokidar watcher
    * @example
    * // Run lint and coverage tasks if a file matching src/*.js changes
    * gue.watch('src/*.js', ['lint','coverage']);
@@ -253,7 +253,6 @@ class Gue extends Orchestrator {
    *
    */
   _watch(glob, taskList) {
-
     const chokidarOpts = {
       ignoreInitial: true
     };
@@ -272,6 +271,8 @@ class Gue extends Orchestrator {
         this._watch(glob, taskList);
       });
     });
+
+    return watcher;
   }
 
   /**

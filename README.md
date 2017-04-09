@@ -97,9 +97,8 @@ This will generate output as shown below
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
     * [._shell(mode, command, values)](#Gue+_shell) ⇒ <code>promise</code>
-    * [._watch(files, taskList)](#Gue+_watch)
+    * [._watch(files, taskList)](#Gue+_watch) ⇒ <code>object</code>
     * [._log(type, message, taskname, duration)](#Gue+_log)
-    * [._runList()](#Gue+_runList) ⇒ <code>array</code>
 
 
 * * *
@@ -334,10 +333,11 @@ See the documentation for '''shell''' for more information
 
 <a name="Gue+_watch"></a>
 
-### gue._watch(files, taskList)
+### gue._watch(files, taskList) ⇒ <code>object</code>
 Watch the specified files and run taskList when a change is detected
 
 <!-- don't display the scope information -->
+**Returns**: <code>object</code> - Returns the chokidar watcher  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -373,17 +373,6 @@ does the acutal printing for ```log``` and ```errLog```
 | taskname | <code>string</code> | The name of the task |
 | duration | <code>int</code> | The task duration in ms |
 
-
-* * *
-
-<a name="Gue+_runList"></a>
-
-### gue._runList() ⇒ <code>array</code>
-Returns the list of active tasks without 'default' if it's there
-Used mainly to set the width of taskname in ```_log```
-
-<!-- don't display the scope information -->
-**Returns**: <code>array</code> - Array of the active tasks  
 
 * * *
 
