@@ -12,7 +12,6 @@ const tmp = require('tmp-promise');
 
 const testCwd = process.cwd();
 
-
 // Checks out the Gue-test repo
 // links the local copy of Gue (this repo)
 // runs gue default and returns stdout/stderr
@@ -22,20 +21,21 @@ function runGueTest() {
   return tmp.dir()
     .then((dir) => {
       let command =
-        'cd ' + dir.path + ' && ' +
-      'git clone ' +
-           'https://github.com/skarfacegc/Gue-test.git &> /dev/null' + ' && ' +
+      'cd ' + dir.path + ' && ' +
+      'git clone -q ' +
+        'https://github.com/skarfacegc/Gue-test.git' + ' && ' +
       'cd Gue-test && ' +
-      '(export NODE_ENV=snapshot && yarn &> /dev/null ; ' +
-      'npm link ' + testCwd + '&> /dev/null; gue snapshotTest||exit 0 && exit 1)';
-
+      '(export NODE_ENV=snapshot ;' +
+      'yarn > ./foo.yarn 2>&1 ; ' +
+      'npm link ' + testCwd + ' > ./foo.link 2>&1 ; ' +
+      'gue snapshotTest || exit 0 && exit 1 )' ;
       return execa.shell(command);
     });
 }
 
-describe('Checkout gue-test', function() {
+describe('Gue-test repo tests', function() {
   this.timeout(0);
-  it('should checkout gue-test', () => {
+  it('should run gue snapshotTest successfully', () => {
     return runGueTest().then((result) => {
       result.cmd = '';
       return snapshot(result.stdout);
