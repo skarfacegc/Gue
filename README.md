@@ -347,10 +347,10 @@ Watch the specified files and run taskList when a change is detected
 **Example**  
 ```js
 // Run lint and coverage tasks if a file matching src/*.js changes
-gue.watch('src/*.js', ['lint','coverage']);
+gue._watch('src/*.js', ['lint','coverage']);
 
 // Run coverage task if a file matching tests/*.js changes
-gue.watch('tests/*.js', 'coverage');
+gue._watch('tests/*.js', 'coverage');
 ```
 
 * * *

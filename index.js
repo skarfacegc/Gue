@@ -246,10 +246,10 @@ class Gue extends Orchestrator {
    * @returns {object} Returns the chokidar watcher
    * @example
    * // Run lint and coverage tasks if a file matching src/*.js changes
-   * gue.watch('src/*.js', ['lint','coverage']);
+   * gue._watch('src/*.js', ['lint','coverage']);
    *
    * // Run coverage task if a file matching tests/*.js changes
-   * gue.watch('tests/*.js', 'coverage');
+   * gue._watch('tests/*.js', 'coverage');
    *
    */
   _watch(glob, taskList) {
