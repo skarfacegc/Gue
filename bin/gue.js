@@ -5,6 +5,7 @@
 const Liftoff = require('liftoff');
 const argv = require('minimist')(process.argv.slice(2));
 const chalk = require('chalk');
+const beeper = require('beeper');
 
 const gueCli = new Liftoff({
   name: 'gue',
@@ -69,6 +70,7 @@ function invoke(env) {
 
   // Print stderr and the task finish notification on error
   gueInst.on('task_err', (event) => {
+    beeper(1);
     gueInst.errLog('finished with error in', event.task, event.duration);
   });
 
