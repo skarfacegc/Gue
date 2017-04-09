@@ -127,6 +127,8 @@ things to do.  Each task may define a list of dependencies that will
 run to completion prior to running the current task.  Each task may
 also specify a function to run.
 
+Tasks are just javascript.  You don't need to just use ```gue.shell```.
+
 
 - Tasks should return a promise or call the callback that is passed
 to the function.
@@ -172,13 +174,13 @@ Runs a shell command and prints the output
 
 Shell commands print their buffer when the task is completed.  If a shell
 command exits with a non zero status a flag is set so that gue exits
-with 1. A shell command that errors will have it's stderr printed in red.
-See the fail task in the output above. Shell commands are run through the
- [lodash](https://www.npmjs.com/package/lodash.template) template system
- using ```{{}}``` as the replacement tokens.  The substitution values
+with 1. STDERR is printed in red.
+Shell commands are run through the
+[lodash](https://www.npmjs.com/package/lodash.template) template system
+using ```{{}}``` as the replacement tokens.  The substitution values
 may be passed in as an optional third argument, or they may be loaded from
- the values specified with ```gue.setOption()```. If ```templateValue``` is
- set, it overrides ```gue.setOption```.
+the values specified with ```gue.setOption()```. If ```templateValue``` is
+set, it overrides ```gue.setOption```.
 
 <!-- don't display the scope information -->
 **Returns**: <code>promise</code> - Promise containing the
@@ -276,8 +278,10 @@ Return an array of the defined tasks
 ### gue.log(message, taskname, duration)
 Prints a log message
 
-If only the message is passed it behaves like console.log
-If duration isn't passed it isn't printed
+- If only message is passed it behaves like console.log
+- If taskname is passed it's added as a tag to the message
+and the message is colorized
+- If duration is passed the duration of the task is printed
 
 <!-- don't display the scope information -->
 
@@ -295,9 +299,7 @@ If duration isn't passed it isn't printed
 ### gue.errLog(message, taskname, duration)
 Prints an error message
 
-Message is printed in red
-If only the message is passed it behaves like console.log
-If duration isn't passed it isn't printed
+Decorates like log, but message is printed in red
 
 <!-- don't display the scope information -->
 
