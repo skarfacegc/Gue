@@ -1,4 +1,3 @@
 {
-    "preset": "google",
-    "fix": true
+    "preset": "google"
 }

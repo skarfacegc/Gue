@@ -7,15 +7,15 @@ const chalk = require('chalk');
 const trimNewlines = require('trim-newlines');
 const util = require('./lib/Util');
 const prettyMs = require('pretty-ms');
+const chokidar = require('chokidar');
 
 class Gue extends Orchestrator {
 
   /**
    * This doesn't take anything interesting.
-   * @returns {object} Gue instance
+   *
    * @example
-   * const Gue = require('gue');
-   * const gue = new Gue();
+   * const gue = require('gue');
    */
   constructor(...args) {
     super(...args);
@@ -79,8 +79,6 @@ class Gue extends Orchestrator {
    *  the values specified with ```gue.setOption()```. If ```templateValue``` is
    *  set, it overrides ```gue.setOption```.
    *
-
-   *
    * @param {string} command The shell command to run
    * @param {literal} value An optional override of the values set with
    * setOption
@@ -112,6 +110,29 @@ class Gue extends Orchestrator {
    */
   silentShell(command, value) {
     return this._shell('silent', command, value);
+  }
+
+  /**
+   * Watch the specified files and run taskList when a change is detected
+   *
+   * This is just a passthrough to _watch.  Done to make it easier to
+   * maintain API compatibility.
+   *
+   * @param {glob} files [chokidar](https://github.com/paulmillr/chokidar)
+   *  compatible glob
+   * @param {tasklist} taskList  tasks to run when a file in files changes
+   *
+   * @example
+   * // Run lint and coverage tasks if a file matching src/*.js changes
+   * gue.watch('src/*.js', ['lint','coverage']);
+   *
+   * // Run coverage task if a file matching tests/*.js changes
+   * gue.watch('tests/*.js', 'coverage');
+   *
+   */
+  watch(glob, taskList) {
+    this.log('Started. ^c to stop', 'watch');
+    return this._watch(glob, taskList);
   }
 
   /**
@@ -189,9 +210,16 @@ class Gue extends Orchestrator {
     const lodashVars = (values && typeof values !== undefined) ? values :
       this.options;
 
+    const shellOpts = {
+      env: {
+        FORCE_COLOR: 'true',
+        PATH: process.env.PATH
+      }
+    };
+
     templateSettings.interpolate = /{{([\s\S]+?)}}/g;
     const compiledCmd = template(command);
-    return execa.shell(compiledCmd(lodashVars), {env: {FORCE_COLOR: 'true'}})
+    return execa.shell(compiledCmd(lodashVars), shellOpts)
       .then((result) => {
         if (mode === 'print') {
           this.errLog(trimNewlines(result.stderr));
@@ -207,6 +235,44 @@ class Gue extends Orchestrator {
         }
         return Promise.reject(result);
       });
+  }
+
+  /**
+   * Watch the specified files and run taskList when a change is detected
+   *
+   * @param {glob} files [chokidar](https://github.com/paulmillr/chokidar)
+   *  compatible glob
+   * @param {tasklist} taskList  tasks to run when a file in files changes
+   * @returns {object} Returns the chokidar watcher
+   * @example
+   * // Run lint and coverage tasks if a file matching src/*.js changes
+   * gue._watch('src/*.js', ['lint','coverage']);
+   *
+   * // Run coverage task if a file matching tests/*.js changes
+   * gue._watch('tests/*.js', 'coverage');
+   *
+   */
+  _watch(glob, taskList) {
+    const chokidarOpts = {
+      ignoreInitial: true
+    };
+
+    const watcher = chokidar.watch(glob, chokidarOpts);
+
+    watcher.on('all', (event, path) => {
+      this.log('\n');
+      this.log(path + ' ' + event, 'watch');
+
+      // Stop the watch, then restart after tasks have run
+      // this fixes looping issues if files are modified
+      // during the run (as with jscs fix)
+      watcher.close();
+      this.start(taskList, () => {
+        this._watch(glob, taskList);
+      });
+    });
+
+    return watcher;
   }
 
   /**
@@ -230,8 +296,7 @@ class Gue extends Orchestrator {
     }
 
     if (taskname && taskname !== undefined) {
-      composedMessage += chalk.bold.green(
-        util.leftPad('[' + taskname + '] ', 3 + util.maxLen(this._runList())));
+      composedMessage += chalk.bold.green('[' + taskname + '] ');
     }
 
     if (type === 'error') {
@@ -249,21 +314,5 @@ class Gue extends Orchestrator {
     }
     console.log(composedMessage);
   }
-
-  /**
-   * Returns the list of active tasks without 'default' if it's there
-   * Used mainly to set the width of taskname in ```_log```
-   *
-   * @returns {array} Array of the active tasks
-   */
-  _runList() {
-    let myArr = this.seq;
-    let indexToRemove = myArr.indexOf('default');
-    if (indexToRemove > 0) {
-      myArr.splice(indexToRemove, 1);
-    }
-    return myArr;
-  }
-
 }
 module.exports = new Gue();

@@ -7,10 +7,16 @@ const expect = chai.expect;
 const sandbox = sinon.sandbox.create();
 const gue = require('../index');
 const chalk = require('chalk');
+const chokidar = require('chokidar');
 
 chai.use(sinonChai);
 
 describe('Gue', () => {
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   describe('constructor', () => {
     it('should have an options property', () => {
       expect(gue.options).to.exist;
@@ -39,7 +45,6 @@ describe('Gue', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('clean', 'Hello');
       sandbox.restore();
-
       expect(logStub).to.be.calledWith('Hello');
     });
 
@@ -47,7 +52,6 @@ describe('Gue', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('', 'Hello');
       sandbox.restore();
-
       expect(logStub).to.be.calledWith('Hello');
     });
 
@@ -58,7 +62,6 @@ describe('Gue', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('normal', 'foo', 'taskname');
       sandbox.restore();
-
       expect(logStub).to.be.calledWith(compareString);
     });
 
@@ -70,7 +73,6 @@ describe('Gue', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('normal', 'foo', 'taskname', 1);
       sandbox.restore();
-
       expect(logStub).to.be.calledWith(compareString);
     });
 
@@ -80,7 +82,6 @@ describe('Gue', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('error', 'foo');
       sandbox.restore();
-
       expect(logStub).to.be.calledWith(compareString);
     });
   });
@@ -89,14 +90,12 @@ describe('Gue', () => {
     it('should call _log correctly if all fields are defined', () => {
       const _logStub = sandbox.stub(gue, '_log');
       gue.log('foo', 'bar', 1);
-      sandbox.restore();
       expect(_logStub).to.be.calledWith('normal', 'foo', 'bar', 1);
     });
 
     it('should call _log correctly if just message is passed', () => {
       const _logStub = sandbox.stub(gue, '_log');
       gue.log('plain');
-      sandbox.restore();
       expect(_logStub).to.be.calledWith('clean', 'plain');
     });
   });
@@ -105,7 +104,6 @@ describe('Gue', () => {
     it('should call _log correctly', () => {
       const _logStub = sandbox.stub(gue, '_log');
       gue.errLog('err');
-      sandbox.restore();
       expect(_logStub).to.be.calledWith('error', 'err');
     });
   });
@@ -150,7 +148,6 @@ describe('Gue', () => {
         .catch((data) => {
           done(new Error('Should not have gotten here'));
         });
-      sandbox.restore();
     });
 
     it('should not print on failure when called in silent mode', (done) => {
@@ -164,7 +161,6 @@ describe('Gue', () => {
           expect(logStub).to.not.be.called;
           done();
         });
-      sandbox.restore();
     });
 
     it('should print on success when called in print mode', (done) => {
@@ -178,7 +174,6 @@ describe('Gue', () => {
         .catch((data) => {
           done(new Error('Should not have gotten here'));
         });
-      sandbox.restore();
     });
 
     it('should print on failure when called in print mode', (done) => {
@@ -194,7 +189,6 @@ describe('Gue', () => {
             .calledWithMatch(/badcommand.*not found/);
           done();
         });
-      sandbox.restore();
     });
   });
 
@@ -203,7 +197,6 @@ describe('Gue', () => {
       const _shellStub = sandbox.stub(gue, '_shell');
       gue.shell('/bin/ls');
       expect(_shellStub).to.be.calledWith('print', '/bin/ls');
-      sandbox.restore();
     });
   });
 
@@ -222,11 +215,38 @@ describe('Gue', () => {
     });
   });
 
-  describe('_runlist', () => {
-    it('should return the run list without default', () => {
-      gue.seq = ['a','b','default'];
-      expect(gue._runList()).to.deep.equal(['a','b']);
+  describe('_watch', () => {
+    it('should call chokidar correctly and start the correct tasks', () => {
+      const watchStub = sandbox.stub(chokidar, 'watch').callsFake(()=> {
+        return {on: () => {}};  // replace the on event handler
+      });
+      gue._watch(['foo'], ['bar']);
+      expect(watchStub).to.be.calledWith(['foo']);
+    });
+
+    it('should run tasks when an event is emitted', () => {
+      const watcher = gue._watch('.', 'foo');
+      watcher.close = () => {};
+      const startStub = sandbox.stub(gue, 'start');
+      watcher.emit('all');
+      expect(startStub).to.be.calledWith('foo');
+    });
+
+    it('should restart the _watch correctly', () => {
+      const watcher = gue._watch('.', 'foo');
+      watcher.close = () => {};
+      const startStub = sandbox.stub(gue, 'start').yields();
+      const _watchStub = sandbox.stub(gue, '_watch');
+      watcher.emit('all');
+      expect(_watchStub).to.be.calledWith('.', 'foo');
     });
   });
 
+  describe('watch', () => {
+    it('should call _watch correctly', () => {
+      const _watchStub = sandbox.stub(gue, '_watch');
+      gue.watch('.', 'bar');
+      expect(_watchStub).to.be.calledWith('.', 'bar');
+    });
+  });
 });

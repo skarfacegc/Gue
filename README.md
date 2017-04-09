@@ -91,13 +91,14 @@ This will generate output as shown below
     * [.task(name, deps, func)](#Gue+task)
     * [.shell(command, value)](#Gue+shell) ⇒ <code>promise</code>
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
+    * [.watch(files, taskList)](#Gue+watch)
     * [.setOption(name, value)](#Gue+setOption)
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
     * [._shell(mode, command, values)](#Gue+_shell) ⇒ <code>promise</code>
+    * [._watch(files, taskList)](#Gue+_watch) ⇒ <code>object</code>
     * [._log(type, message, taskname, duration)](#Gue+_log)
-    * [._runList()](#Gue+_runList) ⇒ <code>array</code>
 
 
 * * *
@@ -108,11 +109,9 @@ This will generate output as shown below
 This doesn't take anything interesting.
 
 <!-- don't display the scope information -->
-**Returns**: <code>object</code> - Gue instance  
 **Example**  
 ```js
-const Gue = require('gue');
-const gue = new Gue();
+const gue = require('gue');
 ```
 
 * * *
@@ -220,6 +219,32 @@ same as shell but doesn't print any output
 
 * * *
 
+<a name="Gue+watch"></a>
+
+### gue.watch(files, taskList)
+Watch the specified files and run taskList when a change is detected
+
+This is just a passthrough to _watch.  Done to make it easier to
+maintain API compatibility.
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| files | <code>glob</code> | [chokidar](https://github.com/paulmillr/chokidar)  compatible glob |
+| taskList | <code>tasklist</code> | tasks to run when a file in files changes |
+
+**Example**  
+```js
+// Run lint and coverage tasks if a file matching src/*.js changes
+gue.watch('src/*.js', ['lint','coverage']);
+
+// Run coverage task if a file matching tests/*.js changes
+gue.watch('tests/*.js', 'coverage');
+```
+
+* * *
+
 <a name="Gue+setOption"></a>
 
 ### gue.setOption(name, value)
@@ -306,6 +331,30 @@ See the documentation for '''shell''' for more information
 
 * * *
 
+<a name="Gue+_watch"></a>
+
+### gue._watch(files, taskList) ⇒ <code>object</code>
+Watch the specified files and run taskList when a change is detected
+
+<!-- don't display the scope information -->
+**Returns**: <code>object</code> - Returns the chokidar watcher  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| files | <code>glob</code> | [chokidar](https://github.com/paulmillr/chokidar)  compatible glob |
+| taskList | <code>tasklist</code> | tasks to run when a file in files changes |
+
+**Example**  
+```js
+// Run lint and coverage tasks if a file matching src/*.js changes
+gue._watch('src/*.js', ['lint','coverage']);
+
+// Run coverage task if a file matching tests/*.js changes
+gue._watch('tests/*.js', 'coverage');
+```
+
+* * *
+
 <a name="Gue+_log"></a>
 
 ### gue._log(type, message, taskname, duration)
@@ -324,17 +373,6 @@ does the acutal printing for ```log``` and ```errLog```
 | taskname | <code>string</code> | The name of the task |
 | duration | <code>int</code> | The task duration in ms |
 
-
-* * *
-
-<a name="Gue+_runList"></a>
-
-### gue._runList() ⇒ <code>array</code>
-Returns the list of active tasks without 'default' if it's there
-Used mainly to set the width of taskname in ```_log```
-
-<!-- don't display the scope information -->
-**Returns**: <code>array</code> - Array of the active tasks  
 
 * * *
 

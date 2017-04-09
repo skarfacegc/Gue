@@ -5,6 +5,7 @@
 const Liftoff = require('liftoff');
 const argv = require('minimist')(process.argv.slice(2));
 const chalk = require('chalk');
+const beeper = require('beeper');
 
 const gueCli = new Liftoff({
   name: 'gue',
@@ -21,16 +22,17 @@ gueCli.launch({
 }, invoke);
 
 function invoke(env) {
+
+  if (!env.configPath) {
+    console.error(chalk.red('No gulpfile found'));
+    process.exit(1);
+  }
+
   require(env.configPath);
   const gueInst = require(env.modulePath);
   const actions = argv._;
   const actionList = actions.length ? actions : ['default'];
   const availableTasks = gueInst.taskList();
-
-  if (!env.configPath) {
-    gueInst.log(chalk.red('No gulpfile found'));
-    process.exit(1);
-  }
 
   // add node_modules/.bin to the path.
   // this should be relative to the project root
@@ -54,16 +56,21 @@ function invoke(env) {
 
   // Log task start
   gueInst.on('task_start', (event) => {
-    gueInst.log('started', event.task, 'normal');
+    if (event.task !== 'default') {
+      gueInst.log('started', event.task, 'normal');
+    }
   });
 
   // Log task stop and task duration
   gueInst.on('task_stop', (event) => {
-    gueInst.log('finished in', event.task, event.duration);
+    if (event.task !== 'default') {
+      gueInst.log('finished in', event.task, event.duration);
+    }
   });
 
   // Print stderr and the task finish notification on error
-  gueInst.on('task_err', (event)=> {
+  gueInst.on('task_err', (event) => {
+    beeper(1);
     gueInst.errLog('finished with error in', event.task, event.duration);
   });
 
