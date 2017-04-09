@@ -1,6 +1,6 @@
 {
   "name": "gue",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A task runner with shell powers",
   "main": "index.js",
   "scripts": {
