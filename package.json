@@ -4,9 +4,9 @@
   "description": "A task runner with shell powers",
   "main": "index.js",
   "scripts": {
-    "test": "rm -rf coverage && nyc --reporter=lcov --reporter=text mocha test/**/*.js",
-    "clean": "rm -rf node_modules coverage",
-    "docs": "rm -f README.md && jsdoc2md --example-lang js --template docs/readme.hbs --separators --partial docs/scope.hbs --files index.js > README.md"
+    "test": "node ./bin/gue.js test",
+    "clean": "node ./bin/gue.js clean",
+    "docs": "node ./bin/gue.js docs"
   },
   "repository": {
     "type": "git",
