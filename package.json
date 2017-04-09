@@ -1,7 +1,7 @@
 {
   "name": "gue",
   "version": "0.0.4",
-  "description": "A lightweight task runner",
+  "description": "A task runner with shell powers",
   "main": "index.js",
   "scripts": {
     "test": "rm -rf coverage && nyc --reporter=lcov --reporter=text mocha test/**/*.js",
