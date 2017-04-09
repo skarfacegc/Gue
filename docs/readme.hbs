@@ -6,26 +6,19 @@
 - [CLI Documentation](#CLI)
 - [API Documentation](#Gue)
 
-Gue (_pronounced goo_) is yet another task runner. It is focused on making it
-easy to run the shell commands that are documented with your tools of
-choice. Gue is a thin wrapper on
+Gue (_pronounced goo_) is task runner that is focused on organizing and running
+shell commands. Gue is a thin wrapper on
 [orchestrator](https://www.npmjs.com/package/orchestrator) with a fancy shell
-command method and some built in logging.
+command, a build in watcher, and some basic logging.
 
 ### Motivation
 A recent change to a plugin I used in another task runner broke my code coverage
-task. This caused me to start looking at alternatives. The one that made the
-most sense was to just use npm scripts, since the command line examples
-in the tools I use normally work pretty well. I also found myself trying to map
-the command line options into whichever adapter/plugin I was using.
+task. This caused me to start looking at alternatives. Just using npm scripts
+made a ton of sense since most tools have a well documented CLI. I was also
+spending more time than I wanted to trying to map command line options into
+the plugin I was using.  I liked shell commands, but I also liked the task
+composition and re-use found in some of the other tools.
 </map>
-
-Npm scripts, while easy to use, did not lend themselves to code re-use. If I
-want to perform the same steps on different sets of files
-(generate code coverage for just client files for example) I would have to
-duplicate code. I realized what I wanted was a programmatic way to setup
-shell calls along with the same task chaining I got used to in other task
-runners.
 
 ## Documentation
 <a name='CLI'></a>
@@ -77,6 +70,11 @@ gue.task('coverage', () => {
 // This task will fail
 gue.task('fail', () => {
   return gue.shell('typo');
+});
+
+// A watch task
+gue.task('watch', () => {
+  gue.watch(gue.options.testFiles, 'coverage');
 });
 ```
 This will generate output as shown below
