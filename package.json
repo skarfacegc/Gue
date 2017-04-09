@@ -4,7 +4,7 @@
   "description": "A task runner with shell powers",
   "main": "index.js",
   "scripts": {
-    "test": "node ./bin/gue.js test",
+    "test": "node ./bin/gue.js test integration",
     "clean": "node ./bin/gue.js clean",
     "docs": "node ./bin/gue.js docs"
   },
@@ -39,6 +39,7 @@
     "trim-newlines": "^1.0.0"
   },
   "devDependencies": {
+    "babel-core": "^6.24.1",
     "chai": "^3.5.0",
     "jscs": "^3.0.7",
     "jsdoc-to-markdown": "^3.0.0",
@@ -48,6 +49,8 @@
     "nyc": "^10.1.2",
     "sinon": "^2.1.0",
     "sinon-as-promised": "^4.0.3",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "snap-shot": "^2.16.4",
+    "tmp-promise": "^1.0.3"
   }
 }

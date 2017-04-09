@@ -8,7 +8,7 @@ const sandbox = sinon.sandbox.create();
 
 chai.use(sinonChai);
 
-const util = require('../lib/Util');
+const util = require('../../lib/Util');
 
 describe('lib/Util', () => {
   describe('maxLen', () => {

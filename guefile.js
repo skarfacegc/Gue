@@ -4,7 +4,7 @@ gue.task('default', ['lint','test','spell']);
 
 gue.task('test', ['clean', 'spell'], () => {
   return gue.shell('nyc --reporter lcov --reporter text ' +
-  'mocha test/**/*.test.js');
+  'mocha test/unit/**/*.test.js');
 });
 
 gue.task('lint', () => {
@@ -12,7 +12,7 @@ gue.task('lint', () => {
 });
 
 gue.task('docs', () => {
-  var command = '/bin/rm -f README.md';
+  let command = '/bin/rm -f README.md';
   command += '&& jsdoc2md --example-lang js --template docs/readme.hbs ';
   command += '--partial docs/scope.hbs --separators --files index.js';
   command += '> README.md';
@@ -23,10 +23,20 @@ gue.task('docs', () => {
     });
 });
 
+gue.task('integration', () => {
+  let command = 'mocha test/integration/**/*.test.js';
+  return gue.shell(command);
+});
+
+gue.task('snapshot', () => {
+  let command = 'export UPDATE=1 && mocha test/integration/**/*.test.js';
+  return gue.shell(command);
+});
+
 gue.task('rebuild', ()=> {
   return gue.shell('rm -rf node_modules && yarn')
     .then(()=> {
-      return gue.start(['test','docs', 'spell']);
+      return gue.start(['test','docs', 'spell', 'integration']);
     });
 });
 

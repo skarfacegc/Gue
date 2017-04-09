@@ -312,7 +312,8 @@ class Gue extends Orchestrator {
       composedMessage += message;
     }
 
-    if (duration !== undefined && duration > 0.0) {
+    if (duration !== undefined && duration > 0.0 &&
+        process.env.NODE_ENV !== 'snapshot') {
       composedMessage += ' ' + chalk.white(prettyMs(duration));
     }
     console.log(composedMessage);

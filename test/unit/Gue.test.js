@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 const sandbox = sinon.sandbox.create();
-const gue = require('../index');
+const gue = require('../../index');
 const chalk = require('chalk');
 const chokidar = require('chokidar');
 
