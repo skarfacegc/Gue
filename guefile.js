@@ -1,8 +1,8 @@
 const gue = require('./index.js');
 
-gue.task('default', ['lint','test']);
+gue.task('default', ['lint','test','spell']);
 
-gue.task('test', ['clean'], () => {
+gue.task('test', ['clean', 'spell'], () => {
   return gue.shell('nyc --reporter lcov --reporter text ' +
   'mocha test/**/*.test.js');
 });
@@ -23,8 +23,12 @@ gue.task('docs', () => {
 gue.task('rebuild', ()=> {
   return gue.shell('rm -rf node_modules && yarn')
     .then(()=> {
-      return gue.start(['test','docs']);
+      return gue.start(['test','docs', 'spell']);
     });
+});
+
+gue.task('spell', () => {
+  return gue.shell('mdspell docs/readme.hbs README.md -n -a --en-us -r');
 });
 
 gue.task('clean', () => {

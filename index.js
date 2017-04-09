@@ -276,7 +276,7 @@ class Gue extends Orchestrator {
   }
 
   /**
-   * does the acutal printing for ```log``` and ```errLog```
+   * does the actual printing for ```log``` and ```errLog```
    *
    * - Error type prints the message in red
    * - Normal type prints the message in cyan

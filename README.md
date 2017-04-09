@@ -7,7 +7,7 @@
 - [API Documentation](#Gue)
 
 Gue (_pronounced goo_) is yet another task runner. It is focused on making it
-easy to run the shell commands that are documented with your toolchain of
+easy to run the shell commands that are documented with your tools of
 choice. Gue is a thin wrapper on
 [orchestrator](https://www.npmjs.com/package/orchestrator) with a fancy shell
 command method and some built in logging.
@@ -16,12 +16,14 @@ command method and some built in logging.
 A recent change to a plugin I used in another task runner broke my code coverage
 task. This caused me to start looking at alternatives. The one that made the
 most sense was to just use npm scripts, since the command line examples
-in the tools I use normally work pretty well.
+in the tools I use normally work pretty well. I also found myself trying to map
+the command line options into whichever adapter/plugin I was using.
+</map>
 
 Npm scripts, while easy to use, did not lend themselves to code re-use. If I
 want to perform the same steps on different sets of files
 (generate code coverage for just client files for example) I would have to
-duplicate code. I realized what I wanted was a programatic way to setup
+duplicate code. I realized what I wanted was a programmatic way to setup
 shell calls along with the same task chaining I got used to in other task
 runners.
 
@@ -358,7 +360,7 @@ gue._watch('tests/*.js', 'coverage');
 <a name="Gue+_log"></a>
 
 ### gue._log(type, message, taskname, duration)
-does the acutal printing for ```log``` and ```errLog```
+does the actual printing for ```log``` and ```errLog```
 
 - Error type prints the message in red
 - Normal type prints the message in cyan

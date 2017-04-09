@@ -1,0 +1,36 @@
+# markdown-spellcheck spelling configuration file
+# Format - lines beginning # are comments
+# global dictionary is at the start, file overrides afterwards
+# one word per line, to define a file override use ' - filename'
+# where filename is relative to this configuration file
+gue
+npm
+guefile
+package.json
+guefile.js
+deps
+func
+silentShell
+taskList
+setOption
+taskname
+errLog
+_shell
+_watch
+_log
+gue.task
+param
+gue.shell
+stderr
+lodash
+execa
+gue.silentShell
+gue.watch
+passthrough
+chokidar
+tasklist
+gue.setoption
+gue.tasklist
+gue.log
+console.log
+gue.errlog
