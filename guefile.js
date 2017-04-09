@@ -17,7 +17,10 @@ gue.task('docs', () => {
   command += '--partial docs/scope.hbs --separators --files index.js';
   command += '> README.md';
 
-  return gue.shell(command);
+  return gue.shell(command)
+    .then(() => {
+      return gue.start('spell');
+    });
 });
 
 gue.task('rebuild', ()=> {
