@@ -35,3 +35,9 @@ gue.log
 console.log
 gue.errlog
 javascript
+fileset
+getTasks
+fileSet.add
+fileSet.getTasks
+minimatch
+filename

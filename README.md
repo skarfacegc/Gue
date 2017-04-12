@@ -81,6 +81,17 @@ This will generate output as shown below
 
 ![Run Example](http://i.imgur.com/f8J5toD.png?1)
 <!-- jsdoc2md gets inserted below -->
+## Classes
+
+<dl>
+<dt><a href="#Gue">Gue</a></dt>
+<dd></dd>
+<dt><a href="#FileSet">FileSet</a></dt>
+<dd><p>Methods to handle sets of files in Gue</p>
+<p>These really should not be called directly</p>
+</dd>
+</dl>
+
 <a name="Gue"></a>
 
 ## Gue
@@ -374,6 +385,67 @@ does the actual printing for ```log``` and ```errLog```
 | message | <code>string</code> | The string to log |
 | taskname | <code>string</code> | The name of the task |
 | duration | <code>int</code> | The task duration in ms |
+
+
+* * *
+
+<a name="FileSet"></a>
+
+## FileSet
+Methods to handle sets of files in Gue
+
+These really should not be called directly
+
+<!-- don't display the scope information -->
+
+* [FileSet](#FileSet)
+    * [new FileSet()](#new_FileSet_new)
+    * [.add(name, glob, tasks)](#FileSet+add) ⇒ <code>object</code>
+    * [.getTasks(file)](#FileSet+getTasks) ⇒ <code>array</code>
+
+
+* * *
+
+<a name="new_FileSet_new"></a>
+
+### new FileSet()
+Create a new FileSet object instance
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="FileSet+add"></a>
+
+### fileSet.add(name, glob, tasks) ⇒ <code>object</code>
+Add a new file set.
+
+Adds a file set named ```name``` that groups files selected by ```glob```
+Associates the list of tasks with that set of files.
+
+<!-- don't display the scope information -->
+**Returns**: <code>object</code> - The fileset  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | Name of the fileset |
+| glob | <code>glob</code> | (minimatch)[https://www.npmjs.com/package/minimatch]     compatible glob |
+| tasks | <code>array</code> | List of tasks to associate with this glob |
+
+
+* * *
+
+<a name="FileSet+getTasks"></a>
+
+### fileSet.getTasks(file) ⇒ <code>array</code>
+Return the list of tasks associated with the passed file
+
+<!-- don't display the scope information -->
+**Returns**: <code>array</code> - list of reduced tasks that match the file  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| file | <code>filename</code> | The file to find tasks for |
 
 
 * * *

@@ -14,7 +14,8 @@ gue.task('lint', () => {
 gue.task('docs', () => {
   let command = '/bin/rm -f README.md';
   command += '&& jsdoc2md --example-lang js --template docs/readme.hbs ';
-  command += '--partial docs/scope.hbs --separators --files index.js';
+  command += '--partial docs/scope.hbs --separators ';
+  command += '--files index.js lib/fileSet.js';
   command += '> README.md';
 
   return gue.shell(command)
