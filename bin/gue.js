@@ -14,8 +14,6 @@ const gueCli = new Liftoff({
   configName: 'guefile',
 });
 
-console.log(argv);
-
 gueCli.launch({
   cwd: argv.cwd,
   configPath: argv.config,
