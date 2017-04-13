@@ -8,7 +8,8 @@ gue.task('test', ['clean', 'spell'], () => {
 });
 
 gue.task('lint', () => {
-  return gue.shell('jscs index.js bin/gue.js lib/Util.js');
+  return gue.shell('jscs index.js bin/gue.js lib/*.js guefile.js' +
+                   ' test/**/*.js');
 });
 
 gue.task('docs', () => {
@@ -51,5 +52,5 @@ gue.task('clean', () => {
 
 gue.task('watch', () => {
   gue.watch(['lib/**/*.js', 'test/**/*.test.js', 'bin/gue.js',
-    'index.js','guefile.js'], ['lint', 'test']);
+    'index.js','guefile.js'], ['lint','test']);
 });
