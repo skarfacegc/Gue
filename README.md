@@ -402,6 +402,7 @@ These really should not be called directly
     * [new FileSet()](#new_FileSet_new)
     * [.add(name, glob, tasks)](#FileSet+add) ⇒ <code>object</code>
     * [.getTasks(file)](#FileSet+getTasks) ⇒ <code>array</code>
+    * [.getFiles(taskName)](#FileSet+getFiles) ⇒ <code>array</code>
 
 
 * * *
@@ -446,6 +447,21 @@ Return the list of tasks associated with the passed file
 | Param | Type | Description |
 | --- | --- | --- |
 | file | <code>filename</code> | The file to find tasks for |
+
+
+* * *
+
+<a name="FileSet+getFiles"></a>
+
+### fileSet.getFiles(taskName) ⇒ <code>array</code>
+Get the list of files for a given task
+
+<!-- don't display the scope information -->
+**Returns**: <code>array</code> - List of files  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| taskName | <code>string</code> | Name of the task you want the file list for |
 
 
 * * *

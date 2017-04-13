@@ -82,7 +82,15 @@ describe('fileSet', () => {
       fileSet.add('index', 'index.js', 'myTask');
 
       expect(fileSet.getTasks('index.js')).to.deep.equal(['myTask','yourtask']);
+    });
+  });
 
+  describe('getFiles', () => {
+    it('should return the list of files for a taskname', () => {
+      const fileSet = new FileSet();
+      fileSet.add('foo', 'README.md', 'myTask');
+
+      expect(fileSet.getFiles('foo')).to.deep.equal(['README.md']);
     });
   });
 });
