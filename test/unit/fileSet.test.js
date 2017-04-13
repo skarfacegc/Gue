@@ -7,7 +7,7 @@ const expect = chai.expect;
 const sandbox = sinon.sandbox.create();
 const FileSet = require('../../lib/fileSet');
 
-describe('fileSet', () => {
+describe('lib/fileSet', () => {
   describe('constructor', () => {
     it('should return a new fileSet object', () => {
       expect(new FileSet()).to.be.an.instanceof(FileSet);
@@ -110,6 +110,15 @@ describe('fileSet', () => {
       fileSet.add('foo', 'README.md', 'myTask');
 
       expect(fileSet.getFiles('foo')).to.deep.equal(['README.md']);
+    });
+  });
+
+  describe('getGlob', () => {
+    it('should return the glob for the passed fileSet', () => {
+      const fileSet = new FileSet();
+      fileSet.add('foo', 'README.md', 'myTask');
+
+      expect(fileSet.getGlob('foo')).to.deep.equal('README.md');
     });
   });
 });
