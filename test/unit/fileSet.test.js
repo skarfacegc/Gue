@@ -121,4 +121,14 @@ describe('lib/fileSet', () => {
       expect(fileSet.getGlob('foo')).to.deep.equal('README.md');
     });
   });
+
+  describe('getAllFiles', () => {
+    it('should return the glob for the passed fileSet', () => {
+      const fileSet = new FileSet();
+      fileSet.add('foo', 'README.md', 'myTask');
+      fileSet.add('bar', 'LICENSE', 'otherTask');
+
+      expect(fileSet.getAllFiles()).to.deep.equal(['README.md','LICENSE']);
+    });
+  });
 });
