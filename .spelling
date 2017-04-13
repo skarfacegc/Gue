@@ -41,5 +41,7 @@ fileSet.add
 fileSet.getTasks
 minimatch
 filename
+filenames
 getFiles
 fileSet.getFiles
+fileArg

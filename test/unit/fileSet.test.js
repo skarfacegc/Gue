@@ -92,6 +92,16 @@ describe('fileSet', () => {
 
       expect(fileSet.getTasks('index.js')).to.deep.equal(['myTask','yourtask']);
     });
+
+    it('should take a list of files', () => {
+      const fileSet = new FileSet();
+
+      fileSet.add('foo', 'README.md', 'ReadTask');
+      fileSet.add('bar', 'LICENSE', 'LicTask');
+
+      expect(fileSet.getTasks(['README.md','LICENSE'])).to.deep
+        .equal(['ReadTask','LicTask']);
+    });
   });
 
   describe('getFiles', () => {

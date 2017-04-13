@@ -401,7 +401,7 @@ These really should not be called directly
 * [FileSet](#FileSet)
     * [new FileSet()](#new_FileSet_new)
     * [.add(name, glob, tasks)](#FileSet+add) ⇒ <code>object</code>
-    * [.getTasks(file)](#FileSet+getTasks) ⇒ <code>array</code>
+    * [.getTasks(fileArg)](#FileSet+getTasks) ⇒ <code>array</code>
     * [.getFiles(taskName)](#FileSet+getFiles) ⇒ <code>array</code>
 
 
@@ -438,7 +438,7 @@ Associates the list of tasks with that set of files.
 
 <a name="FileSet+getTasks"></a>
 
-### fileSet.getTasks(file) ⇒ <code>array</code>
+### fileSet.getTasks(fileArg) ⇒ <code>array</code>
 Return the list of tasks associated with the passed file
 
 <!-- don't display the scope information -->
@@ -446,7 +446,7 @@ Return the list of tasks associated with the passed file
 
 | Param | Type | Description |
 | --- | --- | --- |
-| file | <code>filename</code> | The file to find tasks for |
+| fileArg | <code>filename</code> \| <code>Array.&lt;filenames&gt;</code> | The file(s) to find tasks for |
 
 
 * * *
