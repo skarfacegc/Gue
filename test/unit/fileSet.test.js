@@ -53,6 +53,15 @@ describe('fileSet', () => {
       expect(fileSet.fileSets.foo.tasks).to.be.an.array;
       expect(fileSet.fileSets.bar.tasks).to.be.an.array;
     });
+
+    it('should remove duplicates from allFiles', () => {
+      const fileSet = new FileSet();
+
+      fileSet.add('foo', 'README.md', 'task');
+      fileSet.add('foo2', 'README.md', 'task');
+
+      expect(fileSet.allFiles).to.deep.equal(['README.md']);
+    });
   });
 
   describe('getTasks', () => {
