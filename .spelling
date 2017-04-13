@@ -45,3 +45,12 @@ filenames
 getFiles
 fileSet.getFiles
 fileArg
+globArg
+getGlob
+setName
+getAllFiles
+multimatch
+fileSet.getGlob
+fileSet.getAllFiles
+fileSets
+_watchHandler
