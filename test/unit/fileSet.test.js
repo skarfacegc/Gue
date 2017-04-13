@@ -56,11 +56,19 @@ describe('lib/fileSet', () => {
 
     it('should remove duplicates from allFiles', () => {
       const fileSet = new FileSet();
-
       fileSet.add('foo', 'README.md', 'task');
       fileSet.add('foo2', 'README.md', 'task');
-
       expect(fileSet.allFiles).to.deep.equal(['README.md']);
+    });
+
+    it('should handle an array of globs', () => {
+      const fileSet = new FileSet();
+      fileSet.add('foo', ['README.md','LICENSE'], 'myTask');
+      console.log(fileSet.globMap);
+      expect(fileSet.globMap).to.deep.equal({
+        'README.md': ['foo'],
+        'LICENSE': ['foo']
+      });
     });
   });
 
