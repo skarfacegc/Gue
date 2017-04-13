@@ -45,6 +45,9 @@ version of gue in the local ```node_modules``` if available.
 
 # List the tasks defined in guefile.js
 % gue -l
+
+# Specify an alternate config
+% gue --config=foo.js
 ```
 
 #### guefile.js example
@@ -400,9 +403,11 @@ These really should not be called directly
 
 * [FileSet](#FileSet)
     * [new FileSet()](#new_FileSet_new)
-    * [.add(name, glob, tasks)](#FileSet+add) ⇒ <code>object</code>
+    * [.add(name, globArg, tasks)](#FileSet+add) ⇒ <code>object</code>
     * [.getTasks(fileArg)](#FileSet+getTasks) ⇒ <code>array</code>
     * [.getFiles(taskName)](#FileSet+getFiles) ⇒ <code>array</code>
+    * [.getGlob(setName)](#FileSet+getGlob) ⇒ <code>string</code>
+    * [.getAllFiles()](#FileSet+getAllFiles) ⇒ <code>array</code>
 
 
 * * *
@@ -418,7 +423,7 @@ Create a new FileSet object instance
 
 <a name="FileSet+add"></a>
 
-### fileSet.add(name, glob, tasks) ⇒ <code>object</code>
+### fileSet.add(name, globArg, tasks) ⇒ <code>object</code>
 Add a new file set.
 
 Adds a file set named ```name``` that groups files selected by ```glob```
@@ -430,7 +435,7 @@ Associates the list of tasks with that set of files.
 | Param | Type | Description |
 | --- | --- | --- |
 | name | <code>string</code> | Name of the fileset |
-| glob | <code>glob</code> | (minimatch)[https://www.npmjs.com/package/minimatch]     compatible glob |
+| globArg | <code>glob</code> \| <code>Array.&lt;glob&gt;</code> | (multimatch)[https://www.npmjs.com/package/multimatch]     compatible glob |
 | tasks | <code>array</code> | List of tasks to associate with this glob |
 
 
@@ -463,6 +468,33 @@ Get the list of files for a given task
 | --- | --- | --- |
 | taskName | <code>string</code> | Name of the task you want the file list for |
 
+
+* * *
+
+<a name="FileSet+getGlob"></a>
+
+### fileSet.getGlob(setName) ⇒ <code>string</code>
+Gets the glob for a given fileSet
+
+This is useful to get the glob for a specific set of tests etc
+
+<!-- don't display the scope information -->
+**Returns**: <code>string</code> - The glob from the named fileset  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| setName | <code>string</code> | The name of the file set with the glob you want |
+
+
+* * *
+
+<a name="FileSet+getAllFiles"></a>
+
+### fileSet.getAllFiles() ⇒ <code>array</code>
+Return the list of all files from all globs in all fileSets
+
+<!-- don't display the scope information -->
+**Returns**: <code>array</code> - List of all files  
 
 * * *
 

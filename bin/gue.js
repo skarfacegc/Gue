@@ -14,11 +14,12 @@ const gueCli = new Liftoff({
   configName: 'guefile',
 });
 
+console.log(argv);
+
 gueCli.launch({
   cwd: argv.cwd,
-  configPath: argv.myappfile,
+  configPath: argv.config,
   require: argv.require,
-  completion: argv.completion
 }, invoke);
 
 function invoke(env) {
