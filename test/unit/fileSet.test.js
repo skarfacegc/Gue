@@ -64,7 +64,6 @@ describe('lib/fileSet', () => {
     it('should handle an array of globs', () => {
       const fileSet = new FileSet();
       fileSet.add('foo', ['README.md','LICENSE'], 'myTask');
-      console.log(fileSet.globMap);
       expect(fileSet.globMap).to.deep.equal({
         'README.md': ['foo'],
         'LICENSE': ['foo']
