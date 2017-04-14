@@ -8,6 +8,7 @@ const sandbox = sinon.sandbox.create();
 const gue = require('../../index');
 const chalk = require('chalk');
 const chokidar = require('chokidar');
+const FileSet = require('../../lib/fileSet');
 
 chai.use(sinonChai);
 
@@ -247,6 +248,44 @@ describe('Gue', () => {
       const _watchStub = sandbox.stub(gue, '_watch');
       gue.watch('.', 'bar');
       expect(_watchStub).to.be.calledWith('.', 'bar');
+    });
+  });
+
+  describe('autoWatch', ()=> {
+    it('should call chokidar correctly', () => {
+      const fileSet = new FileSet();
+      fileSet.add('setName', 'README.md', ['task1']);
+      const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
+        return {on: () => {}};
+      });
+      gue.autoWatch(fileSet);
+      expect(watchStub).to.be.calledWith(['README.md']);
+    });
+
+    it('should restart correctly', () => {
+      const fileSet = new FileSet();
+      fileSet.add('setName', 'README.md', 'myTask');
+      fileSet.add('licSet', 'LICENSE', 'licTask');
+
+      const watcher = gue.autoWatch(fileSet);
+      // We don't actually want the watch to loop
+      watcher.close = () => {};
+      sandbox.stub(gue, 'start').yields();
+      const autoWatchStub = sandbox.stub(gue, 'autoWatch');
+      watcher.emit('all');
+      expect(autoWatchStub).to.be.calledWith(fileSet);
+    });
+
+    it('should start the correct tasks', () => {
+      const fileSet = new FileSet();
+      fileSet.add('testSet', 'foo', ['tasks','yayTasks']);
+
+      const watcher = gue.autoWatch(fileSet);
+      const startStub = sandbox.stub(gue, 'start');
+      sandbox.stub(gue, 'autoWatch');
+      watcher.close = () => {};
+      watcher.emit('all', 'change', 'foo');
+      expect(startStub).to.be.calledWith(['tasks','yayTasks']);
     });
   });
 });

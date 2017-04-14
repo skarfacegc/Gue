@@ -138,6 +138,43 @@ class Gue extends Orchestrator {
   }
 
   /**
+   * Uses the fileset object passed to figure out which tasks to run
+   * based on the files that have changed.
+   *
+   * @param {Object} fileSet fileSet object
+   *
+   * @returns {Object} chokidar watcher
+   */
+  autoWatch(fileSet) {
+    const chokidarOpts = {
+      ignoreInitial: true
+    };
+
+    const watcher = chokidar.watch(fileSet.getAllFiles(), chokidarOpts);
+
+    // This shares a very similar structure to the handler in
+    // _watch.  Only way I could figure out how to extract it involved
+    // passing two closures which seemed to be worse than repeating myself
+    // a bit
+    watcher.on('all', (event, path)=> {
+      const tasks = fileSet.getTasks(path);
+      // console.log(tasks);
+      this.log(path + ' ' + event + ' running [' + tasks.join(',') + ']',
+        'autoWatch');
+
+      // Stop the watch, then restart after tasks have run
+      // this fixes looping issues if files are modified
+      // during the run (as with jscs fix)
+      watcher.close();
+      this.start(tasks, () => {
+        this.autoWatch(fileSet);
+      });
+    });
+
+    return watcher;
+  }
+
+  /**
    * Sets a name value binding for use in the lodash expansion
    * in the shell commands
    *
@@ -245,7 +282,7 @@ class Gue extends Orchestrator {
    *
    * @param {glob} files [chokidar](https://github.com/paulmillr/chokidar)
    *  compatible glob
-   * @param {tasklist} taskList  tasks to run when a file in files changes
+   * @param {(string|string[])} taskList  tasks to run when a file in files changes
    * @returns {object} Returns the chokidar watcher
    * @example
    * // Run lint and coverage tasks if a file matching src/*.js changes

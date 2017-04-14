@@ -1,4 +1,5 @@
 const gue = require('./index.js');
+const FileSet = require('./lib/fileSet');
 
 gue.task('default', ['lint','test','spell']);
 
@@ -53,4 +54,15 @@ gue.task('clean', () => {
 gue.task('watch', () => {
   gue.watch(['lib/**/*.js', 'test/**/*.test.js', 'bin/gue.js',
     'index.js','guefile.js'], ['lint','test']);
+});
+
+gue.task('autoWatch', () => {
+
+  fileSet = new FileSet();
+
+  fileSet.add('test', 'test/**/*.js', ['lint','test']);
+  fileSet.add('src', ['*.js','lib/*.js','bin/*.js'],
+    ['docs','lint','test']);
+
+  gue.autoWatch(fileSet);
 });

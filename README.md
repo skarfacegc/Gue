@@ -106,6 +106,7 @@ This will generate output as shown below
     * [.shell(command, value)](#Gue+shell) ⇒ <code>promise</code>
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
     * [.watch(files, taskList)](#Gue+watch)
+    * [.autoWatch(fileSet)](#Gue+autoWatch) ⇒ <code>Object</code>
     * [.setOption(name, value)](#Gue+setOption)
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
@@ -261,6 +262,22 @@ gue.watch('tests/*.js', 'coverage');
 
 * * *
 
+<a name="Gue+autoWatch"></a>
+
+### gue.autoWatch(fileSet) ⇒ <code>Object</code>
+Uses the fileset object passed to figure out which tasks to run
+based on the files that have changed.
+
+<!-- don't display the scope information -->
+**Returns**: <code>Object</code> - chokidar watcher  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| fileSet | <code>Object</code> | fileSet object |
+
+
+* * *
+
 <a name="Gue+setOption"></a>
 
 ### gue.setOption(name, value)
@@ -358,7 +375,7 @@ Watch the specified files and run taskList when a change is detected
 | Param | Type | Description |
 | --- | --- | --- |
 | files | <code>glob</code> | [chokidar](https://github.com/paulmillr/chokidar)  compatible glob |
-| taskList | <code>tasklist</code> | tasks to run when a file in files changes |
+| taskList | <code>string</code> \| <code>Array.&lt;string&gt;</code> | tasks to run when a file in files changes |
 
 **Example**  
 ```js

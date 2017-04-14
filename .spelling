@@ -54,3 +54,5 @@ fileSet.getGlob
 fileSet.getAllFiles
 fileSets
 _watchHandler
+autoWatch
+gue.autoWatch
