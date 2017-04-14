@@ -39,11 +39,9 @@ describe('lib/fileSet', () => {
 
     it('should update the glob map correctly', () => {
       const fileSet = new FileSet();
-
       fileSet.add('foo', 'README.md', 'bar');
-      fileSet.add('baz', 'README.md', 'bar');
-
-      expect(fileSet.globMap['README.md']).to.deep.equal(['foo','baz']);
+      fileSet.add('baz', 'README.md', ['bar','zoop']);
+      expect(fileSet.globMap['README.md']).to.deep.equal(['bar','zoop']);
     });
 
     it('should always save tasks as an array', () => {
@@ -65,8 +63,8 @@ describe('lib/fileSet', () => {
       const fileSet = new FileSet();
       fileSet.add('foo', ['README.md','LICENSE'], 'myTask');
       expect(fileSet.globMap).to.deep.equal({
-        'README.md': ['foo'],
-        'LICENSE': ['foo']
+        'README.md': ['myTask'],
+        'LICENSE': ['myTask']
       });
     });
   });
@@ -108,6 +106,16 @@ describe('lib/fileSet', () => {
 
       expect(fileSet.getTasks(['README.md','LICENSE'])).to.deep
         .equal(['ReadTask','LicTask']);
+    });
+
+    it('should handle a single file matching multiple globs', () => {
+      const fileSet = new FileSet();
+
+      fileSet.add('first', ['README.md'], ['task1','task2']);
+      fileSet.add('second', 'README.m?', 'task3');
+
+      expect(fileSet.getTasks(['README.md'])).to.deep
+        .equal(['task1','task2','task3']);
     });
   });
 
