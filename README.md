@@ -111,6 +111,7 @@ This will generate output as shown below
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
+    * [.debugLog(message, taskname)](#Gue+debugLog)
     * [._shell(mode, command, values)](#Gue+_shell) ⇒ <code>promise</code>
     * [._watch(files, taskList)](#Gue+_watch) ⇒ <code>object</code>
     * [._log(type, message, taskname, duration)](#Gue+_log)
@@ -343,6 +344,21 @@ Decorates like log, but message is printed in red
 
 * * *
 
+<a name="Gue+debugLog"></a>
+
+### gue.debugLog(message, taskname)
+Prints a debug message
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>string</code> | The message to print |
+| taskname | <code>string</code> | The name of the task |
+
+
+* * *
+
 <a name="Gue+_shell"></a>
 
 ### gue._shell(mode, command, values) ⇒ <code>promise</code>
@@ -394,6 +410,7 @@ gue._watch('tests/*.js', 'coverage');
 does the actual printing for ```log``` and ```errLog```
 
 - Error type prints the message in red
+- Debug prints the message in yellow
 - Normal type prints the message in cyan
 - Clean type prints the message without any coloring
 
@@ -422,8 +439,8 @@ These really should not be called directly
     * [new FileSet()](#new_FileSet_new)
     * [.add(name, globArg, tasks)](#FileSet+add) ⇒ <code>object</code>
     * [.getTasks(fileArg)](#FileSet+getTasks) ⇒ <code>array</code>
-    * [.getFiles(taskName)](#FileSet+getFiles) ⇒ <code>array</code>
     * [.getGlob(setName)](#FileSet+getGlob) ⇒ <code>string</code>
+    * [.getFiles(setName)](#FileSet+getFiles) ⇒ <code>string</code>
     * [.getAllFiles()](#FileSet+getAllFiles) ⇒ <code>array</code>
 
 
@@ -473,21 +490,6 @@ Return the list of tasks associated with the passed file
 
 * * *
 
-<a name="FileSet+getFiles"></a>
-
-### fileSet.getFiles(taskName) ⇒ <code>array</code>
-Get the list of files for a given task
-
-<!-- don't display the scope information -->
-**Returns**: <code>array</code> - List of files  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| taskName | <code>string</code> | Name of the task you want the file list for |
-
-
-* * *
-
 <a name="FileSet+getGlob"></a>
 
 ### fileSet.getGlob(setName) ⇒ <code>string</code>
@@ -495,12 +497,31 @@ Gets the glob for a given fileSet
 
 This is useful to get the glob for a specific set of tests etc
 
+WARNING: multimatch globs are not always shell compatible.
+you may want to use getFiles unless you have lots of files that
+match the glob.
+
 <!-- don't display the scope information -->
-**Returns**: <code>string</code> - The glob from the named fileset  
+**Returns**: <code>string</code> - space separated list of globs  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | setName | <code>string</code> | The name of the file set with the glob you want |
+
+
+* * *
+
+<a name="FileSet+getFiles"></a>
+
+### fileSet.getFiles(setName) ⇒ <code>string</code>
+Get a list of the files matching the glob for the pass set name
+
+<!-- don't display the scope information -->
+**Returns**: <code>string</code> - Space separated list of files  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| setName | <code>string</code> | Name of the fileSet |
 
 
 * * *
