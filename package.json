@@ -54,7 +54,7 @@
     "nyc": "^10.1.2",
     "sinon": "^2.1.0",
     "sinon-chai": "^2.8.0",
-    "snap-shot": "^2.16.4",
+    "snap-shot": "^2.17.0",
     "tmp-promise": "^1.0.3"
   }
 }
