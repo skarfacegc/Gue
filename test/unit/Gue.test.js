@@ -227,14 +227,19 @@ describe('Gue', () => {
 
     it('should run tasks when an event is emitted', () => {
       const watcher = gue._watch('.', 'foo');
+
+      // don't restart the watch loop
       watcher.close = () => {};
       const startStub = sandbox.stub(gue, 'start');
+
       watcher.emit('all');
       expect(startStub).to.be.calledWith('foo');
     });
 
     it('should restart the _watch correctly', () => {
       const watcher = gue._watch('.', 'foo');
+
+      // don't restart the watch loop
       watcher.close = () => {};
       const startStub = sandbox.stub(gue, 'start').yields();
       const _watchStub = sandbox.stub(gue, '_watch');
@@ -268,9 +273,11 @@ describe('Gue', () => {
       fileSet.add('licSet', 'LICENSE', 'licTask');
 
       const watcher = gue.autoWatch(fileSet);
-      // We don't actually want the watch to loop
+
+      // Don't restart the watcher
       watcher.close = () => {};
       sandbox.stub(gue, 'start').yields();
+
       const autoWatchStub = sandbox.stub(gue, 'autoWatch');
       watcher.emit('all');
       expect(autoWatchStub).to.be.calledWith(fileSet);
@@ -282,8 +289,11 @@ describe('Gue', () => {
 
       const watcher = gue.autoWatch(fileSet);
       const startStub = sandbox.stub(gue, 'start');
+
+      // We don't want the watch to restart
       sandbox.stub(gue, 'autoWatch');
       watcher.close = () => {};
+
       watcher.emit('all', 'change', 'foo');
       expect(startStub).to.be.calledWith(['tasks','yayTasks']);
     });
