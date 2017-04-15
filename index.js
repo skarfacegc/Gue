@@ -158,7 +158,6 @@ class Gue extends Orchestrator {
     // a bit
     watcher.on('all', (event, path)=> {
       const tasks = fileSet.getTasks(path);
-      // console.log(tasks);
       this.log(path + ' ' + event + ' running [' + tasks.join(',') + ']',
         'autoWatch');
 

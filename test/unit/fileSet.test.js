@@ -21,7 +21,7 @@ describe('lib/fileSet', () => {
 
       const testSetDef = {
         name: 'foo',
-        glob: 'LICENSE',
+        globs: ['LICENSE'],
         files: ['LICENSE'],
         tasks: ['bar']
       };
@@ -124,7 +124,7 @@ describe('lib/fileSet', () => {
       const fileSet = new FileSet();
       fileSet.add('foo', 'README.md', 'myTask');
 
-      expect(fileSet.getFiles('foo')).to.deep.equal(['README.md']);
+      expect(fileSet.getFiles('foo')).to.deep.equal('README.md');
     });
   });
 
