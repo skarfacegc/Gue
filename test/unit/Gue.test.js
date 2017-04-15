@@ -45,14 +45,12 @@ describe('Gue', () => {
     it('should not decorate in clean mode', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('clean', 'Hello');
-      sandbox.restore();
       expect(logStub).to.be.calledWith('Hello');
     });
 
     it('should not decorate if an invalid mode is passed', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('', 'Hello');
-      sandbox.restore();
       expect(logStub).to.be.calledWith('Hello');
     });
 
@@ -62,7 +60,6 @@ describe('Gue', () => {
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('normal', 'foo', 'taskname');
-      sandbox.restore();
       expect(logStub).to.be.calledWith(compareString);
     });
 
@@ -73,7 +70,6 @@ describe('Gue', () => {
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('normal', 'foo', 'taskname', 1);
-      sandbox.restore();
       expect(logStub).to.be.calledWith(compareString);
     });
 
@@ -82,7 +78,14 @@ describe('Gue', () => {
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('error', 'foo');
-      sandbox.restore();
+      expect(logStub).to.be.calledWith(compareString);
+    });
+
+    it('should correctly color debug messages', () => {
+      var compareString = chalk.yellow('foo');
+
+      const logStub = sandbox.stub(console, 'log');
+      gue._log('debug', 'foo');
       expect(logStub).to.be.calledWith(compareString);
     });
   });
@@ -106,6 +109,25 @@ describe('Gue', () => {
       const _logStub = sandbox.stub(gue, '_log');
       gue.errLog('err');
       expect(_logStub).to.be.calledWith('error', 'err');
+    });
+  });
+
+  describe('debugLog', () => {
+    it('should call _log correctly', () => {
+      const _logStub = sandbox.stub(gue, '_log');
+
+      gue.debug = true;
+      gue.debugLog('err');
+      gue.debug = false;
+
+      expect(_logStub).to.be.calledWith('debug', 'err');
+    });
+
+    it('should not log if debug is false', () => {
+      const _logStub = sandbox.stub(gue, '_log');
+      gue.debug = false;
+      gue.debugLog('err');
+      expect(_logStub).to.not.be.called;
     });
   });
 

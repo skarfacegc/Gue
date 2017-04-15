@@ -56,3 +56,5 @@ fileSets
 _watchHandler
 autoWatch
 gue.autoWatch
+debugLog
+gue.debugLog

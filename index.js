@@ -231,6 +231,19 @@ class Gue extends Orchestrator {
   }
 
   /**
+   * Prints a debug message
+   *
+   * @param {string} message  The message to print
+   * @param {string} taskname The name of the task
+   *
+   */
+  debugLog(message, taskname) {
+    if (this.debug) {
+      this._log('debug', message, taskname);
+    }
+  }
+
+  /**
    * This is what actually does the shell execution for ```shell```
    * and ```silentShell```
    *
@@ -245,6 +258,8 @@ class Gue extends Orchestrator {
    * [execa](https://www.npmjs.com/package/execa) result
    */
   _shell(mode, command, values) {
+
+    this.debugLog(command, 'debug');
 
     const lodashVars = (values && typeof values !== undefined) ? values :
       this.options;
@@ -318,6 +333,7 @@ class Gue extends Orchestrator {
    * does the actual printing for ```log``` and ```errLog```
    *
    * - Error type prints the message in red
+   * - Debug prints the message in yellow
    * - Normal type prints the message in cyan
    * - Clean type prints the message without any coloring
    *
@@ -340,6 +356,8 @@ class Gue extends Orchestrator {
 
     if (type === 'error') {
       composedMessage += chalk.red(message);
+    } else if (type === 'debug') {
+      composedMessage += chalk.yellow(message);
     } else if (type === 'normal') {
       composedMessage += chalk.cyan(message);
     } else if (type === 'clean') {
