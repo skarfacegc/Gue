@@ -45,6 +45,9 @@ version of gue in the local ```node_modules``` if available.
 
 # List the tasks defined in guefile.js
 % gue -l
+
+# Specify an alternate config
+% gue --config=foo.js
 ```
 
 #### guefile.js example
@@ -81,6 +84,17 @@ This will generate output as shown below
 
 ![Run Example](http://i.imgur.com/f8J5toD.png?1)
 <!-- jsdoc2md gets inserted below -->
+## Classes
+
+<dl>
+<dt><a href="#Gue">Gue</a></dt>
+<dd></dd>
+<dt><a href="#FileSet">FileSet</a></dt>
+<dd><p>Methods to handle sets of files in Gue</p>
+<p>These really should not be called directly</p>
+</dd>
+</dl>
+
 <a name="Gue"></a>
 
 ## Gue
@@ -92,10 +106,12 @@ This will generate output as shown below
     * [.shell(command, value)](#Gue+shell) ⇒ <code>promise</code>
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
     * [.watch(files, taskList)](#Gue+watch)
+    * [.autoWatch(fileSet)](#Gue+autoWatch) ⇒ <code>Object</code>
     * [.setOption(name, value)](#Gue+setOption)
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
+    * [.debugLog(message, taskname)](#Gue+debugLog)
     * [._shell(mode, command, values)](#Gue+_shell) ⇒ <code>promise</code>
     * [._watch(files, taskList)](#Gue+_watch) ⇒ <code>object</code>
     * [._log(type, message, taskname, duration)](#Gue+_log)
@@ -247,6 +263,22 @@ gue.watch('tests/*.js', 'coverage');
 
 * * *
 
+<a name="Gue+autoWatch"></a>
+
+### gue.autoWatch(fileSet) ⇒ <code>Object</code>
+Uses the fileset object passed to figure out which tasks to run
+based on the files that have changed.
+
+<!-- don't display the scope information -->
+**Returns**: <code>Object</code> - chokidar watcher  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| fileSet | <code>Object</code> | fileSet object |
+
+
+* * *
+
 <a name="Gue+setOption"></a>
 
 ### gue.setOption(name, value)
@@ -312,6 +344,21 @@ Decorates like log, but message is printed in red
 
 * * *
 
+<a name="Gue+debugLog"></a>
+
+### gue.debugLog(message, taskname)
+Prints a debug message
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>string</code> | The message to print |
+| taskname | <code>string</code> | The name of the task |
+
+
+* * *
+
 <a name="Gue+_shell"></a>
 
 ### gue._shell(mode, command, values) ⇒ <code>promise</code>
@@ -344,7 +391,7 @@ Watch the specified files and run taskList when a change is detected
 | Param | Type | Description |
 | --- | --- | --- |
 | files | <code>glob</code> | [chokidar](https://github.com/paulmillr/chokidar)  compatible glob |
-| taskList | <code>tasklist</code> | tasks to run when a file in files changes |
+| taskList | <code>string</code> \| <code>Array.&lt;string&gt;</code> | tasks to run when a file in files changes |
 
 **Example**  
 ```js
@@ -363,6 +410,7 @@ gue._watch('tests/*.js', 'coverage');
 does the actual printing for ```log``` and ```errLog```
 
 - Error type prints the message in red
+- Debug prints the message in yellow
 - Normal type prints the message in cyan
 - Clean type prints the message without any coloring
 
@@ -375,6 +423,116 @@ does the actual printing for ```log``` and ```errLog```
 | taskname | <code>string</code> | The name of the task |
 | duration | <code>int</code> | The task duration in ms |
 
+
+* * *
+
+<a name="FileSet"></a>
+
+## FileSet
+Methods to handle sets of files in Gue
+
+These really should not be called directly
+
+<!-- don't display the scope information -->
+
+* [FileSet](#FileSet)
+    * [new FileSet()](#new_FileSet_new)
+    * [.add(name, globArg, tasks)](#FileSet+add) ⇒ <code>object</code>
+    * [.getTasks(fileArg)](#FileSet+getTasks) ⇒ <code>array</code>
+    * [.getGlob(setName)](#FileSet+getGlob) ⇒ <code>string</code>
+    * [.getFiles(setName)](#FileSet+getFiles) ⇒ <code>string</code>
+    * [.getAllFiles()](#FileSet+getAllFiles) ⇒ <code>array</code>
+
+
+* * *
+
+<a name="new_FileSet_new"></a>
+
+### new FileSet()
+Create a new FileSet object instance
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="FileSet+add"></a>
+
+### fileSet.add(name, globArg, tasks) ⇒ <code>object</code>
+Add a new file set.
+
+Adds a file set named ```name``` that groups files selected by ```glob```
+Associates the list of tasks with that set of files.
+
+<!-- don't display the scope information -->
+**Returns**: <code>object</code> - The fileset  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | Name of the fileset |
+| globArg | <code>glob</code> \| <code>Array.&lt;glob&gt;</code> | (multimatch)[https://www.npmjs.com/package/multimatch]     compatible glob |
+| tasks | <code>array</code> | List of tasks to associate with this glob |
+
+
+* * *
+
+<a name="FileSet+getTasks"></a>
+
+### fileSet.getTasks(fileArg) ⇒ <code>array</code>
+Return the list of tasks associated with the passed file
+
+<!-- don't display the scope information -->
+**Returns**: <code>array</code> - list of reduced tasks that match the file  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| fileArg | <code>filename</code> \| <code>Array.&lt;filenames&gt;</code> | The file(s) to find tasks for |
+
+
+* * *
+
+<a name="FileSet+getGlob"></a>
+
+### fileSet.getGlob(setName) ⇒ <code>string</code>
+Gets the glob for a given fileSet
+
+This is useful to get the glob for a specific set of tests etc
+
+WARNING: multimatch globs are not always shell compatible.
+you may want to use getFiles unless you have lots of files that
+match the glob.
+
+<!-- don't display the scope information -->
+**Returns**: <code>string</code> - space separated list of globs  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| setName | <code>string</code> | The name of the file set with the glob you want |
+
+
+* * *
+
+<a name="FileSet+getFiles"></a>
+
+### fileSet.getFiles(setName) ⇒ <code>string</code>
+Get a list of the files matching the glob for the pass set name
+
+<!-- don't display the scope information -->
+**Returns**: <code>string</code> - Space separated list of files  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| setName | <code>string</code> | Name of the fileSet |
+
+
+* * *
+
+<a name="FileSet+getAllFiles"></a>
+
+### fileSet.getAllFiles() ⇒ <code>array</code>
+Return the list of all files from all globs in all fileSets
+
+<!-- don't display the scope information -->
+**Returns**: <code>array</code> - List of all files  
 
 * * *
 

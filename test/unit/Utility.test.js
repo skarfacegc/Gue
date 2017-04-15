@@ -31,4 +31,14 @@ describe('lib/Util', () => {
       expect(util.leftPad('foo', 2)).to.equal('foo');
     });
   });
+
+  describe('toArray', () => {
+    it('should correctly turn a scalar into an array', () => {
+      expect(util.toArray('1')).to.deep.equal(['1']);
+    });
+
+    it('should correctly handle an existing array', () => {
+      expect(util.toArray(['1','2'])).to.deep.equal(['1','2']);
+    });
+  });
 });

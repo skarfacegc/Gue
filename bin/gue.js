@@ -16,9 +16,8 @@ const gueCli = new Liftoff({
 
 gueCli.launch({
   cwd: argv.cwd,
-  configPath: argv.myappfile,
+  configPath: argv.config,
   require: argv.require,
-  completion: argv.completion
 }, invoke);
 
 function invoke(env) {

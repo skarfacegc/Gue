@@ -8,6 +8,7 @@ const sandbox = sinon.sandbox.create();
 const gue = require('../../index');
 const chalk = require('chalk');
 const chokidar = require('chokidar');
+const FileSet = require('../../lib/fileSet');
 
 chai.use(sinonChai);
 
@@ -44,14 +45,12 @@ describe('Gue', () => {
     it('should not decorate in clean mode', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('clean', 'Hello');
-      sandbox.restore();
       expect(logStub).to.be.calledWith('Hello');
     });
 
     it('should not decorate if an invalid mode is passed', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('', 'Hello');
-      sandbox.restore();
       expect(logStub).to.be.calledWith('Hello');
     });
 
@@ -61,7 +60,6 @@ describe('Gue', () => {
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('normal', 'foo', 'taskname');
-      sandbox.restore();
       expect(logStub).to.be.calledWith(compareString);
     });
 
@@ -72,7 +70,6 @@ describe('Gue', () => {
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('normal', 'foo', 'taskname', 1);
-      sandbox.restore();
       expect(logStub).to.be.calledWith(compareString);
     });
 
@@ -81,7 +78,14 @@ describe('Gue', () => {
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('error', 'foo');
-      sandbox.restore();
+      expect(logStub).to.be.calledWith(compareString);
+    });
+
+    it('should correctly color debug messages', () => {
+      var compareString = chalk.yellow('foo');
+
+      const logStub = sandbox.stub(console, 'log');
+      gue._log('debug', 'foo');
       expect(logStub).to.be.calledWith(compareString);
     });
   });
@@ -105,6 +109,25 @@ describe('Gue', () => {
       const _logStub = sandbox.stub(gue, '_log');
       gue.errLog('err');
       expect(_logStub).to.be.calledWith('error', 'err');
+    });
+  });
+
+  describe('debugLog', () => {
+    it('should call _log correctly', () => {
+      const _logStub = sandbox.stub(gue, '_log');
+
+      gue.debug = true;
+      gue.debugLog('err');
+      gue.debug = false;
+
+      expect(_logStub).to.be.calledWith('debug', 'err');
+    });
+
+    it('should not log if debug is false', () => {
+      const _logStub = sandbox.stub(gue, '_log');
+      gue.debug = false;
+      gue.debugLog('err');
+      expect(_logStub).to.not.be.called;
     });
   });
 
@@ -226,14 +249,19 @@ describe('Gue', () => {
 
     it('should run tasks when an event is emitted', () => {
       const watcher = gue._watch('.', 'foo');
+
+      // don't restart the watch loop
       watcher.close = () => {};
       const startStub = sandbox.stub(gue, 'start');
+
       watcher.emit('all');
       expect(startStub).to.be.calledWith('foo');
     });
 
     it('should restart the _watch correctly', () => {
       const watcher = gue._watch('.', 'foo');
+
+      // don't restart the watch loop
       watcher.close = () => {};
       const startStub = sandbox.stub(gue, 'start').yields();
       const _watchStub = sandbox.stub(gue, '_watch');
@@ -247,6 +275,49 @@ describe('Gue', () => {
       const _watchStub = sandbox.stub(gue, '_watch');
       gue.watch('.', 'bar');
       expect(_watchStub).to.be.calledWith('.', 'bar');
+    });
+  });
+
+  describe('autoWatch', ()=> {
+    it('should call chokidar correctly', () => {
+      const fileSet = new FileSet();
+      fileSet.add('setName', 'README.md', ['task1']);
+      const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
+        return {on: () => {}};
+      });
+      gue.autoWatch(fileSet);
+      expect(watchStub).to.be.calledWith(['README.md']);
+    });
+
+    it('should restart correctly', () => {
+      const fileSet = new FileSet();
+      fileSet.add('setName', 'README.md', 'myTask');
+      fileSet.add('licSet', 'LICENSE', 'licTask');
+
+      const watcher = gue.autoWatch(fileSet);
+
+      // Don't restart the watcher
+      watcher.close = () => {};
+      sandbox.stub(gue, 'start').yields();
+
+      const autoWatchStub = sandbox.stub(gue, 'autoWatch');
+      watcher.emit('all');
+      expect(autoWatchStub).to.be.calledWith(fileSet);
+    });
+
+    it('should start the correct tasks', () => {
+      const fileSet = new FileSet();
+      fileSet.add('testSet', 'foo', ['tasks','yayTasks']);
+
+      const watcher = gue.autoWatch(fileSet);
+      const startStub = sandbox.stub(gue, 'start');
+
+      // We don't want the watch to restart
+      sandbox.stub(gue, 'autoWatch');
+      watcher.close = () => {};
+
+      watcher.emit('all', 'change', 'foo');
+      expect(startStub).to.be.calledWith(['tasks','yayTasks']);
     });
   });
 });

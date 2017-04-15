@@ -138,6 +138,42 @@ class Gue extends Orchestrator {
   }
 
   /**
+   * Uses the fileset object passed to figure out which tasks to run
+   * based on the files that have changed.
+   *
+   * @param {Object} fileSet fileSet object
+   *
+   * @returns {Object} chokidar watcher
+   */
+  autoWatch(fileSet) {
+    const chokidarOpts = {
+      ignoreInitial: true
+    };
+
+    const watcher = chokidar.watch(fileSet.getAllFiles(), chokidarOpts);
+
+    // This shares a very similar structure to the handler in
+    // _watch.  Only way I could figure out how to extract it involved
+    // passing two closures which seemed to be worse than repeating myself
+    // a bit
+    watcher.on('all', (event, path)=> {
+      const tasks = fileSet.getTasks(path);
+      this.log(path + ' ' + event + ' running [' + tasks.join(',') + ']',
+        'autoWatch');
+
+      // Stop the watch, then restart after tasks have run
+      // this fixes looping issues if files are modified
+      // during the run (as with jscs fix)
+      watcher.close();
+      this.start(tasks, () => {
+        this.autoWatch(fileSet);
+      });
+    });
+
+    return watcher;
+  }
+
+  /**
    * Sets a name value binding for use in the lodash expansion
    * in the shell commands
    *
@@ -195,6 +231,19 @@ class Gue extends Orchestrator {
   }
 
   /**
+   * Prints a debug message
+   *
+   * @param {string} message  The message to print
+   * @param {string} taskname The name of the task
+   *
+   */
+  debugLog(message, taskname) {
+    if (this.debug) {
+      this._log('debug', message, taskname);
+    }
+  }
+
+  /**
    * This is what actually does the shell execution for ```shell```
    * and ```silentShell```
    *
@@ -209,6 +258,8 @@ class Gue extends Orchestrator {
    * [execa](https://www.npmjs.com/package/execa) result
    */
   _shell(mode, command, values) {
+
+    this.debugLog(command, 'debug');
 
     const lodashVars = (values && typeof values !== undefined) ? values :
       this.options;
@@ -245,7 +296,7 @@ class Gue extends Orchestrator {
    *
    * @param {glob} files [chokidar](https://github.com/paulmillr/chokidar)
    *  compatible glob
-   * @param {tasklist} taskList  tasks to run when a file in files changes
+   * @param {(string|string[])} taskList  tasks to run when a file in files changes
    * @returns {object} Returns the chokidar watcher
    * @example
    * // Run lint and coverage tasks if a file matching src/*.js changes
@@ -282,6 +333,7 @@ class Gue extends Orchestrator {
    * does the actual printing for ```log``` and ```errLog```
    *
    * - Error type prints the message in red
+   * - Debug prints the message in yellow
    * - Normal type prints the message in cyan
    * - Clean type prints the message without any coloring
    *
@@ -304,6 +356,8 @@ class Gue extends Orchestrator {
 
     if (type === 'error') {
       composedMessage += chalk.red(message);
+    } else if (type === 'debug') {
+      composedMessage += chalk.yellow(message);
     } else if (type === 'normal') {
       composedMessage += chalk.cyan(message);
     } else if (type === 'clean') {
