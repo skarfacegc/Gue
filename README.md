@@ -469,7 +469,7 @@ Associates the list of tasks with that set of files.
 | Param | Type | Description |
 | --- | --- | --- |
 | name | <code>string</code> | Name of the fileset |
-| globArg | <code>glob</code> \| <code>Array.&lt;glob&gt;</code> | (multimatch)[https://www.npmjs.com/package/multimatch]     compatible glob |
+| globArg | <code>glob</code> \| <code>globs</code> | [multimatch](https://www.npmjs.com/package/multimatch)     compatible glob |
 | tasks | <code>array</code> | List of tasks to associate with this glob |
 
 
