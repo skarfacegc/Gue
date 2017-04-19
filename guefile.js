@@ -5,7 +5,7 @@ fileSet = new FileSet();
 
 fileSet.add('allSrc', ['**/*.js'], 'lint');
 fileSet.add('src', ['*.js','lib/*.js','bin/*.js'], 'test');
-fileSet.add('spellCheck', ['docs/*', 'index.js','lib/*.js','.spelling'],
+fileSet.add('spellCheck', ['docSrc/*', 'index.js','lib/*.js','.spelling'],
   'spell');
 fileSet.add('unitTests', ['test/unit/**/*.js'], 'test');
 fileSet.add('integrationTests', ['test/integration/**/*.js'], 'integration');
@@ -45,8 +45,8 @@ gue.task('distclean', ['clean'], () => {
 
 gue.task('buildDocs', () => {
   let command = '/bin/rm -f README.md';
-  command += '&& jsdoc2md --example-lang js --template docs/readme.hbs ';
-  command += '--partial docs/scope.hbs --separators ';
+  command += '&& jsdoc2md --example-lang js --template docSrc/readme.hbs ';
+  command += '--partial docSrc/scope.hbs --separators ';
   command += '--files index.js lib/fileSet.js';
   command += '> README.md';
 
@@ -54,7 +54,7 @@ gue.task('buildDocs', () => {
 });
 
 gue.task('spell', ['buildDocs'], () => {
-  return gue.shell('mdspell docs/readme.hbs README.md -n -a --en-us -r');
+  return gue.shell('mdspell docSrc/readme.hbs README.md -n -a --en-us -r');
 });
 
 gue.task('integration', () => {
