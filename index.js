@@ -8,6 +8,7 @@ const trimNewlines = require('trim-newlines');
 const util = require('./lib/Util');
 const prettyMs = require('pretty-ms');
 const chokidar = require('chokidar');
+const FileSet = require('./lib/fileSet');
 
 class Gue extends Orchestrator {
 
@@ -21,6 +22,8 @@ class Gue extends Orchestrator {
     super(...args);
     this.exitCode = 0;
     this.options = {};
+    this.fileSet = new FileSet();
+
   }
 
   /**

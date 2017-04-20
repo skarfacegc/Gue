@@ -1,7 +1,5 @@
 const gue = require('./index.js');
-const FileSet = require('./lib/fileSet');
-
-fileSet = new FileSet();
+const fileSet = gue.fileSet;
 
 fileSet.add('allSrc', ['**/*.js'], 'lint');
 fileSet.add('src', ['*.js','lib/*.js','bin/*.js'], 'test');
