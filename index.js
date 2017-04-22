@@ -8,6 +8,7 @@ const trimNewlines = require('trim-newlines');
 const util = require('./lib/Util');
 const prettyMs = require('pretty-ms');
 const chokidar = require('chokidar');
+const FileSet = require('./lib/fileSet');
 
 class Gue extends Orchestrator {
 
@@ -21,6 +22,8 @@ class Gue extends Orchestrator {
     super(...args);
     this.exitCode = 0;
     this.options = {};
+    this.fileSet = new FileSet();
+
   }
 
   /**
@@ -31,6 +34,8 @@ class Gue extends Orchestrator {
    * things to do.  Each task may define a list of dependencies that will
    * run to completion prior to running the current task.  Each task may
    * also specify a function to run.
+   *
+   * Tasks are just javascript.  You don't need to just use ```gue.shell```.
    *
    *
    * - Tasks should return a promise or call the callback that is passed
@@ -71,13 +76,13 @@ class Gue extends Orchestrator {
    *
    * Shell commands print their buffer when the task is completed.  If a shell
    * command exits with a non zero status a flag is set so that gue exits
-   * with 1. A shell command that errors will have it's stderr printed in red.
-   * See the fail task in the output above. Shell commands are run through the
-   *  [lodash](https://www.npmjs.com/package/lodash.template) template system
-   *  using ```{{}}``` as the replacement tokens.  The substitution values
+   * with 1. STDERR is printed in red.
+   * Shell commands are run through the
+   * [lodash](https://www.npmjs.com/package/lodash.template) template system
+   * using ```{{}}``` as the replacement tokens.  The substitution values
    * may be passed in as an optional third argument, or they may be loaded from
-   *  the values specified with ```gue.setOption()```. If ```templateValue``` is
-   *  set, it overrides ```gue.setOption```.
+   * the values specified with ```gue.setOption()```. If ```templateValue``` is
+   * set, it overrides ```gue.setOption```.
    *
    * @param {string} command The shell command to run
    * @param {literal} value An optional override of the values set with
@@ -136,8 +141,45 @@ class Gue extends Orchestrator {
   }
 
   /**
+   * Uses the fileset object passed to figure out which tasks to run
+   * based on the files that have changed.
+   *
+   * @param {Object} fileSet fileSet object
+   *
+   * @returns {Object} chokidar watcher
+   */
+  autoWatch(fileSet) {
+    const chokidarOpts = {
+      ignoreInitial: true
+    };
+
+    const watcher = chokidar.watch(fileSet.getAllFiles(), chokidarOpts);
+
+    // This shares a very similar structure to the handler in
+    // _watch.  Only way I could figure out how to extract it involved
+    // passing two closures which seemed to be worse than repeating myself
+    // a bit
+    watcher.on('all', (event, path)=> {
+      const tasks = fileSet.getTasks(path);
+      this.log(path + ' ' + event + ' running [' + tasks.join(',') + ']',
+        'autoWatch');
+
+      // Stop the watch, then restart after tasks have run
+      // this fixes looping issues if files are modified
+      // during the run (as with jscs fix)
+      watcher.close();
+      this.start(tasks, () => {
+        this.autoWatch(fileSet);
+      });
+    });
+
+    return watcher;
+  }
+
+  /**
    * Sets a name value binding for use in the lodash expansion
    * in the shell commands
+   *
    *
    * @param {string} name  name of the value
    * @param {literal} value the value itself
@@ -159,8 +201,10 @@ class Gue extends Orchestrator {
   /**
    * Prints a log message
    *
-   * If only the message is passed it behaves like console.log
-   * If duration isn't passed it isn't printed
+   * - If only message is passed it behaves like console.log
+   * - If taskname is passed it's added as a tag to the message
+   * and the message is colorized
+   * - If duration is passed the duration of the task is printed
    *
    * @param {string} message  The string to log
    * @param {string} taskname The name of the task
@@ -178,9 +222,7 @@ class Gue extends Orchestrator {
   /**
    * Prints an error message
    *
-   * Message is printed in red
-   * If only the message is passed it behaves like console.log
-   * If duration isn't passed it isn't printed
+   * Decorates like log, but message is printed in red
    *
    * @param {string} message  The string to log
    * @param {string} taskname The name of the task
@@ -189,6 +231,19 @@ class Gue extends Orchestrator {
    */
   errLog(message, taskname, duration) {
     this._log('error', message, taskname, duration);
+  }
+
+  /**
+   * Prints a debug message
+   *
+   * @param {string} message  The message to print
+   * @param {string} taskname The name of the task
+   *
+   */
+  debugLog(message, taskname) {
+    if (this.debug) {
+      this._log('debug', message, taskname);
+    }
   }
 
   /**
@@ -206,6 +261,8 @@ class Gue extends Orchestrator {
    * [execa](https://www.npmjs.com/package/execa) result
    */
   _shell(mode, command, values) {
+
+    this.debugLog(command, 'debug');
 
     const lodashVars = (values && typeof values !== undefined) ? values :
       this.options;
@@ -242,7 +299,7 @@ class Gue extends Orchestrator {
    *
    * @param {glob} files [chokidar](https://github.com/paulmillr/chokidar)
    *  compatible glob
-   * @param {tasklist} taskList  tasks to run when a file in files changes
+   * @param {(string|string[])} taskList  tasks to run when a file in files changes
    * @returns {object} Returns the chokidar watcher
    * @example
    * // Run lint and coverage tasks if a file matching src/*.js changes
@@ -276,9 +333,10 @@ class Gue extends Orchestrator {
   }
 
   /**
-   * does the acutal printing for ```log``` and ```errLog```
+   * does the actual printing for ```log``` and ```errLog```
    *
    * - Error type prints the message in red
+   * - Debug prints the message in yellow
    * - Normal type prints the message in cyan
    * - Clean type prints the message without any coloring
    *
@@ -301,6 +359,8 @@ class Gue extends Orchestrator {
 
     if (type === 'error') {
       composedMessage += chalk.red(message);
+    } else if (type === 'debug') {
+      composedMessage += chalk.yellow(message);
     } else if (type === 'normal') {
       composedMessage += chalk.cyan(message);
     } else if (type === 'clean') {
@@ -309,7 +369,8 @@ class Gue extends Orchestrator {
       composedMessage += message;
     }
 
-    if (duration !== undefined && duration > 0.0) {
+    if (duration !== undefined && duration > 0.0 &&
+        process.env.NODE_ENV !== 'snapshot') {
       composedMessage += ' ' + chalk.white(prettyMs(duration));
     }
     console.log(composedMessage);

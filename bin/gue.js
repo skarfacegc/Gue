@@ -16,9 +16,8 @@ const gueCli = new Liftoff({
 
 gueCli.launch({
   cwd: argv.cwd,
-  configPath: argv.myappfile,
+  configPath: argv.config,
   require: argv.require,
-  completion: argv.completion
 }, invoke);
 
 function invoke(env) {
@@ -77,6 +76,11 @@ function invoke(env) {
   // If there was an error in any of the tasks set the exit code
   gueInst.on('err', (event) => {
     gueInst.exitCode = 1;
+  });
+
+  gueInst.on('task_not_found', (event) => {
+    gueInst.errLog('Task ' + event.task + ' not found', 'gue');
+    process.exit(1);
   });
 
   // setup process event listener so we can
