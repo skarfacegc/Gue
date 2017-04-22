@@ -78,6 +78,11 @@ function invoke(env) {
     gueInst.exitCode = 1;
   });
 
+  gueInst.on('task_not_found', (event) => {
+    gueInst.errLog('Task ' + event.task + ' not found', 'gue');
+    process.exit(1);
+  });
+
   // setup process event listener so we can
   // exit with the right code
   process.once('exit', (code) => {
