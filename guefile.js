@@ -11,7 +11,7 @@ fileSet.add('packageJson', 'package.json', 'rebuild');
 fileSet.add('clean', ['coverage','.nyc_output']);
 fileSet.add('distclean', ['node_modules']);
 
-// gue.debug = true;
+gue.debug = true;
 
 gue.task('watch', () => {
   gue.autoWatch(fileSet);
@@ -23,7 +23,7 @@ gue.task('test', ['clean'], () => {
 });
 
 gue.task('lint', () => {
-  return gue.shell('jscs ' + fileSet.getFiles('allSrc'));
+  return gue.shell('jscs {{files "allSrc"}}');
 });
 
 gue.task('rebuild', ['distclean'], () => {

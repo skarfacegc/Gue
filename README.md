@@ -107,7 +107,6 @@ This will generate output as shown below
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
     * [.watch(files, taskList)](#Gue+watch)
     * [.autoWatch(fileSet)](#Gue+autoWatch) ⇒ <code>Object</code>
-    * [.setOption(name, value)](#Gue+setOption)
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
@@ -191,12 +190,15 @@ Runs a shell command and prints the output
 Shell commands print their buffer when the task is completed.  If a shell
 command exits with a non zero status a flag is set so that gue exits
 with 1. STDERR is printed in red.
-Shell commands are run through the
-[lodash](https://www.npmjs.com/package/lodash.template) template system
-using ```{{}}``` as the replacement tokens.  The substitution values
-may be passed in as an optional third argument, or they may be loaded from
-the values specified with ```gue.setOption()```. If ```templateValue``` is
-set, it overrides ```gue.setOption```.
+
+The command string is actually a
+[handlebars](https://www.npmjs.com/package/handlebars) template.
+
+The following helpers are provided:
+- ```{{files "fileSet"}}```: expands to the files matching the glob in
+  fileSet.  **the quotes are required**
+- ```{{globs "fileSet"}}```: expands to the glob(s) in the fileSet.
+  **the quotes are required**
 
 <!-- don't display the scope information -->
 **Returns**: <code>promise</code> - Promise containing the
@@ -205,14 +207,17 @@ set, it overrides ```gue.setOption```.
 | Param | Type | Description |
 | --- | --- | --- |
 | command | <code>string</code> | The shell command to run |
-| value | <code>literal</code> | An optional override of the values set with setOption |
+| value | <code>object</code> | passed to handlebars render |
 
 **Example**  
 ```js
-gue.setOption('myString', 'foobar');
+gue.fileSet.add('exampleSet', 'README.*');
 
-// foobar
-gue.shell('echo {{myString}}');
+// README.md
+gue.shell('echo {{files "exampleSet"}}');
+
+// *.md
+gue.shell('echo {{globs "exampleSet"}}');
 
 // woot
 gue.shell('echo {{myString}}', {myString: 'woot'});
@@ -275,22 +280,6 @@ based on the files that have changed.
 | Param | Type | Description |
 | --- | --- | --- |
 | fileSet | <code>Object</code> | fileSet object |
-
-
-* * *
-
-<a name="Gue+setOption"></a>
-
-### gue.setOption(name, value)
-Sets a name value binding for use in the lodash expansion
-in the shell commands
-
-<!-- don't display the scope information -->
-
-| Param | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | name of the value |
-| value | <code>literal</code> | the value itself |
 
 
 * * *
@@ -374,8 +363,8 @@ See the documentation for '''shell''' for more information
 | Param | Type | Description |
 | --- | --- | --- |
 | mode | <code>string</code> | 'print' or 'silent' |
-| command | <code>type</code> | The shell command to run |
-| values | <code>type</code> | an optional override of the values set with setOption |
+| command | <code>type</code> | The shell command/shell command template to run |
+| values | <code>type</code> | values to pass to the command template |
 
 
 * * *

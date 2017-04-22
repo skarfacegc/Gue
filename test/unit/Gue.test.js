@@ -132,12 +132,25 @@ describe('Gue', () => {
   });
 
   describe('_shell', () => {
-    it('should run the command with replacement', () => {
-      gue.setOption('test', 'TestString');
-      return gue._shell('silent', 'echo {{test}}')
-      .then((data)=> {
-        expect(data.stdout).to.equal('TestString');
-      });
+
+    it('should expand fileSet files', () => {
+      const fileSet = gue.fileSet;
+      fileSet.add('testSet', '*README.md*');
+
+      gue._shell('silent', 'echo {{files "testSet"}}')
+        .then((data) => {
+          expect(data.stdout).to.equal('README.md');
+        });
+    });
+
+    it('should expand fileSet globs', () => {
+      const fileSet = gue.fileSet;
+      fileSet.add('globTest', '*.md');
+
+      gue._shell('silent', 'echo {{globs "globTest"}}')
+        .then((data) => {
+          expect(data.stdout).to.equal('*.md');
+        });
     });
 
     it('should run a command with passed replacement', () => {
