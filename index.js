@@ -1,14 +1,13 @@
 'use strict';
 const Orchestrator = require('orchestrator');
 const execa = require('execa');
-const template = require('lodash.template');
-const templateSettings = require('lodash.templatesettings');
 const chalk = require('chalk');
 const trimNewlines = require('trim-newlines');
 const util = require('./lib/Util');
 const prettyMs = require('pretty-ms');
 const chokidar = require('chokidar');
 const FileSet = require('./lib/fileSet');
+const handlebars = require('handlebars');
 
 class Gue extends Orchestrator {
 
@@ -274,8 +273,7 @@ class Gue extends Orchestrator {
       }
     };
 
-    templateSettings.interpolate = /{{([\s\S]+?)}}/g;
-    const compiledCmd = template(command);
+    const compiledCmd = handlebars.compile(command);
     return execa.shell(compiledCmd(lodashVars), shellOpts)
       .then((result) => {
         if (mode === 'print') {
