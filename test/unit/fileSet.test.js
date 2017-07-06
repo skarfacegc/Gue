@@ -48,8 +48,8 @@ describe('lib/fileSet', () => {
       const fileSet = new FileSet();
       fileSet.add('foo', 'README.md', 'singleTask');
       fileSet.add('bar', 'LICENSE', ['one','two']);
-      expect(fileSet.fileSets.foo.tasks).to.be.an.array;
-      expect(fileSet.fileSets.bar.tasks).to.be.an.array;
+      expect(fileSet.fileSets.foo.tasks).to.be.an('array');
+      expect(fileSet.fileSets.bar.tasks).to.be.an('array');
     });
 
     it('should remove duplicates from allFiles', () => {
