@@ -32,7 +32,7 @@
     "chokidar": "^1.7.0",
     "execa": "^0.7.0",
     "globby": "^6.1.0",
-    "handlebars": "^4.0.6",
+    "handlebars": "^4.0.10",
     "liftoff": "^2.3.0",
     "lodash.isarray": "^4.0.0",
     "lodash.uniq": "^4.5.0",
