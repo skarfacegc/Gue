@@ -1,14 +1,13 @@
 'use strict';
 const Orchestrator = require('orchestrator');
 const execa = require('execa');
-const template = require('lodash.template');
-const templateSettings = require('lodash.templatesettings');
 const chalk = require('chalk');
 const trimNewlines = require('trim-newlines');
 const util = require('./lib/Util');
 const prettyMs = require('pretty-ms');
 const chokidar = require('chokidar');
 const FileSet = require('./lib/fileSet');
+const handlebars = require('handlebars');
 
 class Gue extends Orchestrator {
 
@@ -77,24 +76,29 @@ class Gue extends Orchestrator {
    * Shell commands print their buffer when the task is completed.  If a shell
    * command exits with a non zero status a flag is set so that gue exits
    * with 1. STDERR is printed in red.
-   * Shell commands are run through the
-   * [lodash](https://www.npmjs.com/package/lodash.template) template system
-   * using ```{{}}``` as the replacement tokens.  The substitution values
-   * may be passed in as an optional third argument, or they may be loaded from
-   * the values specified with ```gue.setOption()```. If ```templateValue``` is
-   * set, it overrides ```gue.setOption```.
+   *
+   * The command string is actually a
+   * [handlebars](https://www.npmjs.com/package/handlebars) template.
+   *
+   * The following helpers are provided:
+   * - ```{{files "fileSet"}}```: expands to the files matching the glob in
+   *   fileSet.  **the quotes are required**
+   * - ```{{globs "fileSet"}}```: expands to the glob(s) in the fileSet.
+   *   **the quotes are required**
    *
    * @param {string} command The shell command to run
-   * @param {literal} value An optional override of the values set with
-   * setOption
+   * @param {object} value passed to handlebars render
    * @returns {promise} Promise containing the
    * [execa](https://www.npmjs.com/package/execa) result
    *
    * @example
-   * gue.setOption('myString', 'foobar');
+   * gue.fileSet.add('exampleSet', 'README.*');
    *
-   * // foobar
-   * gue.shell('echo {{myString}}');
+   * // README.md
+   * gue.shell('echo {{files "exampleSet"}}');
+   *
+   * // *.md
+   * gue.shell('echo {{globs "exampleSet"}}');
    *
    * // woot
    * gue.shell('echo {{myString}}', {myString: 'woot'});
@@ -253,19 +257,17 @@ class Gue extends Orchestrator {
    * See the documentation for '''shell''' for more information
    *
    * @param {string} mode    'print' or 'silent'
-   * @param {type} command The shell command to run
-   * @param {type} values  an optional override of the values set with
-   * setOption
+   * @param {type} command The shell command/shell command template to run
+   * @param {type} values  values to pass to the command template
    *
    * @returns {promise} Promise containing the
    * [execa](https://www.npmjs.com/package/execa) result
    */
   _shell(mode, command, values) {
 
-    this.debugLog(command, 'debug');
+    const that = this;
 
-    const lodashVars = (values && typeof values !== undefined) ? values :
-      this.options;
+    this.debugLog(command, 'debug');
 
     const shellOpts = {
       env: {
@@ -274,9 +276,11 @@ class Gue extends Orchestrator {
       }
     };
 
-    templateSettings.interpolate = /{{([\s\S]+?)}}/g;
-    const compiledCmd = template(command);
-    return execa.shell(compiledCmd(lodashVars), shellOpts)
+    const compiledCmd = buildCmd(that, command);
+
+    this.debugLog(compiledCmd(values), 'debug');
+
+    return execa.shell(compiledCmd(values), shellOpts)
       .then((result) => {
         if (mode === 'print') {
           this.errLog(trimNewlines(result.stderr));
@@ -292,6 +296,7 @@ class Gue extends Orchestrator {
         }
         return Promise.reject(result);
       });
+
   }
 
   /**
@@ -377,3 +382,19 @@ class Gue extends Orchestrator {
   }
 }
 module.exports = new Gue();
+
+//
+// Some helpers
+//
+
+function buildCmd(that, command) {
+  handlebars.registerHelper('files', (setName) => {
+    return that.fileSet.getFiles(setName);
+  });
+
+  handlebars.registerHelper('globs', (setName) => {
+    return that.fileSet.getGlob(setName);
+  });
+
+  return handlebars.compile(command);
+}
