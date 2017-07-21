@@ -147,7 +147,7 @@ describe('Gue', () => {
       const fileSet = gue.fileSet;
       fileSet.add('globTest', '*.md');
 
-      gue._shell('silent', 'echo {{globs "globTest"}}')
+      gue._shell('silent', 'echo \'{{globs "globTest"}}\'')
         .then((data) => {
           expect(data.stdout).to.equal('*.md');
         });
