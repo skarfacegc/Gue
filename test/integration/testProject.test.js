@@ -21,13 +21,14 @@ function runGueTest() {
   return tmp.dir()
     .then((dir) => {
       let command =
+      'yarn link > ' + dir.path + '/foo.linkAdd 2>&1;' +
       'cd ' + dir.path + ' && ' +
       'git clone -q ' +
         'https://github.com/skarfacegc/Gue-test.git' + ' && ' +
       'cd Gue-test && ' +
       '(export NODE_ENV=snapshot ;' +
       'yarn > ./foo.yarn 2>&1 ; ' +
-      'npm link ' + testCwd + ' > ./foo.link 2>&1 ; ' +
+      'yarn link gue > ./foo.link 2>&1 ; ' +
       'gue snapshotTest || exit 0 && exit 1 )' ;
       return execa.shell(command);
     });
