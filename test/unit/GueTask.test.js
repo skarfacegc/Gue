@@ -54,5 +54,12 @@ describe('GueTask', () => {
       const newTask = new GueTask('foo',sampleFn);
       expect(newTask).to.deep.equal(testTask);
     });
+
+    it('should throw if dependencies is not an array', () => {
+      const sampleFn = () => {console.log('woot');};
+      expect(()=> {
+        new GueTask('foo', sampleFn, sampleFn);
+      }).to.throw();
+    });
   });
 });
