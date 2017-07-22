@@ -45,14 +45,14 @@ gue.task('buildDocs', () => {
   let command = '/bin/rm -f README.md';
   command += '&& jsdoc2md --example-lang js --template docs/readme.hbs ';
   command += '--partial docs/scope.hbs --separators ';
-  command += '--files index.js lib/fileSet.js lib/GueTask.js';
+  command += '--files index.js lib/fileSet.js lib/GueTasks.js lib/GueTask.js';
   command += '> README.md';
 
   return gue.shell(command);
 });
 
 gue.task('spell', ['buildDocs'], () => {
-  return gue.shell('mdspell docs/readme.hbs README.md -n -a --en-us -r');
+  return gue.shell('mdspell README.md -n -a --en-us -r');
 });
 
 gue.task('integration', () => {
