@@ -58,3 +58,7 @@ autoWatch
 gue.autoWatch
 debugLog
 gue.debugLog
+GueTasks
+addTask
+gueTasks.addTask
+GueTask

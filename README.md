@@ -93,6 +93,12 @@ This will generate output as shown below
 <dd><p>Methods to handle sets of files in Gue</p>
 <p>These really should not be called directly</p>
 </dd>
+<dt><a href="#GueTasks">GueTasks</a></dt>
+<dd><p>GueTasks - Methods that deal with lists of tasks</p>
+</dd>
+<dt><a href="#GueTask">GueTask</a></dt>
+<dd><p>GueTask - Methods that deal with a single task</p>
+</dd>
 </dl>
 
 <a name="Gue"></a>
@@ -107,6 +113,7 @@ This will generate output as shown below
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
     * [.watch(files, taskList)](#Gue+watch)
     * [.autoWatch(fileSet)](#Gue+autoWatch) ⇒ <code>Object</code>
+    * [.setOption(name, value)](#Gue+setOption)
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
@@ -280,6 +287,22 @@ based on the files that have changed.
 | Param | Type | Description |
 | --- | --- | --- |
 | fileSet | <code>Object</code> | fileSet object |
+
+
+* * *
+
+<a name="Gue+setOption"></a>
+
+### gue.setOption(name, value)
+Sets a name value binding for use in the lodash expansion
+in the shell commands
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | name of the value |
+| value | <code>literal</code> | the value itself |
 
 
 * * *
@@ -522,6 +545,119 @@ Return the list of all files from all globs in all fileSets
 
 <!-- don't display the scope information -->
 **Returns**: <code>array</code> - List of all files  
+
+* * *
+
+<a name="GueTasks"></a>
+
+## GueTasks
+GueTasks - Methods that deal with lists of tasks
+
+<!-- don't display the scope information -->
+
+* [GueTasks](#GueTasks)
+    * [new GueTasks()](#new_GueTasks_new)
+    * [.addTask(name, dependencies, task)](#GueTasks+addTask) ⇒ <code>type</code>
+
+
+* * *
+
+<a name="new_GueTasks_new"></a>
+
+### new GueTasks()
+constructor - Doesn't do anything interesting
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="GueTasks+addTask"></a>
+
+### gueTasks.addTask(name, dependencies, task) ⇒ <code>type</code>
+addTask - Add a new task
+
+This just calls new GueTask and puts the result onto the task list
+
+dependencies are optional, if only two arguments are passed
+then the 2nd argument is assumed to be the task itself and must
+be a function
+
+You can just have dependencies without a task (for task group aliases)
+
+<!-- don't display the scope information -->
+**Returns**: <code>type</code> - nothing  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | Description |
+| dependencies | <code>array</code> \| <code>function</code> | A list of tasks or a function to run prior to task |
+| task | <code>function</code> | The task to run |
+
+**Example**  
+```js
+// Add a new task named myTask that runs console.log('foo') when executed
+addTask('myTask', () =>{
+  return Promise.resolve('foo')
+}
+
+// Add a new task named yourTask that runs console.log('foo') before
+// running console.log('bar')
+addTask('yourTask', () =>{
+  return Promise.resolve('foo');
+}, () =>{
+  return Promise.resolve('bar');
+}
+
+// Add a new task named ourTask that runs myTask and yourTask
+addTask('ourTask', ['yourTask','myTask']);
+
+// Add a new task named theirTask taht runs ourTask before running
+// return Promise.resolve('woot')
+addTask('theirTask',['ourTask'], () =>{
+  return Promise.resolve('woot');
+}
+```
+
+* * *
+
+<a name="GueTask"></a>
+
+## GueTask
+GueTask - Methods that deal with a single task
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="new_GueTask_new"></a>
+
+### new GueTask(name, dependencies, action)
+constructor - Description
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>String</code> | Name of the task |
+| dependencies | <code>Array</code> \| <code>function</code> | Array of dependencies or the task action |
+| action | <code>function</code> | Task action (function) |
+
+**Example**  
+```js
+// creates a task named foo that runs tasks a and b prior to
+// running Promise.resolve()
+new GueTask('foo',['a','b'],() =>{
+  return Promise.resolve();
+});
+
+// Creates a task named foo2 that just executes promise.resolve
+new GueTask('foo2', () =>{
+  return Promise.resolve();
+}
+
+// Creates a task named foo3 that runs tasks a and b
+new GueTask('foo3', ['a','b'])
+```
 
 * * *
 
