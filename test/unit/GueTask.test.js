@@ -61,5 +61,12 @@ describe('GueTask', () => {
         new GueTask('foo', sampleFn, sampleFn);
       }).to.throw();
     });
+
+    it('should ensure that action is a function', ()=> {
+      const sampleFn = () => {console.log('woot');};
+      expect(()=> {
+        new GueTask('foo', ['bar'], 'foo');
+      }).to.throw();
+    });
   });
 });
