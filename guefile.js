@@ -11,7 +11,7 @@ fileSet.add('packageJson', 'package.json', 'rebuild');
 fileSet.add('clean', ['coverage','.nyc_output']);
 fileSet.add('distclean', ['node_modules']);
 
-gue.debug = true;
+// gue.debug = true;
 
 gue.task('watch', () => {
   gue.autoWatch(fileSet);
