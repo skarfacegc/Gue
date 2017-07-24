@@ -69,4 +69,17 @@ describe('GueTask', () => {
       }).to.throw();
     });
   });
+
+  describe('hasDependencies', () => {
+    it('should return true if there are dependencies', () => {
+      const gueTask = new GueTask('foo',['bar']);
+      expect(gueTask.hasDependencies()).to.be.true;
+    });
+
+    it('should return false if there are no dependencies', () => {
+      const gueTask = new GueTask('foo',()=> {return Promise.resolve();});
+      expect(gueTask.hasDependencies()).to.be.false;
+    });
+  });
+
 });
