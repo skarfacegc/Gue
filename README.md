@@ -558,6 +558,8 @@ GueTasks - Methods that deal with lists of tasks
 * [GueTasks](#GueTasks)
     * [new GueTasks()](#new_GueTasks_new)
     * [.addTask(name, dependencies, task)](#GueTasks+addTask) ⇒ <code>type</code>
+    * [.startTasks(taskNames)](#GueTasks+startTasks) ⇒ <code>promise</code>
+    * [.runTask(taskName)](#GueTasks+runTask) ⇒ <code>promise</code>
 
 
 * * *
@@ -590,7 +592,7 @@ You can just have dependencies without a task (for task group aliases)
 | Param | Type | Description |
 | --- | --- | --- |
 | name | <code>string</code> | Description |
-| dependencies | <code>array</code> \| <code>function</code> | A list of tasks or a function to run prior to task |
+| dependencies | <code>array</code> \| <code>function</code> | A list of tasks (or the action function if there are no dependencies) |
 | task | <code>function</code> | The task to run |
 
 **Example**  
@@ -600,23 +602,45 @@ addTask('myTask', () =>{
   return Promise.resolve('foo')
 }
 
-// Add a new task named yourTask that runs console.log('foo') before
-// running console.log('bar')
-addTask('yourTask', () =>{
-  return Promise.resolve('foo');
-}, () =>{
-  return Promise.resolve('bar');
-}
-
 // Add a new task named ourTask that runs myTask and yourTask
 addTask('ourTask', ['yourTask','myTask']);
 
-// Add a new task named theirTask taht runs ourTask before running
+// Add a new task named theirTask that runs ourTask before running
 // return Promise.resolve('woot')
 addTask('theirTask',['ourTask'], () =>{
   return Promise.resolve('woot');
 }
 ```
+
+* * *
+
+<a name="GueTasks+startTasks"></a>
+
+### gueTasks.startTasks(taskNames) ⇒ <code>promise</code>
+startTasks - Run the named task or tasks
+
+<!-- don't display the scope information -->
+**Returns**: <code>promise</code> - resolved or rejected promise based  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| taskNames | <code>array</code> \| <code>string</code> | an array of tasks or a task to run |
+
+
+* * *
+
+<a name="GueTasks+runTask"></a>
+
+### gueTasks.runTask(taskName) ⇒ <code>promise</code>
+runTask - execute the action of a single task
+
+<!-- don't display the scope information -->
+**Returns**: <code>promise</code> - Resolved or rejected promise  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| taskName | <code>string</code> | The name of the task to execute |
+
 
 * * *
 
@@ -626,6 +650,12 @@ addTask('theirTask',['ourTask'], () =>{
 GueTask - Methods that deal with a single task
 
 <!-- don't display the scope information -->
+
+* [GueTask](#GueTask)
+    * [new GueTask(name, dependencies, action)](#new_GueTask_new)
+    * [.hasDependencies()](#GueTask+hasDependencies) ⇒ <code>boolean</code>
+    * [.execute()](#GueTask+execute) ⇒
+
 
 * * *
 
@@ -658,6 +688,28 @@ new GueTask('foo2', () =>{
 // Creates a task named foo3 that runs tasks a and b
 new GueTask('foo3', ['a','b'])
 ```
+
+* * *
+
+<a name="GueTask+hasDependencies"></a>
+
+### gueTask.hasDependencies() ⇒ <code>boolean</code>
+hasDependencies - returns true if a task has dependencies
+
+<!-- don't display the scope information -->
+**Returns**: <code>boolean</code> - true if a task has dependencies  
+
+* * *
+
+<a name="GueTask+execute"></a>
+
+### gueTask.execute() ⇒
+execute - executes the task's action
+
+This does not check/resolve dependencies
+
+<!-- don't display the scope information -->
+**Returns**: returns the result of the action  
 
 * * *
 

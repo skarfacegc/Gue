@@ -62,3 +62,12 @@ GueTasks
 addTask
 gueTasks.addTask
 GueTask
+startTasks
+taskNames
+gueTasks.startTasks
+gueTask.hasDependencies
+hasDependencies
+boolean
+runTask
+gueTasks.runTask
+gueTask.execute

@@ -28,6 +28,7 @@
   "homepage": "https://github.com/skarfacegc/Gue#readme",
   "dependencies": {
     "beeper": "^1.1.1",
+    "chai-as-promised": "^7.1.1",
     "chalk": "^2.0.1",
     "chokidar": "^1.7.0",
     "execa": "^0.7.0",

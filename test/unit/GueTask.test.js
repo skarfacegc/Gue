@@ -2,7 +2,10 @@ const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const expect = chai.expect;
+const ChaiAsPromised = require('chai-as-promised');
 const GueTask = require('../../lib/GueTask');
+
+chai.use(ChaiAsPromised);
 
 describe('GueTask', () => {
 
@@ -77,9 +80,21 @@ describe('GueTask', () => {
     });
 
     it('should return false if there are no dependencies', () => {
-      const gueTask = new GueTask('foo',()=> {return Promise.resolve();});
+      const gueTask = new GueTask('foo',() => {return Promise.resolve();});
       expect(gueTask.hasDependencies()).to.be.false;
     });
   });
 
+  describe('execute', () => {
+    it('should run the action', ()=> {
+      const gueTask = new GueTask('foo',() => {
+        return new Promise((resolve,reject)=> {
+          setTimeout(function() {
+            resolve();
+          }, 50);
+        });
+      });
+      return expect(gueTask.execute()).to.be.fulfilled;
+    });
+  });
 });
