@@ -34,9 +34,9 @@ describe('GueTasks', () => {
     });
   });
 
-  describe('startTasks', () => {
+  describe('startTasks', function() {
 
-    afterEach(() => {
+    afterEach(function() {
       sandbox.restore();
     });
 
@@ -67,7 +67,6 @@ describe('GueTasks', () => {
 
       expect(runTaskStub.args[0][0]).to.equal('testTask1');
       expect(runTaskStub.args[1][0]).to.equal('testTask2');
-
     });
   });
 
