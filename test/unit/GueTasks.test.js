@@ -36,10 +36,6 @@ describe('GueTasks', () => {
 
   describe('startTasks', function() {
 
-    afterEach(function() {
-      sandbox.restore();
-    });
-
     it('should call runTask correctly with a single Task', () => {
       const gueTasks = new GueTasks();
       const runTaskStub = sandbox.stub(gueTasks, 'runTask');
@@ -94,6 +90,31 @@ describe('GueTasks', () => {
 
       return expect(gueTasks.runTask('testTask')).to
         .eventually.be.rejectedWith('testTaskDone');
+    });
+
+    it('should run all dependent tasks first', ()=> {
+      const gueTasks = new GueTasks();
+
+      // Setup the sample task
+      const sampleFn = sinon.stub();
+      sampleFn.resolves();
+
+      gueTasks.addTask('a', ()=> {
+        return sampleFn('a');
+      });
+      gueTasks.addTask('b', ()=> {
+        return sampleFn('b');
+      });
+      gueTasks.addTask('wrapper', ['a','b'], () => {
+        return sampleFn('wrapper');
+      });
+
+      gueTasks.runTask('wrapper')
+      .then(() => {
+        return expect(sampleFn.getCall(0)).to.be.calledWith('a') &&
+          expect(sampleFn.getCall(1)).to.be.calledWith('b') &&
+          expect(sampleFn.getCall(2)).to.be.calledWith('wrapper');
+      });
     });
   });
 });
