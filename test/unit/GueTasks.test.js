@@ -92,15 +92,21 @@ describe('GueTasks', () => {
         .eventually.be.rejectedWith('testTaskDone');
     });
 
-    it('should run all dependent tasks first', ()=> {
+    it('should run a nested task tree correctly', ()=> {
       const gueTasks = new GueTasks();
 
       // Setup the sample task
       const sampleFn = sinon.stub();
       sampleFn.resolves();
 
-      gueTasks.addTask('a', ()=> {
+      gueTasks.addTask('a', ['1','2'], ()=> {
         return sampleFn('a');
+      });
+      gueTasks.addTask('1', ()=> {
+        return sampleFn('1');
+      });
+      gueTasks.addTask('2', ()=> {
+        return sampleFn('2');
       });
       gueTasks.addTask('b', ()=> {
         return sampleFn('b');
@@ -111,9 +117,11 @@ describe('GueTasks', () => {
 
       gueTasks.runTask('wrapper')
       .then(() => {
-        return expect(sampleFn.getCall(0)).to.be.calledWith('a') &&
-          expect(sampleFn.getCall(1)).to.be.calledWith('b') &&
-          expect(sampleFn.getCall(2)).to.be.calledWith('wrapper');
+        return expect(sampleFn.getCall(0)).to.be.calledWith('1') &&
+               expect(sampleFn.getCall(1)).to.be.calledWith('2') &&
+               expect(sampleFn.getCall(2)).to.be.calledWith('a') &&
+               expect(sampleFn.getCall(3)).to.be.calledWith('b') &&
+               expect(sampleFn.getCall(4)).to.be.calledWith('wrapper');
       });
     });
   });
