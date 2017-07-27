@@ -261,7 +261,7 @@ describe('Gue', () => {
     });
 
     it('should run tasks when an event is emitted', () => {
-      const watcher = gue._watch('.', 'foo');
+      const watcher = gue._watch(__dirname, 'foo');
 
       // don't restart the watch loop
       watcher.close = () => {};
@@ -272,14 +272,14 @@ describe('Gue', () => {
     });
 
     it('should restart the _watch correctly', () => {
-      const watcher = gue._watch('.', 'foo');
+      const watcher = gue._watch(__dirname, 'foo');
 
       // don't restart the watch loop
       watcher.close = () => {};
       const startStub = sandbox.stub(gue, 'start').yields();
       const _watchStub = sandbox.stub(gue, '_watch');
       watcher.emit('all');
-      expect(_watchStub).to.be.calledWith('.', 'foo');
+      expect(_watchStub).to.be.calledWith(__dirname, 'foo');
     });
   });
 
