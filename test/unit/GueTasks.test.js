@@ -102,9 +102,19 @@ describe('GueTasks', () => {
       gueTasks.addTask('a', ['1','2'], ()=> {
         return sampleFn('a');
       });
+
+      // Make this one take some time
+      // to make sure we don't get accidently correct
+      // ordered task execution
       gueTasks.addTask('1', ()=> {
-        return sampleFn('1');
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            sampleFn('1');
+            resolve();
+          }, 10);
+        });
       });
+
       gueTasks.addTask('2', ()=> {
         return sampleFn('2');
       });
