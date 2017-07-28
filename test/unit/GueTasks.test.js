@@ -92,7 +92,7 @@ describe('GueTasks', () => {
         .eventually.be.rejectedWith('testTaskDone');
     });
 
-    it('should run a nested task tree correctly', ()=> {
+    it('should run a nested task tree correctly', () => {
       const gueTasks = new GueTasks();
 
       // Setup the sample task
@@ -115,14 +115,32 @@ describe('GueTasks', () => {
         return sampleFn('wrapper');
       });
 
-      gueTasks.runTask('wrapper')
-      .then(() => {
-        return expect(sampleFn.getCall(0)).to.be.calledWith('1') &&
-               expect(sampleFn.getCall(1)).to.be.calledWith('2') &&
-               expect(sampleFn.getCall(2)).to.be.calledWith('a') &&
-               expect(sampleFn.getCall(3)).to.be.calledWith('b') &&
-               expect(sampleFn.getCall(4)).to.be.calledWith('wrapper');
+      return gueTasks.runTask('wrapper').then(()=> {
+        expect(sampleFn.getCall(0)).to.be.calledWith('1');
+        expect(sampleFn.getCall(1)).to.be.calledWith('2');
+        expect(sampleFn.getCall(2)).to.be.calledWith('a');
+        expect(sampleFn.getCall(3)).to.be.calledWith('b');
+        expect(sampleFn.getCall(4)).to.be.calledWith('wrapper');
       });
+    });
+
+    it('should fail nested tasks correctly', () => {
+      const gueTasks = new GueTasks();
+      const sampleFn = sinon.stub().rejects();
+      const failedFn = sinon.stub().resolves();
+
+      // Nesting this 3 layers
+      gueTasks.addTask('wrapper', ['a'], () => {
+        return Promise.resolve();
+      });
+      gueTasks.addTask('a', ['1'], () => {
+        return Promise.resolve();
+      });
+      gueTasks.addTask('1', () => {
+        return Promise.reject();
+      });
+
+      return expect(gueTasks.runTask('wrapper')).to.eventually.be.rejected;
     });
   });
 });
