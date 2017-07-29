@@ -31,31 +31,17 @@ describe('GueTask', () => {
 
     it('should successfully create a task', ()=> {
       const sampleFn = () => {console.log('woot');};
-      const testTask = {
-        name: 'foo',
-        dependencies: ['task','list'],
-        action: sampleFn,
-        startTime: 0,
-        endTime: 0
-      };
-
       const newTask = new GueTask('foo',['task','list'], sampleFn);
-      expect(newTask).to.deep.equal(testTask);
+      expect(newTask.name).to.equal('foo');
+      expect(newTask.dependencies).to.deep.equal(['task','list']);
+      expect(newTask.action).to.deep.equal(sampleFn);
     });
 
     it('should correctly handle a task without dependencies', () => {
       const sampleFn = ()=> {console.log('woot');};
-
-      const testTask = {
-        name: 'foo',
-        dependencies: undefined,
-        action: sampleFn,
-        startTime: 0,
-        endTime: 0
-      };
-
       const newTask = new GueTask('foo',sampleFn);
-      expect(newTask).to.deep.equal(testTask);
+      expect(newTask.dependencies).to.be.undefined;
+      expect(newTask.action).to.deep.equal(sampleFn);
     });
 
     it('should throw if dependencies is not an array', () => {
