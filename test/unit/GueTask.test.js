@@ -82,5 +82,12 @@ describe('GueTask', () => {
       });
       return expect(gueTask.execute()).to.be.fulfilled;
     });
+
+    it('should propogate rejected promises', () => {
+      const gueTask = new GueTask('foo', () => {
+        return Promise.reject('failed');
+      });
+      return expect(gueTask.execute()).to.eventually.be.rejectedWith('failed');
+    });
   });
 });
