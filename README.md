@@ -654,6 +654,8 @@ GueTask - Methods that deal with a single task
 * [GueTask](#GueTask)
     * [new GueTask(name, dependencies, action)](#new_GueTask_new)
     * [.hasDependencies()](#GueTask+hasDependencies) ⇒ <code>boolean</code>
+    * [.startExecution()](#GueTask+startExecution) ⇒ <code>type</code>
+    * [.endExecution()](#GueTask+endExecution) ⇒ <code>type</code>
     * [.execute()](#GueTask+execute) ⇒
 
 
@@ -698,6 +700,27 @@ hasDependencies - returns true if a task has dependencies
 
 <!-- don't display the scope information -->
 **Returns**: <code>boolean</code> - true if a task has dependencies  
+
+* * *
+
+<a name="GueTask+startExecution"></a>
+
+### gueTask.startExecution() ⇒ <code>type</code>
+startExecution - Description
+
+<!-- don't display the scope information -->
+**Returns**: <code>type</code> - Description  
+
+* * *
+
+<a name="GueTask+endExecution"></a>
+
+### gueTask.endExecution() ⇒ <code>type</code>
+endExecution - Description
+
+<!-- don't display the scope information -->
+**Returns**: <code>type</code> - Description  
+**Emits**: <code>GueTask#event:executeEnd</code>  
 
 * * *
 
