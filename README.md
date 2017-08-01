@@ -97,7 +97,10 @@ This will generate output as shown below
 <dd><p>GueTasks - Methods that deal with lists of tasks</p>
 </dd>
 <dt><a href="#GueTask">GueTask</a></dt>
-<dd><p>GueTask - Methods that deal with a single task</p>
+<dd><p>GueTask - Methods that deal with a single task
+since runTask needs to interact with the dependency tree
+that action is in the GueTasks module (since GueTasks deals with
+lists of tasks).  Executing the task action lives here.</p>
 </dd>
 </dl>
 
@@ -648,15 +651,22 @@ runTask - execute the action of a single task
 
 ## GueTask
 GueTask - Methods that deal with a single task
+since runTask needs to interact with the dependency tree
+that action is in the GueTasks module (since GueTasks deals with
+lists of tasks).  Executing the task action lives here.
 
 <!-- don't display the scope information -->
 
 * [GueTask](#GueTask)
     * [new GueTask(name, dependencies, action)](#new_GueTask_new)
     * [.hasDependencies()](#GueTask+hasDependencies) ⇒ <code>boolean</code>
-    * [.startExecution()](#GueTask+startExecution) ⇒ <code>type</code>
-    * [.endExecution()](#GueTask+endExecution) ⇒ <code>type</code>
-    * [.execute()](#GueTask+execute) ⇒
+    * [.beginTask()](#GueTask+beginTask)
+    * [.endTask()](#GueTask+endTask)
+    * [.getTaskDuration()](#GueTask+getTaskDuration) ⇒ <code>integer</code>
+    * [.startAction()](#GueTask+startAction)
+    * [.endAction()](#GueTask+endAction)
+    * [.getActionDuration()](#GueTask+getActionDuration) ⇒ <code>integer</code>
+    * [.runAction()](#GueTask+runAction) ⇒
 
 
 * * *
@@ -664,7 +674,9 @@ GueTask - Methods that deal with a single task
 <a name="new_GueTask_new"></a>
 
 ### new GueTask(name, dependencies, action)
-constructor - Description
+constructor - Create a new task with dependencies and actions.
+You must have either a dependency or an action.
+You may have both dependencies and an action
 
 <!-- don't display the scope information -->
 
@@ -703,30 +715,73 @@ hasDependencies - returns true if a task has dependencies
 
 * * *
 
-<a name="GueTask+startExecution"></a>
+<a name="GueTask+beginTask"></a>
 
-### gueTask.startExecution() ⇒ <code>type</code>
-startExecution - Description
+### gueTask.beginTask()
+beginTask - Marks the task as started
+
+handles any task start activities. Currently just
+sets the start time and sends the start message to
+gueEvents
 
 <!-- don't display the scope information -->
-**Returns**: <code>type</code> - Description  
 
 * * *
 
-<a name="GueTask+endExecution"></a>
+<a name="GueTask+endTask"></a>
 
-### gueTask.endExecution() ⇒ <code>type</code>
-endExecution - Description
+### gueTask.endTask()
+endTask - Marks the task as done
+
+handles any task end activities. Currently just
+sets the end time and sends the end message to
+gueEvents
 
 <!-- don't display the scope information -->
-**Returns**: <code>type</code> - Description  
-**Emits**: <code>GueTask#event:executeEnd</code>  
 
 * * *
 
-<a name="GueTask+execute"></a>
+<a name="GueTask+getTaskDuration"></a>
 
-### gueTask.execute() ⇒
+### gueTask.getTaskDuration() ⇒ <code>integer</code>
+getTaskDuration - Returns how long the task ran
+
+<!-- don't display the scope information -->
+**Returns**: <code>integer</code> - Number of ms the task ran  
+
+* * *
+
+<a name="GueTask+startAction"></a>
+
+### gueTask.startAction()
+startAction - Handles execution start
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="GueTask+endAction"></a>
+
+### gueTask.endAction()
+endAction - Handles execute completion
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="GueTask+getActionDuration"></a>
+
+### gueTask.getActionDuration() ⇒ <code>integer</code>
+getActionDuration - Returns how long the action ran
+
+<!-- don't display the scope information -->
+**Returns**: <code>integer</code> - Number of ms the action ran  
+
+* * *
+
+<a name="GueTask+runAction"></a>
+
+### gueTask.runAction() ⇒
 execute - executes the task's action
 
 This does not check/resolve dependencies

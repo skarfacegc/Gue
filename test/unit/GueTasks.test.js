@@ -111,7 +111,7 @@ describe('GueTasks', () => {
           setTimeout(() => {
             sampleFn('1');
             resolve();
-          }, 10);
+          }, 20);
         });
       });
 

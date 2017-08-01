@@ -4,6 +4,7 @@ const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 const ChaiAsPromised = require('chai-as-promised');
 const GueTask = require('../../lib/GueTask');
+const gueEvents = require('../../lib/GueEvents');
 
 chai.use(ChaiAsPromised);
 
@@ -71,6 +72,158 @@ describe('GueTask', () => {
     });
   });
 
+  describe('beginTask', () => {
+    it('should emit a GueTask.beginTask event', ()=> {
+      const beginTaskEventStub = sinon.stub();
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+
+      gueEvents.on('GueTask.beginTask', ()=> {
+        beginTaskEventStub();
+      });
+
+      gueTask.beginTask();
+      expect(beginTaskEventStub).to.be.called;
+      gueEvents.removeAllListeners();
+    });
+
+    it('should set the start time correctly', () => {
+      var fakeClock = sinon.useFakeTimers(500);
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+
+      gueTask.beginTask();
+      expect(gueTask.startTime).to.equal(500);
+      fakeClock.restore();
+    });
+  });
+
+  describe('endTask', () => {
+    it('should emit a GueTask.endTask event', ()=> {
+      const endTaskEventStub = sinon.stub();
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+
+      gueEvents.on('GueTask.endTask', ()=> {
+        endTaskEventStub();
+      });
+
+      gueTask.endTask();
+      expect(endTaskEventStub).to.be.called;
+      gueEvents.removeAllListeners();
+    });
+
+    it('should set the start time correctly', () => {
+      const fakeClock = sinon.useFakeTimers(600);
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+
+      gueTask.endTask();
+      expect(gueTask.endTime).to.equal(600);
+      fakeClock.restore();
+    });
+  });
+
+  describe('getTaskDuration', () => {
+    it('should return the correct duration', ()=> {
+      const gueTask = new GueTask('foo', ()=> {
+        Promise.resolve();
+      });
+      gueTask.endTime = 500;
+      gueTask.startTime = 400;
+      expect(gueTask.getTaskDuration()).to.equal(100);
+    });
+
+    it('should handle tasks with no end correctly', ()=> {
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+      gueTask.startTime = 500;
+
+      expect(gueTask.getTaskDuration()).to.equal(0);
+    });
+  });
+
+  describe('startAction', ()=> {
+    it('should emit a GueTask.startAction event', ()=> {
+      const startActionEventStub = sinon.stub();
+      const gueTask = new GueTask('foo', ()=> {
+        Promise.resolve();
+      });
+
+      gueEvents.on('GueTask.startAction', () => {
+        startActionEventStub();
+      });
+
+      gueTask.startAction();
+      expect(startActionEventStub).to.be.called;
+      gueEvents.removeAllListeners();
+    });
+
+    it('should set the action start time', () => {
+      const fakeClock = sinon.useFakeTimers(1000);
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+
+      gueTask.startAction();
+      expect(gueTask.actionStartTime).to.equal(1000);
+      fakeClock.restore();
+    });
+  });
+
+  describe('endAction', ()=> {
+    it('should emit a GueTask.endAction event', ()=> {
+      const endActionEventStub = sinon.stub();
+      const gueTask = new GueTask('foo', ()=> {
+        Promise.resolve();
+      });
+
+      gueEvents.on('GueTask.endAction', () => {
+        endActionEventStub();
+      });
+
+      gueTask.endAction();
+      expect(endActionEventStub).to.be.called;
+      gueEvents.removeAllListeners();
+    });
+
+    it('should set the action start time', () => {
+      const fakeClock = sinon.useFakeTimers(2000);
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+
+      gueTask.endAction();
+      expect(gueTask.actionEndTime).to.equal(2000);
+      fakeClock.restore();
+    });
+  });
+
+  describe('getActionDuration', () => {
+    it('should return the correct duration', ()=> {
+      const gueTask = new GueTask('foo', ()=> {
+        Promise.resolve();
+      });
+      gueTask.actionEndTime = 500;
+      gueTask.actionStartTime = 400;
+      expect(gueTask.getActionDuration()).to.equal(100);
+    });
+
+    it('should handle actions with no end time', ()=> {
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+      gueTask.actionStartTime = 500;
+
+      expect(gueTask.getActionDuration()).to.equal(0);
+    });
+  });
+
   describe('execute', () => {
     it('should run the action', ()=> {
       const gueTask = new GueTask('foo',() => {
@@ -80,14 +233,15 @@ describe('GueTask', () => {
           }, 50);
         });
       });
-      return expect(gueTask.execute()).to.be.fulfilled;
+      return expect(gueTask.runAction()).to.be.fulfilled;
     });
 
     it('should propogate rejected promises', () => {
       const gueTask = new GueTask('foo', () => {
         return Promise.reject('failed');
       });
-      return expect(gueTask.execute()).to.eventually.be.rejectedWith('failed');
+      return expect(gueTask.runAction()).to
+        .eventually.be.rejectedWith('failed');
     });
   });
 });
