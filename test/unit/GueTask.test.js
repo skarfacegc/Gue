@@ -6,6 +6,7 @@ const ChaiAsPromised = require('chai-as-promised');
 const GueTask = require('../../lib/GueTask');
 const gueEvents = require('../../lib/GueEvents');
 
+chai.use(sinonChai);
 chai.use(ChaiAsPromised);
 
 describe('GueTask', () => {
@@ -224,7 +225,7 @@ describe('GueTask', () => {
     });
   });
 
-  describe('execute', () => {
+  describe('runAction', () => {
     it('should run the action', ()=> {
       const gueTask = new GueTask('foo',() => {
         return new Promise((resolve,reject)=> {
@@ -242,6 +243,20 @@ describe('GueTask', () => {
       });
       return expect(gueTask.runAction()).to
         .eventually.be.rejectedWith('failed');
+    });
+
+    it('should emit an error if the task fails', () => {
+      const gueTask = new GueTask('foo', () => {
+        return Promise.reject('failed');
+      });
+      const eventStub = sinon.stub();
+
+      gueTask.runAction().catch(()=> {});
+
+      gueEvents.on('GueTask.runAction.error', (val)=> {
+        expect(val).to.eventually.equal('failed');
+      });
+
     });
   });
 });
