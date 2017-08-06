@@ -1,6 +1,6 @@
 {
   "name": "gue",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A task runner with shell powers",
   "main": "index.js",
   "scripts": {
@@ -40,12 +40,10 @@
     "minimist": "^1.2.0",
     "multimatch": "^2.1.0",
     "orchestrator": "^0.3.8",
-    "pretty-ms": "^3.0.0",
     "trim-newlines": "^2.0.0"
   },
   "devDependencies": {
-    "babel-core": "^6.25.0",
-    "chai": "^4.1.0",
+    "chai": "^4.0.2",
     "coveralls": "^2.13.1",
     "jscs": "^3.0.7",
     "jsdoc-to-markdown": "^3.0.0",
@@ -53,9 +51,7 @@
     "markdox": "^0.1.10",
     "mocha": "^3.4.2",
     "nyc": "^11.0.3",
-    "sinon": "^2.3.8",
-    "sinon-chai": "^2.12.0",
-    "snap-shot": "^2.17.0",
-    "tmp-promise": "^1.0.3"
+    "sinon": "^2.3.6",
+    "sinon-chai": "^2.11.0"
   }
 }
