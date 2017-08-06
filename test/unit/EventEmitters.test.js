@@ -41,7 +41,6 @@ describe('Event Emitters', () => {
     const eventStub = sinon.stub();
 
     gueTasks.addTask('a', ()=> {
-      console.log('\tRun');
       return Promise.resolve('a');
     });
 
