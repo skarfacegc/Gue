@@ -80,7 +80,7 @@ describe('GueTask', () => {
         Promise.resolve();
       });
 
-      gueEvents.on('GueTask.beginTask', ()=> {
+      gueEvents.on('GueTask.taskStarted', ()=> {
         beginTaskEventStub();
       });
 
@@ -108,7 +108,7 @@ describe('GueTask', () => {
         Promise.resolve();
       });
 
-      gueEvents.on('GueTask.endTask', ()=> {
+      gueEvents.on('GueTask.taskFinished', ()=> {
         endTaskEventStub();
       });
 
