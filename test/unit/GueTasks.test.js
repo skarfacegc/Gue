@@ -3,9 +3,11 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const sandbox = sinon.sandbox.create();
 const expect = chai.expect;
+const ChaiAsPromised = require('chai-as-promised');
+
 const GueTasks = require('../../lib/GueTasks');
 const GueTask = require('../../lib/GueTask');
-const ChaiAsPromised = require('chai-as-promised');
+const gueEvents = require('../../lib/GueEvents');
 
 chai.use(sinonChai);
 chai.use(ChaiAsPromised);
@@ -70,6 +72,30 @@ describe('GueTasks', () => {
     it('should throw on missing taskNames', () => {
       const gueTasks = new GueTasks();
       expect(()=> {gueTasks.runTask('badTask');}).to.throw();
+    });
+
+    it('should emit taskStarted/taskFinished events', () => {
+      const gueTasks = new GueTasks();
+      const eventStartStub = sinon.stub().named('started');
+      const eventFinishedStub = sinon.stub().named('finished');
+      gueTasks.addTask('a', () => {
+        Promise.resolve();
+      });
+
+      gueEvents.on('GueTask.taskStarted', () => {
+        eventStartStub();
+      });
+
+      gueEvents.on('GueTask.taskFinished', () => {
+        eventFinishedStub();
+      });
+
+      return gueTasks.runTask('a').then(()=> {
+        expect(eventStartStub).to.be.calledOnce;
+        expect(eventFinishedStub).to.be.calledOnce;
+        sinon.assert.callOrder(eventStartStub, eventFinishedStub);
+      });
+
     });
   });
 });
