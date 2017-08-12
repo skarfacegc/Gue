@@ -79,7 +79,7 @@ describe('GueTasks', () => {
       const eventStartStub = sinon.stub().named('started');
       const eventFinishedStub = sinon.stub().named('finished');
       gueTasks.addTask('a', () => {
-        Promise.resolve();
+        return Promise.resolve();
       });
 
       gueEvents.on('GueTask.taskStarted', () => {
@@ -94,6 +94,18 @@ describe('GueTasks', () => {
         expect(eventStartStub).to.be.calledOnce;
         expect(eventFinishedStub).to.be.calledOnce;
         sinon.assert.callOrder(eventStartStub, eventFinishedStub);
+      });
+    });
+
+    it('should run a task with no dependencies correctly', () => {
+      const gueTasks = new GueTasks();
+      const taskStub = sinon.stub().resolves();
+      gueTasks.addTask('a', () => {
+        return taskStub();
+      });
+
+      return gueTasks.runTask('a').then(()=> {
+        expect(taskStub).to.be.calledOnce;
       });
 
     });
