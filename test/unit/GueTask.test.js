@@ -73,7 +73,7 @@ describe('GueTask', () => {
     });
   });
 
-  describe('beginTask', () => {
+  describe('taskStarted', () => {
     it('should emit a GueTask.beginTask event', ()=> {
       const beginTaskEventStub = sinon.stub();
       const gueTask = new GueTask('foo', () => {
@@ -84,7 +84,7 @@ describe('GueTask', () => {
         beginTaskEventStub();
       });
 
-      gueTask.beginTask();
+      gueTask.taskStarted();
       expect(beginTaskEventStub).to.be.called;
       gueEvents.removeAllListeners();
     });
@@ -95,7 +95,7 @@ describe('GueTask', () => {
         Promise.resolve();
       });
 
-      gueTask.beginTask();
+      gueTask.taskStarted();
       expect(gueTask.startTime).to.equal(500);
       fakeClock.restore();
     });
@@ -112,7 +112,7 @@ describe('GueTask', () => {
         endTaskEventStub();
       });
 
-      gueTask.endTask();
+      gueTask.taskFinished();
       expect(endTaskEventStub).to.be.called;
       gueEvents.removeAllListeners();
     });
@@ -123,7 +123,7 @@ describe('GueTask', () => {
         Promise.resolve();
       });
 
-      gueTask.endTask();
+      gueTask.taskFinished();
       expect(gueTask.endTime).to.equal(600);
       fakeClock.restore();
     });
