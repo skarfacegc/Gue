@@ -77,6 +77,16 @@ describe('GueTasks', () => {
       });
     });
 
+    it('should fail the task if an action fails', () => {
+      const gueTasks = new GueTasks();
+
+      gueTasks.addTask('failedTask', () => {
+        return Promise.reject();
+      });
+
+      return expect(gueTasks.runTask('failedTask')).to.eventually.be.rejected;
+    });
+
     it('should run a task with dependencies correctly', () => {
       const gueTasks = new GueTasks();
 
@@ -174,5 +184,7 @@ describe('GueTasks', () => {
           bStartStub, bFinishStub, aFinishStub);
       });
     });
+
+    // it('should fail the action if a nested task fails', )
   });
 });
