@@ -107,6 +107,52 @@ describe('GueTasks', () => {
       return gueTasks.runTask('a').then(()=> {
         expect(taskStub).to.be.calledOnce;
       });
+    });
+
+    it('should run a task with dependencies correctly', () => {
+      // this one is large as we're testing both action order and
+      // event order
+      const gueTasks = new GueTasks();
+
+      const wrapperStub = sinon.stub().resolves().named('wrapper');
+      const aStub = sinon.stub().resolves().named('a');
+      const bStub = sinon.stub().resolves().named('b');
+      const cStub = sinon.stub().resolves().named('c');
+      const dStub = sinon.stub().resolves().named('d');
+
+      gueTasks.addTask('wrapper', ['c','d'], () => {
+        // console.log('run wrapper');
+        return wrapperStub();
+      });
+
+      gueTasks.addTask('a', () => {
+        // console.log('run a');
+        return aStub();
+      });
+
+      gueTasks.addTask('b', () => {
+        // console.log('run b');
+        return bStub();
+      });
+
+      gueTasks.addTask('c', ['a','b'], () => {
+        // console.log('run c');
+        return cStub();
+      });
+
+      gueTasks.addTask('d', () => {
+        // console.log('run d');
+        return dStub();
+      });
+
+      return gueTasks.runTask('wrapper').then(()=> {
+        expect(wrapperStub).to.be.calledOnce;
+        expect(aStub).to.be.calledOnce;
+        expect(bStub).to.be.calledOnce;
+        expect(cStub).to.be.calledOnce;
+        expect(dStub).to.be.calledOnce;
+        sinon.assert.callOrder(aStub, bStub, cStub, dStub, wrapperStub);
+      });
 
     });
   });
