@@ -101,8 +101,8 @@ describe('GueTask', () => {
     });
   });
 
-  describe('endTask', () => {
-    it('should emit a GueTask.endTask event', ()=> {
+  describe('taskFinished', () => {
+    it('should emit a GueTask.taskFinished event', ()=> {
       const endTaskEventStub = sinon.stub();
       const gueTask = new GueTask('foo', () => {
         Promise.resolve();
@@ -117,7 +117,7 @@ describe('GueTask', () => {
       gueEvents.removeAllListeners();
     });
 
-    it('should set the start time correctly', () => {
+    it('should set the end time correctly', () => {
       const fakeClock = sinon.useFakeTimers(600);
       const gueTask = new GueTask('foo', () => {
         Promise.resolve();
@@ -126,6 +126,34 @@ describe('GueTask', () => {
       gueTask.taskFinished();
       expect(gueTask.endTime).to.equal(600);
       fakeClock.restore();
+    });
+  });
+
+  describe('taskFinishedWithError', () => {
+    it('should set the end time correctly', () => {
+      const fakeClock = sinon.useFakeTimers(600);
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+
+      gueTask.taskFinishedWithError();
+      expect(gueTask.endTime).to.equal(600);
+      fakeClock.restore();
+    });
+
+    it('should emit a GueTask.taskFinished.error event', ()=> {
+      const endTaskEventStub = sinon.stub();
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+
+      gueEvents.on('GueTask.taskFinished.error', (obj, val)=> {
+        endTaskEventStub(val);
+      });
+
+      gueTask.taskFinishedWithError('MyMessage');
+      expect(endTaskEventStub).to.be.calledWith('MyMessage');
+      gueEvents.removeAllListeners();
     });
   });
 
@@ -202,6 +230,34 @@ describe('GueTask', () => {
       gueTask.endAction();
       expect(gueTask.actionEndTime).to.equal(2000);
       fakeClock.restore();
+    });
+  });
+
+  describe('endActionWithError', () => {
+    it('should set the end time correctly', () => {
+      const fakeClock = sinon.useFakeTimers(600);
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+
+      gueTask.endActionWithError();
+      expect(gueTask.actionEndTime).to.equal(600);
+      fakeClock.restore();
+    });
+
+    it('should emit a GueTask.endAction.error event', ()=> {
+      const endTaskEventStub = sinon.stub();
+      const gueTask = new GueTask('foo', () => {
+        Promise.resolve();
+      });
+
+      gueEvents.on('GueTask.endAction.error', (obj, val)=> {
+        endTaskEventStub(val);
+      });
+
+      gueTask.endActionWithError('MyMessage');
+      expect(endTaskEventStub).to.be.calledWith('MyMessage');
+      gueEvents.removeAllListeners();
     });
   });
 
