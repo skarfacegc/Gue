@@ -124,8 +124,15 @@ describe('GueTasks', () => {
       });
 
       gueTasks.addTask('a', () => {
-        // console.log('run a');
-        return aStub();
+        // Pause here to ensure that we're still getting
+        // good task order
+        return new Promise((resolve,reject) => {
+          setTimeout(() => {
+            // console.log('run a');
+            aStub();
+            resolve();
+          }, 50);
+        });
       });
 
       gueTasks.addTask('b', () => {
@@ -166,7 +173,12 @@ describe('GueTasks', () => {
       });
 
       gueTasks.addTask('b', () => {
-        return Promise.resolve();
+        // pause here to help ensure good task order
+        return new Promise((resolve,reject) => {
+          setTimeout(() => {
+            resolve();
+          }, 50);
+        });
       });
 
       gueEvents.on('GueTask.taskStarted', (val) => {
