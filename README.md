@@ -661,8 +661,8 @@ lists of tasks).  Executing the task action lives here.
 * [GueTask](#GueTask)
     * [new GueTask(name, dependencies, action)](#new_GueTask_new)
     * [.hasDependencies()](#GueTask+hasDependencies) ⇒ <code>boolean</code>
-    * [.beginTask()](#GueTask+beginTask)
-    * [.endTask()](#GueTask+endTask)
+    * [.taskStarted()](#GueTask+taskStarted)
+    * [.taskFinished()](#GueTask+taskFinished)
     * [.getTaskDuration()](#GueTask+getTaskDuration) ⇒ <code>integer</code>
     * [.startAction()](#GueTask+startAction)
     * [.endAction()](#GueTask+endAction)
@@ -716,9 +716,9 @@ hasDependencies - returns true if a task has dependencies
 
 * * *
 
-<a name="GueTask+beginTask"></a>
+<a name="GueTask+taskStarted"></a>
 
-### gueTask.beginTask()
+### gueTask.taskStarted()
 beginTask - Marks the task as started
 
 handles any task start activities. Currently just
@@ -729,9 +729,9 @@ gueEvents
 
 * * *
 
-<a name="GueTask+endTask"></a>
+<a name="GueTask+taskFinished"></a>
 
-### gueTask.endTask()
+### gueTask.taskFinished()
 endTask - Marks the task as done
 
 handles any task end activities. Currently just
