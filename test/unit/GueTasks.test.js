@@ -87,6 +87,25 @@ describe('GueTasks', () => {
       return expect(gueTasks.runTask('failedTask')).to.eventually.be.rejected;
     });
 
+    it('should emit GueTask.taskFinished.error on task failure', () => {
+      const gueTasks = new GueTasks();
+      const eventStub = sinon.stub();
+
+      gueEvents.on('GueTask.taskFinished.error', (obj, val)=> {
+        eventStub(val);
+      });
+
+      gueTasks.addTask('failed', () => {
+        return Promise.reject('Message');
+      });
+
+      return gueTasks.runTask('failed')
+      .catch(()=> {
+        expect(eventStub).to.be.calledWith('Message');
+      });
+
+    });
+
     it('should run a task with dependencies correctly', () => {
       const gueTasks = new GueTasks();
 
