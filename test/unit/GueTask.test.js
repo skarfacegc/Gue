@@ -257,6 +257,8 @@ describe('GueTask', () => {
         expect(val).to.eventually.equal('failed');
       });
 
+      gueEvents.removeAllListeners();
+
     });
   });
 });

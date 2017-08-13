@@ -185,6 +185,38 @@ describe('GueTasks', () => {
       });
     });
 
-    // it('should fail the action if a nested task fails', )
+    it('should fail the action if a nested task fails', () => {
+      const gueTasks = new GueTasks();
+
+      gueTasks.addTask('wrapper', ['fail'], () => {
+        return Promise.resolve();
+      });
+
+      gueTasks.addTask('fail', () => {
+        return Promise.reject();
+      });
+
+      return expect(gueTasks.runTask('wrapper')).to.eventually.be.rejected;
+    });
+
+    it('should handle failed dependencies', () => {
+      const gueTasks = new GueTasks();
+      const actionStub = sinon.stub().resolves();
+      gueTasks.addTask('wrapper', ['fail'], () => {
+        return actionStub();
+      });
+
+      gueTasks.addTask('fail', () => {
+        return Promise.reject();
+      });
+
+      return gueTasks.runTask('wrapper')
+      .then(()=> {
+        throw Error('Should not have gotten here');
+      })
+      .catch(()=> {
+        expect(actionStub).to.not.be.called;
+      });
+    });
   });
 });
