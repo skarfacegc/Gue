@@ -562,7 +562,6 @@ GueTasks - Methods that deal with lists of tasks
 * [GueTasks](#GueTasks)
     * [new GueTasks()](#new_GueTasks_new)
     * [.addTask(name, dependencies, task)](#GueTasks+addTask) ⇒ <code>type</code>
-    * [.startTasks(taskNames)](#GueTasks+startTasks) ⇒ <code>promise</code>
     * [.runTask(taskName)](#GueTasks+runTask) ⇒ <code>promise</code>
 
 
@@ -615,21 +614,6 @@ addTask('theirTask',['ourTask'], () =>{
   return Promise.resolve('woot');
 }
 ```
-
-* * *
-
-<a name="GueTasks+startTasks"></a>
-
-### gueTasks.startTasks(taskNames) ⇒ <code>promise</code>
-startTasks - Run the named task or tasks
-
-<!-- don't display the scope information -->
-**Returns**: <code>promise</code> - resolved or rejected promise based  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| taskNames | <code>array</code> \| <code>string</code> | an array of tasks or a task to run |
-
 
 * * *
 

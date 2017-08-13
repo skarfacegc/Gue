@@ -36,38 +36,6 @@ describe('GueTasks', () => {
     });
   });
 
-  describe('startTasks', function() {
-
-    it('should call runTask correctly with a single Task', () => {
-      const gueTasks = new GueTasks();
-      const runTaskStub = sandbox.stub(gueTasks, 'runTask');
-      gueTasks.addTask('testTask', () => {
-        return Promise.resolve('testTask Resolved');
-      });
-
-      gueTasks.startTasks('testTask');
-      expect(runTaskStub).to.be.calledWith('testTask');
-    });
-
-    it('should call runTask correctly with array', () => {
-      const gueTasks = new GueTasks();
-      const runTaskStub = sandbox.stub(gueTasks, 'runTask');
-
-      gueTasks.addTask('testTask1', () => {
-        return Promise.resolve();
-      });
-
-      gueTasks.addTask('testTask2', () => {
-        return Promise.resolve();
-      });
-
-      gueTasks.startTasks(['testTask1','testTask2']);
-
-      expect(runTaskStub.args[0][0]).to.equal('testTask1');
-      expect(runTaskStub.args[1][0]).to.equal('testTask2');
-    });
-  });
-
   describe('runTask', () => {
     it('should throw on missing taskNames', () => {
       const gueTasks = new GueTasks();
