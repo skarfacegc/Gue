@@ -3,9 +3,11 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const sandbox = sinon.sandbox.create();
 const expect = chai.expect;
+const ChaiAsPromised = require('chai-as-promised');
+
 const GueTasks = require('../../lib/GueTasks');
 const GueTask = require('../../lib/GueTask');
-const ChaiAsPromised = require('chai-as-promised');
+const gueEvents = require('../../lib/GueEvents');
 
 chai.use(sinonChai);
 chai.use(ChaiAsPromised);
@@ -72,85 +74,137 @@ describe('GueTasks', () => {
       expect(()=> {gueTasks.runTask('badTask');}).to.throw();
     });
 
+    it('should emit taskStarted/taskFinished events', () => {
+      const gueTasks = new GueTasks();
+      const eventStartStub = sinon.stub().named('started');
+      const eventFinishedStub = sinon.stub().named('finished');
+      gueTasks.addTask('a', () => {
+        return Promise.resolve();
+      });
+
+      gueEvents.on('GueTask.taskStarted', () => {
+        eventStartStub();
+      });
+
+      gueEvents.on('GueTask.taskFinished', () => {
+        eventFinishedStub();
+      });
+
+      return gueTasks.runTask('a').then(()=> {
+        expect(eventStartStub).to.be.calledOnce;
+        expect(eventFinishedStub).to.be.calledOnce;
+        sinon.assert.callOrder(eventStartStub, eventFinishedStub);
+      });
+    });
+
     it('should run a task with no dependencies correctly', () => {
       const gueTasks = new GueTasks();
-      gueTasks.addTask('testTask', ()=> {
-        return Promise.resolve('testTaskDone');
+      const taskStub = sinon.stub().resolves();
+      gueTasks.addTask('a', () => {
+        return taskStub();
       });
 
-      return expect(gueTasks.runTask('testTask')).to
-        .eventually.equal('testTaskDone');
+      return gueTasks.runTask('a').then(()=> {
+        expect(taskStub).to.be.calledOnce;
+      });
     });
 
-    it('should handle a failed task correctly', () => {
-      const gueTasks = new GueTasks();
-      gueTasks.addTask('testTask', ()=> {
-        return Promise.reject('testTaskDone');
-      });
-
-      return expect(gueTasks.runTask('testTask')).to
-        .eventually.be.rejectedWith('testTaskDone');
-    });
-
-    it('should run a nested task tree correctly', () => {
+    it('should run a task with dependencies correctly', () => {
       const gueTasks = new GueTasks();
 
-      // Setup the sample task
-      const sampleFn = sinon.stub();
-      sampleFn.resolves();
+      const wrapperStub = sinon.stub().resolves().named('wrapper');
+      const aStub = sinon.stub().resolves().named('a');
+      const bStub = sinon.stub().resolves().named('b');
+      const cStub = sinon.stub().resolves().named('c');
+      const dStub = sinon.stub().resolves().named('d');
 
-      gueTasks.addTask('a', ['1','2'], ()=> {
-        return sampleFn('a');
+      gueTasks.addTask('wrapper', ['c','d'], () => {
+        // console.log('run wrapper');
+        return wrapperStub();
       });
 
-      // Make this one take some time
-      // to make sure we don't get accidently correct
-      // ordered task execution
-      gueTasks.addTask('1', ()=> {
-        return new Promise((resolve, reject) => {
+      gueTasks.addTask('a', () => {
+        // Pause here to ensure that we're still getting
+        // good task order
+        return new Promise((resolve,reject) => {
           setTimeout(() => {
-            sampleFn('1');
+            // console.log('run a');
+            aStub();
             resolve();
-          }, 20);
+          }, 50);
         });
       });
 
-      gueTasks.addTask('2', ()=> {
-        return sampleFn('2');
+      gueTasks.addTask('b', () => {
+        // console.log('run b');
+        return bStub();
       });
-      gueTasks.addTask('b', ()=> {
-        return sampleFn('b');
+
+      gueTasks.addTask('c', ['a','b'], () => {
+        // console.log('run c');
+        return cStub();
       });
-      gueTasks.addTask('wrapper', ['a','b'], () => {
-        return sampleFn('wrapper');
+
+      gueTasks.addTask('d', () => {
+        // console.log('run d');
+        return dStub();
       });
 
       return gueTasks.runTask('wrapper').then(()=> {
-        expect(sampleFn.getCall(0)).to.be.calledWith('1');
-        expect(sampleFn.getCall(1)).to.be.calledWith('2');
-        expect(sampleFn.getCall(2)).to.be.calledWith('a');
-        expect(sampleFn.getCall(3)).to.be.calledWith('b');
-        expect(sampleFn.getCall(4)).to.be.calledWith('wrapper');
+        expect(wrapperStub).to.be.calledOnce;
+        expect(aStub).to.be.calledOnce;
+        expect(bStub).to.be.calledOnce;
+        expect(cStub).to.be.calledOnce;
+        expect(dStub).to.be.calledOnce;
+        sinon.assert.callOrder(aStub, bStub, cStub, dStub, wrapperStub);
       });
     });
 
-    it('should fail nested tasks correctly', () => {
+    it('should emit the correct events with nested tasks', () => {
       const gueTasks = new GueTasks();
-      const sampleFn = sinon.stub().rejects();
-      const failedFn = sinon.stub().resolves();
 
-      // Nesting this 3 layers
-      gueTasks.addTask('wrapper', ['a'], () => {
+      const aStartStub = sinon.stub().named('eventStartA');
+      const bStartStub = sinon.stub().named('eventStartB');
+      const aFinishStub = sinon.stub().named('eventFinishA');
+      const bFinishStub = sinon.stub().named('eventFinishB');
+
+      gueTasks.addTask('a', ['b'], () => {
         return Promise.resolve();
       });
-      gueTasks.addTask('a', ['1'], () => {
-        return Promise.resolve();
-      });
-      gueTasks.addTask('1', () => {
-        return Promise.reject();
+
+      gueTasks.addTask('b', () => {
+        // pause here to help ensure good task order
+        return new Promise((resolve,reject) => {
+          setTimeout(() => {
+            resolve();
+          }, 50);
+        });
       });
 
-      return expect(gueTasks.runTask('wrapper')).to.eventually.be.rejected;
+      gueEvents.on('GueTask.taskStarted', (val) => {
+        if (val.name === 'a') {
+          aStartStub();
+        } else {
+          bStartStub();
+        }
+      });
+
+      gueEvents.on('GueTask.taskFinished', (val) => {
+        if (val.name === 'a') {
+          aFinishStub();
+        } else {
+          bFinishStub();
+        }
+      });
+
+      return gueTasks.runTask('a').then(()=> {
+        expect(aStartStub).to.be.calledOnce;
+        expect(bStartStub).to.be.calledOnce;
+        expect(aFinishStub).to.be.calledOnce;
+        expect(bFinishStub).to.be.calledOnce;
+        sinon.assert.callOrder(aStartStub,
+          bStartStub, bFinishStub, aFinishStub);
+      });
     });
   });
 });
