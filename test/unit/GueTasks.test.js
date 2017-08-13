@@ -110,8 +110,6 @@ describe('GueTasks', () => {
     });
 
     it('should run a task with dependencies correctly', () => {
-      // this one is large as we're testing both action order and
-      // event order
       const gueTasks = new GueTasks();
 
       const wrapperStub = sinon.stub().resolves().named('wrapper');
@@ -153,7 +151,48 @@ describe('GueTasks', () => {
         expect(dStub).to.be.calledOnce;
         sinon.assert.callOrder(aStub, bStub, cStub, dStub, wrapperStub);
       });
+    });
 
+    it('should emit the correct events with nested tasks', () => {
+      const gueTasks = new GueTasks();
+
+      const aStartStub = sinon.stub().named('eventStartA');
+      const bStartStub = sinon.stub().named('eventStartB');
+      const aFinishStub = sinon.stub().named('eventFinishA');
+      const bFinishStub = sinon.stub().named('eventFinishB');
+
+      gueTasks.addTask('a', ['b'], () => {
+        return Promise.resolve();
+      });
+
+      gueTasks.addTask('b', () => {
+        return Promise.resolve();
+      });
+
+      gueEvents.on('GueTask.taskStarted', (val) => {
+        if (val.name === 'a') {
+          aStartStub();
+        } else {
+          bStartStub();
+        }
+      });
+
+      gueEvents.on('GueTask.taskFinished', (val) => {
+        if (val.name === 'a') {
+          aFinishStub();
+        } else {
+          bFinishStub();
+        }
+      });
+
+      return gueTasks.runTask('a').then(()=> {
+        expect(aStartStub).to.be.calledOnce;
+        expect(bStartStub).to.be.calledOnce;
+        expect(aFinishStub).to.be.calledOnce;
+        expect(bFinishStub).to.be.calledOnce;
+        sinon.assert.callOrder(aStartStub,
+          bStartStub, bFinishStub, aFinishStub);
+      });
     });
   });
 });
