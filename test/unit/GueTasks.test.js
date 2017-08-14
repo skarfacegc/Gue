@@ -102,8 +102,8 @@ describe('GueTasks', () => {
       return gueTasks.runTask('failed')
       .catch(()=> {
         expect(eventStub).to.be.calledWith('Message');
+        gueEvents.removeAllListeners();
       });
-
     });
 
     it('should run a task with dependencies correctly', () => {
@@ -216,6 +216,28 @@ describe('GueTasks', () => {
       });
 
       return expect(gueTasks.runTask('wrapper')).to.eventually.be.rejected;
+    });
+
+    it('should emit GueTask.taskFinished.error on dependency failure', () => {
+      const gueTasks = new GueTasks();
+      const eventStub = sinon.stub();
+
+      gueTasks.addTask('wrapper', ['fail'], () => {
+        return Promise.resolve();
+      });
+
+      gueTasks.addTask('fail', () => {
+        return Promise.reject('Message');
+      });
+
+      gueEvents.on('GueTask.taskFinished.error', (obj, val)=> {
+        eventStub(val);
+      });
+
+      return gueTasks.runTask('wrapper').catch(()=> {
+        expect(eventStub).to.be.calledWith('Message');
+        gueEvents.removeAllListeners();
+      });
     });
 
     it('should handle failed dependencies', () => {
