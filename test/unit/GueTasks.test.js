@@ -36,6 +36,44 @@ describe('GueTasks', () => {
     });
   });
 
+  describe('runTaskParallel', () => {
+    it('should run a single task correctly', () => {
+      const gueTasks = new GueTasks();
+      const aStub = sinon.stub().resolves();
+
+      gueTasks.addTask('a', () => {
+        return aStub();
+      });
+
+      return gueTasks.runTaskParallel('a')
+      .then(()=> {
+        expect(aStub).to.be.called;
+      });
+
+    });
+
+    it('should run all of the passed tasks', () => {
+      const gueTasks = new GueTasks();
+      const aStub = sinon.stub().resolves();
+      const bStub = sinon.stub().resolves();
+
+      gueTasks.addTask('a', () => {
+        return aStub();
+      });
+
+      gueTasks.addTask('b', () => {
+        return bStub();
+      });
+
+      return gueTasks.runTaskParallel(['a','b'])
+      .then(()=> {
+        expect(aStub).to.be.called;
+        expect(bStub).to.be.called;
+      });
+
+    });
+  });
+
   describe('runTask', () => {
     it('should throw on missing taskNames', () => {
       const gueTasks = new GueTasks();
