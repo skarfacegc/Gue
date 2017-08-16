@@ -57,8 +57,6 @@ function invoke(env) {
     }
   });
 
-  console.log(actionList);
-
   // Now lets make do stuff
   gueInst.gueTasks.runTaskParallel(actionList);
 }
