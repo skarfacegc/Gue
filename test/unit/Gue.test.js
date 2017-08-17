@@ -28,9 +28,9 @@ describe('Gue', () => {
     it('should successfully create a task', () => {
       gue.task('foo', ['bar'], () => {});
 
-      expect(gue.tasks).to.have.property('foo');
-      expect(gue.tasks.foo.dep).to.deep.equal(['bar']);
-      expect(gue.tasks.foo.name).to.equal('foo');
+      expect(gue.gueTasks.tasks).to.have.property('foo');
+      expect(gue.gueTasks.tasks.foo.dependencies).to.deep.equal(['bar']);
+      expect(gue.gueTasks.tasks.foo.name).to.equal('foo');
     });
   });
 
@@ -265,7 +265,8 @@ describe('Gue', () => {
 
       // don't restart the watch loop
       watcher.close = () => {};
-      const startStub = sandbox.stub(gue, 'start');
+      const startStub = sandbox.stub(gue.gueTasks, 'runTaskParallel')
+        .resolves();
 
       watcher.emit('all');
       expect(startStub).to.be.calledWith('foo');
