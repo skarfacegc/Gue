@@ -396,6 +396,7 @@ class Gue {
     // Print stderr and the task finish notification on error
     gueEvents.on('GueTask.taskFinished.error', (task, message) => {
       beeper(1);
+      this.exitCode = 1;
       this.errLog('finished with error in', task.name,
         task.getTaskDuration());
     });
