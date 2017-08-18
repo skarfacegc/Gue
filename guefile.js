@@ -13,24 +13,23 @@ fileSet.add('distclean', ['node_modules']);
 
 // gue.debug = true;
 
+gue.task('rebuild', ['distclean', 'yarn', 'lint', 'test', 'integration']);
+
 gue.task('watch', () => {
   gue.autoWatch(fileSet);
 });
 
 gue.task('test', ['clean'], () => {
   return gue.shell('nyc --reporter lcov --reporter text ' +
-  'mocha ' + fileSet.getFiles('unitTests'));
+  'mocha {{files "unitTests"}}');
 });
 
 gue.task('lint', () => {
   return gue.shell('jscs {{files "allSrc"}}');
 });
 
-gue.task('rebuild', ['distclean'], () => {
-  return gue.shell('yarn')
-    .then(() => {
-      return gue.start(['test','lint', 'integration']);
-    });
+gue.task('yarn', () => {
+  return gue.shell('yarn');
 });
 
 gue.task('clean', () => {

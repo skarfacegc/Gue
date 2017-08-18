@@ -3,13 +3,16 @@ const Orchestrator = require('orchestrator');
 const execa = require('execa');
 const chalk = require('chalk');
 const trimNewlines = require('trim-newlines');
-const util = require('./lib/Util');
 const prettyMs = require('pretty-ms');
 const chokidar = require('chokidar');
-const FileSet = require('./lib/fileSet');
 const handlebars = require('handlebars');
+const beeper = require('beeper');
+const FileSet = require('./lib/fileSet');
+const util = require('./lib/Util');
+const GueTasks = require('./lib/GueTasks');
+const gueEvents = require('./lib/GueEvents');
 
-class Gue extends Orchestrator {
+class Gue {
 
   /**
    * This doesn't take anything interesting.
@@ -17,12 +20,12 @@ class Gue extends Orchestrator {
    * @example
    * const gue = require('gue');
    */
-  constructor(...args) {
-    super(...args);
+  constructor() {
     this.exitCode = 0;
     this.options = {};
     this.fileSet = new FileSet();
-
+    this.gueTasks = new GueTasks();
+    this.registerEventHandlers();
   }
 
   /**
@@ -37,10 +40,7 @@ class Gue extends Orchestrator {
    * Tasks are just javascript.  You don't need to just use ```gue.shell```.
    *
    *
-   * - Tasks should return a promise or call the callback that is passed
-   * to the function.
-   * - Dependencies will run to completion prior to executing the current task.
-   * These tasks will run asynchronously (order is not guaranteed)
+   * - Tasks should return a promise.
    *
    * @param {string} name Name of the task
    * @param {array} deps Array of task dependencies
@@ -60,14 +60,9 @@ class Gue extends Orchestrator {
    *   return gue.shell('nyc mocha tests/*.js')
    * })
    *
-   * // Example of using a callback
-   * task('nonPromise', (done) => {
-   *   plainFunction();
-   *   done();
-   * })
    */
   task(name, deps, func) {
-    super.add(name, deps, func);
+    this.gueTasks.addTask(name, deps, func);
   }
 
   /**
@@ -172,7 +167,8 @@ class Gue extends Orchestrator {
       // this fixes looping issues if files are modified
       // during the run (as with jscs fix)
       watcher.close();
-      this.start(tasks, () => {
+      this.gueTasks.runTaskParallel(tasks)
+      .then(() => {
         this.autoWatch(fileSet);
       });
     });
@@ -199,7 +195,7 @@ class Gue extends Orchestrator {
    * @returns {array} Array of the defined tasks
    */
   taskList() {
-    return Object.keys(this.tasks);
+    return Object.keys(this.gueTasks.tasks);
   }
 
   /**
@@ -289,6 +285,7 @@ class Gue extends Orchestrator {
         return Promise.resolve(result);
       })
       .catch((result) => {
+        beeper(1);
         this.exitCode = 1;
         if (mode === 'print') {
           this.errLog(trimNewlines(result.stderr));
@@ -329,7 +326,8 @@ class Gue extends Orchestrator {
       // this fixes looping issues if files are modified
       // during the run (as with jscs fix)
       watcher.close();
-      this.start(taskList, () => {
+      this.gueTasks.runTaskParallel(taskList)
+      .then(() => {
         this._watch(glob, taskList);
       });
     });
@@ -380,6 +378,31 @@ class Gue extends Orchestrator {
     }
     console.log(composedMessage);
   }
+
+  registerEventHandlers() {
+    // Log task start
+    gueEvents.on('GueTask.taskStarted', (task) => {
+      if (task.name !== 'default') {
+        this.log('started', task.name, 'normal');
+      }
+    });
+
+    // Log task stop and task duration
+    gueEvents.on('GueTask.taskFinished', (task) => {
+      if (task.name !== 'default') {
+        this.log('finished in', task.name, task.getTaskDuration());
+      }
+    });
+
+    // Print stderr and the task finish notification on error
+    gueEvents.on('GueTask.taskFinished.error', (task, message) => {
+      beeper(1);
+      this.exitCode = 1;
+      this.errLog('finished with error in', task.name,
+        task.getTaskDuration());
+    });
+  }
+
 }
 module.exports = new Gue();
 
