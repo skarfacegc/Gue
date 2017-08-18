@@ -49,15 +49,17 @@ function invoke(env) {
     process.exit(0);
   }
 
-  // setup process event listener so we can
-  // exit with the right code
-  process.once('exit', (code) => {
-    if (gueInst.exitCode === 1) {
-      process.exit(1);
-    }
-  });
+  // // setup process event listener so we can
+  // // exit with the right code
+  // process.once('exit', (code) => {
+  //   if (gueInst.exitCode === 1) {
+  //     process.exit(1);
+  //   }
+  // });
 
   // Now lets make do stuff
-  gueInst.gueTasks.runTaskParallel(actionList);
+  gueInst.gueTasks.runTaskParallel(actionList).catch(()=> {
+    process.exit(gueInst.exitCode);
+  });
 }
 //

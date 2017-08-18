@@ -285,6 +285,7 @@ class Gue {
         return Promise.resolve(result);
       })
       .catch((result) => {
+        beeper(1);
         this.exitCode = 1;
         if (mode === 'print') {
           this.errLog(trimNewlines(result.stderr));
