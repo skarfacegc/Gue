@@ -167,7 +167,7 @@ class Gue {
       // this fixes looping issues if files are modified
       // during the run (as with jscs fix)
       watcher.close();
-      gueTasks.runTaskParallel(tasks)
+      this.gueTasks.runTaskParallel(tasks)
       .then(() => {
         this.autoWatch(fileSet);
       });
