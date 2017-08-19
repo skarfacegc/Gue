@@ -284,14 +284,14 @@ describe('Gue', () => {
     });
   });
 
-  describe('autoWatch', ()=> {
+  describe('_autoWatch', ()=> {
     it('should call chokidar correctly', () => {
       const fileSet = new FileSet();
       fileSet.add('setName', 'README.md', ['task1']);
       const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
         return {on: () => {}};
       });
-      gue.autoWatch(fileSet);
+      gue._autoWatch(fileSet);
       expect(watchStub).to.be.calledWith(['README.md']);
     });
 
@@ -299,7 +299,7 @@ describe('Gue', () => {
       const fileSet = new FileSet();
       fileSet.add('testSet', 'foo', ['tasks','yayTasks']);
 
-      const watcher = gue.autoWatch(fileSet);
+      const watcher = gue._autoWatch(fileSet);
       const startStub = sandbox.stub(gue.gueTasks, 'runTaskParallel')
         .resolves();
 

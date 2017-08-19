@@ -116,13 +116,14 @@ lists of tasks).  Executing the task action lives here.</p>
     * [.shell(command, value)](#Gue+shell) ⇒ <code>promise</code>
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
     * [.watch(files, taskList)](#Gue+watch)
-    * [.autoWatch(fileSet)](#Gue+autoWatch) ⇒ <code>Object</code>
+    * [.autoWatch(fileSet)](#Gue+autoWatch)
     * [.setOption(name, value)](#Gue+setOption)
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
     * [.debugLog(message, taskname)](#Gue+debugLog)
     * [._shell(mode, command, values)](#Gue+_shell) ⇒ <code>promise</code>
+    * [._autoWatch(fileSet)](#Gue+_autoWatch) ⇒ <code>Object</code>
     * [._watch(files, taskList)](#Gue+_watch) ⇒ <code>object</code>
     * [._log(type, message, taskname, duration)](#Gue+_log)
 
@@ -156,10 +157,7 @@ also specify a function to run.
 Tasks are just javascript.  You don't need to just use ```gue.shell```.
 
 
-- Tasks should return a promise or call the callback that is passed
-to the function.
-- Dependencies will run to completion prior to executing the current task.
-These tasks will run asynchronously (order is not guaranteed)
+- Tasks should return a promise.
 
 <!-- don't display the scope information -->
 
@@ -182,12 +180,6 @@ task('coverage', () =>{
 // Create a task that calls a linter task prior to coverage
 task('coverage', ['lint'], () =>{
   return gue.shell('nyc mocha tests/*.js')
-})
-
-// Example of using a callback
-task('nonPromise', (done) => {
-  plainFunction();
-  done();
 })
 ```
 
@@ -256,7 +248,7 @@ same as shell but doesn't print any output
 <a name="Gue+watch"></a>
 
 ### gue.watch(files, taskList)
-Watch the specified files and run taskList when a change is detected
+watch = watch the specified files and run taskList when a change is detected
 
 This is just a passthrough to _watch.  Done to make it easier to
 maintain API compatibility.
@@ -281,16 +273,15 @@ gue.watch('tests/*.js', 'coverage');
 
 <a name="Gue+autoWatch"></a>
 
-### gue.autoWatch(fileSet) ⇒ <code>Object</code>
-Uses the fileset object passed to figure out which tasks to run
-based on the files that have changed.
+### gue.autoWatch(fileSet)
+autoWatch - Watch all files specified in the fileset, run the appropriate
+tasks when one of the files is changed
 
 <!-- don't display the scope information -->
-**Returns**: <code>Object</code> - chokidar watcher  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| fileSet | <code>Object</code> | fileSet object |
+| fileSet | <code>fileSet</code> | the fileset object that contains the files to watch |
 
 
 * * *
@@ -392,6 +383,22 @@ See the documentation for '''shell''' for more information
 | mode | <code>string</code> | 'print' or 'silent' |
 | command | <code>type</code> | The shell command/shell command template to run |
 | values | <code>type</code> | values to pass to the command template |
+
+
+* * *
+
+<a name="Gue+_autoWatch"></a>
+
+### gue._autoWatch(fileSet) ⇒ <code>Object</code>
+Uses the fileset object passed to figure out which tasks to run
+based on the files that have changed.
+
+<!-- don't display the scope information -->
+**Returns**: <code>Object</code> - chokidar watcher  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| fileSet | <code>Object</code> | fileSet object |
 
 
 * * *
@@ -562,6 +569,7 @@ GueTasks - Methods that deal with lists of tasks
 * [GueTasks](#GueTasks)
     * [new GueTasks()](#new_GueTasks_new)
     * [.addTask(name, dependencies, task)](#GueTasks+addTask) ⇒ <code>type</code>
+    * [.runTaskParallel(tasks)](#GueTasks+runTaskParallel) ⇒ <code>promise</code>
     * [.runTask(taskName)](#GueTasks+runTask) ⇒ <code>promise</code>
 
 
@@ -617,6 +625,23 @@ addTask('theirTask',['ourTask'], () =>{
 
 * * *
 
+<a name="GueTasks+runTaskParallel"></a>
+
+### gueTasks.runTaskParallel(tasks) ⇒ <code>promise</code>
+runTaskParallel - Run tasks in parallel
+
+This will run tasks concurrently. Each task's dependencies will
+still run sequentially.
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| tasks | <code>string</code> \| <code>array</code> | One or more tasks to run |
+
+
+* * *
+
 <a name="GueTasks+runTask"></a>
 
 ### gueTasks.runTask(taskName) ⇒ <code>promise</code>
@@ -647,9 +672,11 @@ lists of tasks).  Executing the task action lives here.
     * [.hasDependencies()](#GueTask+hasDependencies) ⇒ <code>boolean</code>
     * [.taskStarted()](#GueTask+taskStarted)
     * [.taskFinished()](#GueTask+taskFinished)
+    * [.taskFinishedWithError(message)](#GueTask+taskFinishedWithError)
     * [.getTaskDuration()](#GueTask+getTaskDuration) ⇒ <code>integer</code>
     * [.startAction()](#GueTask+startAction)
     * [.endAction()](#GueTask+endAction)
+    * [.endActionWithError(message)](#GueTask+endActionWithError)
     * [.getActionDuration()](#GueTask+getActionDuration) ⇒ <code>integer</code>
     * [.runAction()](#GueTask+runAction) ⇒
 
@@ -726,6 +753,21 @@ gueEvents
 
 * * *
 
+<a name="GueTask+taskFinishedWithError"></a>
+
+### gueTask.taskFinishedWithError(message)
+taskFinishedWithError - Marks a task as finished with an error
+emits the task failed event
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>string</code> | Error message |
+
+
+* * *
+
 <a name="GueTask+getTaskDuration"></a>
 
 ### gueTask.getTaskDuration() ⇒ <code>integer</code>
@@ -751,6 +793,20 @@ startAction - Handles execution start
 endAction - Handles execute completion
 
 <!-- don't display the scope information -->
+
+* * *
+
+<a name="GueTask+endActionWithError"></a>
+
+### gueTask.endActionWithError(message)
+endActionWithError - end the action and emits an error
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>string</code> | The error message |
+
 
 * * *
 

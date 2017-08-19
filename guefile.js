@@ -16,7 +16,7 @@ fileSet.add('distclean', ['node_modules']);
 gue.task('rebuild', ['distclean', 'yarn', 'lint', 'test', 'integration']);
 
 gue.task('watch', () => {
-  gue.autoWatch(fileSet);
+  return gue.autoWatch(fileSet);
 });
 
 gue.task('test', ['clean'], () => {

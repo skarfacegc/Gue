@@ -117,7 +117,7 @@ class Gue {
   }
 
   /**
-   * Watch the specified files and run taskList when a change is detected
+   * watch = watch the specified files and run taskList when a change is detected
    *
    * This is just a passthrough to _watch.  Done to make it easier to
    * maintain API compatibility.
@@ -136,44 +136,23 @@ class Gue {
    */
   watch(glob, taskList) {
     this.log('Started. ^c to stop', 'watch');
-    return this._watch(glob, taskList);
+    return new Promise(() => {
+      return this._watch(glob, taskList);
+    });
   }
 
   /**
-   * Uses the fileset object passed to figure out which tasks to run
-   * based on the files that have changed.
+   * autoWatch - Watch all files specified in the fileset, run the appropriate
+   * tasks when one of the files is changed
    *
-   * @param {Object} fileSet fileSet object
+   * @param {fileSet} fileSet the fileset object that contains the files to watch
    *
-   * @returns {Object} chokidar watcher
    */
   autoWatch(fileSet) {
-    const chokidarOpts = {
-      ignoreInitial: true
-    };
-
-    const watcher = chokidar.watch(fileSet.getAllFiles(), chokidarOpts);
-
-    // This shares a very similar structure to the handler in
-    // _watch.  Only way I could figure out how to extract it involved
-    // passing two closures which seemed to be worse than repeating myself
-    // a bit
-    watcher.on('all', (event, path)=> {
-      const tasks = fileSet.getTasks(path);
-      this.log(path + ' ' + event + ' running [' + tasks.join(',') + ']',
-        'autoWatch');
-
-      // Stop the watch, then restart after tasks have run
-      // this fixes looping issues if files are modified
-      // during the run (as with jscs fix)
-      watcher.close();
-      this.gueTasks.runTaskParallel(tasks)
-      .then(() => {
-        this.autoWatch(fileSet);
-      });
+    this.log('Started. ^c to stop', 'autoWatch');
+    return new Promise(()=> {
+      this._autoWatch(fileSet);
     });
-
-    return watcher;
   }
 
   /**
@@ -282,7 +261,7 @@ class Gue {
           this.errLog(trimNewlines(result.stderr));
           this.log(trimNewlines(result.stdout));
         }
-        return Promise.resolve(result);
+        return result;
       })
       .catch((result) => {
         beeper(1);
@@ -291,9 +270,49 @@ class Gue {
           this.errLog(trimNewlines(result.stderr));
           this.log(trimNewlines(result.stdout));
         }
-        return Promise.reject(result);
+        throw result;
       });
 
+  }
+
+  /**
+   * Uses the fileset object passed to figure out which tasks to run
+   * based on the files that have changed.
+   *
+   * @param {Object} fileSet fileSet object
+   *
+   * @returns {Object} chokidar watcher
+   */
+  _autoWatch(fileSet) {
+    const chokidarOpts = {
+      ignoreInitial: true
+    };
+
+    const watcher = chokidar.watch(fileSet.getAllFiles(), chokidarOpts);
+
+    // This shares a very similar structure to the handler in
+    // _watch.  Only way I could figure out how to extract it involved
+    // passing two closures which seemed to be worse than repeating myself
+    // a bit
+    watcher.on('all', (event, path)=> {
+      const tasks = fileSet.getTasks(path);
+      this.log(path + ' ' + event + ' running [' + tasks.join(',') + ']',
+        'autoWatch');
+
+      // Stop the watch, then restart after tasks have run
+      // this fixes looping issues if files are modified
+      // during the run (as with jscs fix)
+      watcher.close();
+      this.gueTasks.runTaskParallel(tasks)
+      .catch(()=> {
+        // don't let errors stop the restart
+      })
+      .then(() => {
+        this._autoWatch(fileSet);
+      });
+    });
+
+    return watcher;
   }
 
   /**
@@ -327,6 +346,9 @@ class Gue {
       // during the run (as with jscs fix)
       watcher.close();
       this.gueTasks.runTaskParallel(taskList)
+      .catch(()=> {
+        // don't let errors stop the restart
+      })
       .then(() => {
         this._watch(glob, taskList);
       });

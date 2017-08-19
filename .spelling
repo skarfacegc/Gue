@@ -94,3 +94,10 @@ taskStarted
 taskFinished
 gueTask.taskStarted
 gueTask.taskFinished
+_autoWatch
+runTaskParallel
+taskFinishedWithError
+gueTask.endActionWithError
+endActionWithError
+gueTasks.runTaskParallel
+gueTask.taskFinishedWithError
