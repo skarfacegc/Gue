@@ -70,7 +70,33 @@ describe('GueTasks', () => {
         expect(aStub).to.be.called;
         expect(bStub).to.be.called;
       });
+    });
 
+    it('should ignore errors when swallowError is true', () => {
+      const gueTasks = new GueTasks();
+      const rejectStub = sinon.stub().rejects();
+
+      gueTasks.addTask('a', () => {
+        return rejectStub();
+      });
+
+      gueTasks.addTask('b', () => {
+        return rejectStub();
+      });
+
+      return expect(gueTasks.runTaskParallel(['a','b'], true)).to.eventually
+        .be.fulfilled;
+    });
+
+    it('should propogate errors when swallowError is false', () => {
+      const gueTasks = new GueTasks();
+      const rejectStub = sinon.stub().rejects();
+
+      gueTasks.addTask('a', () => {
+        return rejectStub();
+      });
+
+      return expect(gueTasks.runTaskParallel('a')).to.eventually.be.rejected;
     });
   });
 

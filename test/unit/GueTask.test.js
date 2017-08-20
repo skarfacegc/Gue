@@ -314,7 +314,11 @@ describe('GueTask', () => {
       });
 
       gueEvents.removeAllListeners();
+    });
 
+    it('should handle tasks without an action', () => {
+      const gueTask = new GueTask('foo', ['bar']);
+      expect(gueTask.runAction()).to.eventually.fulfilled;
     });
   });
 });
