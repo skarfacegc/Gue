@@ -12,7 +12,7 @@ chai.use(ChaiAsPromised);
 describe('GueTask', () => {
   describe('constructor', () => {
     it('should require a name', () => {
-      expect(()=> {
+      expect(() => {
         new GueTask('', ['task', 'list'], () => {});
       }).to.throw();
     });
@@ -29,7 +29,7 @@ describe('GueTask', () => {
       }).to.throw();
     });
 
-    it('should successfully create a task', ()=> {
+    it('should successfully create a task', () => {
       const sampleFn = () => {
         console.log('woot');
       };
@@ -40,7 +40,7 @@ describe('GueTask', () => {
     });
 
     it('should correctly handle a task without dependencies', () => {
-      const sampleFn = ()=> {
+      const sampleFn = () => {
         console.log('woot');
       };
       const newTask = new GueTask('foo', sampleFn);
@@ -52,13 +52,13 @@ describe('GueTask', () => {
       const sampleFn = () => {
         console.log('woot');
       };
-      expect(()=> {
+      expect(() => {
         new GueTask('foo', sampleFn, sampleFn);
       }).to.throw();
     });
 
-    it('should ensure that action is a function', ()=> {
-      expect(()=> {
+    it('should ensure that action is a function', () => {
+      expect(() => {
         new GueTask('foo', ['bar'], 'foo');
       }).to.throw();
     });
@@ -79,13 +79,13 @@ describe('GueTask', () => {
   });
 
   describe('taskStarted', () => {
-    it('should emit a GueTask.beginTask event', ()=> {
+    it('should emit a GueTask.beginTask event', () => {
       const beginTaskEventStub = sinon.stub();
       const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });
 
-      gueEvents.on('GueTask.taskStarted', ()=> {
+      gueEvents.on('GueTask.taskStarted', () => {
         beginTaskEventStub();
       });
 
@@ -107,13 +107,13 @@ describe('GueTask', () => {
   });
 
   describe('taskFinished', () => {
-    it('should emit a GueTask.taskFinished event', ()=> {
+    it('should emit a GueTask.taskFinished event', () => {
       const endTaskEventStub = sinon.stub();
       const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });
 
-      gueEvents.on('GueTask.taskFinished', ()=> {
+      gueEvents.on('GueTask.taskFinished', () => {
         endTaskEventStub();
       });
 
@@ -146,13 +146,13 @@ describe('GueTask', () => {
       fakeClock.restore();
     });
 
-    it('should emit a GueTask.taskFinished.error event', ()=> {
+    it('should emit a GueTask.taskFinished.error event', () => {
       const endTaskEventStub = sinon.stub();
       const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });
 
-      gueEvents.on('GueTask.taskFinished.error', (obj, val)=> {
+      gueEvents.on('GueTask.taskFinished.error', (obj, val) => {
         endTaskEventStub(val);
       });
 
@@ -163,8 +163,8 @@ describe('GueTask', () => {
   });
 
   describe('getTaskDuration', () => {
-    it('should return the correct duration', ()=> {
-      const gueTask = new GueTask('foo', ()=> {
+    it('should return the correct duration', () => {
+      const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });
       gueTask.endTime = 500;
@@ -172,7 +172,7 @@ describe('GueTask', () => {
       expect(gueTask.getTaskDuration()).to.equal(100);
     });
 
-    it('should handle tasks with no end correctly', ()=> {
+    it('should handle tasks with no end correctly', () => {
       const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });
@@ -182,10 +182,10 @@ describe('GueTask', () => {
     });
   });
 
-  describe('startAction', ()=> {
-    it('should emit a GueTask.startAction event', ()=> {
+  describe('startAction', () => {
+    it('should emit a GueTask.startAction event', () => {
       const startActionEventStub = sinon.stub();
-      const gueTask = new GueTask('foo', ()=> {
+      const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });
 
@@ -210,10 +210,10 @@ describe('GueTask', () => {
     });
   });
 
-  describe('endAction', ()=> {
-    it('should emit a GueTask.endAction event', ()=> {
+  describe('endAction', () => {
+    it('should emit a GueTask.endAction event', () => {
       const endActionEventStub = sinon.stub();
-      const gueTask = new GueTask('foo', ()=> {
+      const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });
 
@@ -250,13 +250,13 @@ describe('GueTask', () => {
       fakeClock.restore();
     });
 
-    it('should emit a GueTask.endAction.error event', ()=> {
+    it('should emit a GueTask.endAction.error event', () => {
       const endTaskEventStub = sinon.stub();
       const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });
 
-      gueEvents.on('GueTask.endAction.error', (obj, val)=> {
+      gueEvents.on('GueTask.endAction.error', (obj, val) => {
         endTaskEventStub(val);
       });
 
@@ -267,8 +267,8 @@ describe('GueTask', () => {
   });
 
   describe('getActionDuration', () => {
-    it('should return the correct duration', ()=> {
-      const gueTask = new GueTask('foo', ()=> {
+    it('should return the correct duration', () => {
+      const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });
       gueTask.actionEndTime = 500;
@@ -276,7 +276,7 @@ describe('GueTask', () => {
       expect(gueTask.getActionDuration()).to.equal(100);
     });
 
-    it('should handle actions with no end time', ()=> {
+    it('should handle actions with no end time', () => {
       const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });
@@ -287,9 +287,9 @@ describe('GueTask', () => {
   });
 
   describe('runAction', () => {
-    it('should run the action', ()=> {
+    it('should run the action', () => {
       const gueTask = new GueTask('foo', () => {
-        return new Promise((resolve, reject)=> {
+        return new Promise((resolve, reject) => {
           setTimeout(function() {
             resolve();
           }, 50);
@@ -311,9 +311,9 @@ describe('GueTask', () => {
         return Promise.reject('failed');
       });
 
-      gueTask.runAction().catch(()=> {});
+      gueTask.runAction().catch(() => {});
 
-      gueEvents.on('GueTask.runAction.error', (val)=> {
+      gueEvents.on('GueTask.runAction.error', (val) => {
         expect(val).to.eventually.equal('failed');
       });
 

@@ -165,7 +165,7 @@ describe('Gue', () => {
 
     it('should handle command failures', (done) => {
       gue._shell('silent', 'badcommand')
-        .then(()=> {
+        .then(() => {
           done(new Error('Should not have succeeded'));
         })
         .catch((err) => {
@@ -254,7 +254,7 @@ describe('Gue', () => {
 
   describe('_watch', () => {
     it('should call chokidar correctly and start the correct tasks', () => {
-      const watchStub = sandbox.stub(chokidar, 'watch').callsFake(()=> {
+      const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
         return {on: () => {}}; // replace the on event handler
       });
       gue._watch(['foo'], ['bar']);
@@ -282,7 +282,7 @@ describe('Gue', () => {
     });
   });
 
-  describe('_autoWatch', ()=> {
+  describe('_autoWatch', () => {
     it('should call chokidar correctly', () => {
       const fileSet = new FileSet();
       fileSet.add('setName', 'README.md', ['task1']);

@@ -62,7 +62,7 @@ function invoke(env) {
   // });
 
   // Now lets make do stuff
-  gueInst.gueTasks.runTaskParallel(actionList).catch(()=> {
+  gueInst.gueTasks.runTaskParallel(actionList).catch(() => {
     process.exit(gueInst.exitCode);
   });
 }

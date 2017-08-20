@@ -156,7 +156,7 @@ class Gue {
    */
   autoWatch(fileSet) {
     this.log('Started. ^c to stop', 'autoWatch');
-    return new Promise(()=> {
+    return new Promise(() => {
       this._autoWatch(fileSet);
     });
   }
@@ -298,7 +298,7 @@ class Gue {
     // _watch.  Only way I could figure out how to extract it involved
     // passing two closures which seemed to be worse than repeating myself
     // a bit
-    watcher.on('all', (event, path)=> {
+    watcher.on('all', (event, path) => {
       const tasks = fileSet.getTasks(path);
       this.log(path + ' ' + event + ' running [' + tasks.join(',') + ']',
         'autoWatch');
@@ -308,7 +308,7 @@ class Gue {
       // during the run (as with jscs fix)
       watcher.close();
       this.gueTasks.runTaskParallel(tasks, true)
-      .catch(()=> {
+      .catch(() => {
         // don't let errors stop the restart
       })
       .then(() => {
@@ -351,7 +351,7 @@ class Gue {
       // during the run (as with jscs fix)
       watcher.close();
       this.gueTasks.runTaskParallel(taskList, true)
-      .catch(()=> {
+      .catch(() => {
         // don't let errors stop the restart
       })
       .then(() => {

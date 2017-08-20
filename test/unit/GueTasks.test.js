@@ -20,7 +20,7 @@ describe('GueTasks', () => {
   });
 
   describe('addTask', () => {
-    it('should successfully add a task', ()=> {
+    it('should successfully add a task', () => {
       const gueTasks = new GueTasks();
       gueTasks.addTask('foo', () => {});
       expect(gueTasks.tasks.foo).to.be.instanceOf(GueTask);
@@ -29,7 +29,7 @@ describe('GueTasks', () => {
     it('should error if a duplicate name is added', () => {
       const gueTasks = new GueTasks();
       gueTasks.addTask('foo', () => {});
-      expect(()=> {
+      expect(() => {
         gueTasks.addTask('foo', () => {});
       }).to.throw();
     });
@@ -45,7 +45,7 @@ describe('GueTasks', () => {
       });
 
       return gueTasks.runTaskParallel('a')
-      .then(()=> {
+      .then(() => {
         expect(aStub).to.be.called;
       });
     });
@@ -64,7 +64,7 @@ describe('GueTasks', () => {
       });
 
       return gueTasks.runTaskParallel(['a', 'b'])
-      .then(()=> {
+      .then(() => {
         expect(aStub).to.be.called;
         expect(bStub).to.be.called;
       });
@@ -101,7 +101,7 @@ describe('GueTasks', () => {
   describe('runTask', () => {
     it('should throw on missing taskNames', () => {
       const gueTasks = new GueTasks();
-      expect(()=> {
+      expect(() => {
         gueTasks.runTask('badTask');
       }).to.throw();
     });
@@ -122,7 +122,7 @@ describe('GueTasks', () => {
         eventFinishedStub();
       });
 
-      return gueTasks.runTask('a').then(()=> {
+      return gueTasks.runTask('a').then(() => {
         expect(eventStartStub).to.be.calledOnce;
         expect(eventFinishedStub).to.be.calledOnce;
         sinon.assert.callOrder(eventStartStub, eventFinishedStub);
@@ -136,7 +136,7 @@ describe('GueTasks', () => {
         return taskStub();
       });
 
-      return gueTasks.runTask('a').then(()=> {
+      return gueTasks.runTask('a').then(() => {
         expect(taskStub).to.be.calledOnce;
       });
     });
@@ -155,7 +155,7 @@ describe('GueTasks', () => {
       const gueTasks = new GueTasks();
       const eventStub = sinon.stub();
 
-      gueEvents.on('GueTask.taskFinished.error', (obj, val)=> {
+      gueEvents.on('GueTask.taskFinished.error', (obj, val) => {
         eventStub(val);
       });
 
@@ -164,7 +164,7 @@ describe('GueTasks', () => {
       });
 
       return gueTasks.runTask('failed')
-      .catch(()=> {
+      .catch(() => {
         expect(eventStub).to.be.calledWith('Message');
         gueEvents.removeAllListeners();
       });
@@ -211,7 +211,7 @@ describe('GueTasks', () => {
         return dStub();
       });
 
-      return gueTasks.runTask('wrapper').then(()=> {
+      return gueTasks.runTask('wrapper').then(() => {
         expect(wrapperStub).to.be.calledOnce;
         expect(aStub).to.be.calledOnce;
         expect(bStub).to.be.calledOnce;
@@ -258,7 +258,7 @@ describe('GueTasks', () => {
         }
       });
 
-      return gueTasks.runTask('a').then(()=> {
+      return gueTasks.runTask('a').then(() => {
         expect(aStartStub).to.be.calledOnce;
         expect(bStartStub).to.be.calledOnce;
         expect(aFinishStub).to.be.calledOnce;
@@ -294,11 +294,11 @@ describe('GueTasks', () => {
         return Promise.reject('Message');
       });
 
-      gueEvents.on('GueTask.taskFinished.error', (obj, val)=> {
+      gueEvents.on('GueTask.taskFinished.error', (obj, val) => {
         eventStub(val);
       });
 
-      return gueTasks.runTask('wrapper').catch(()=> {
+      return gueTasks.runTask('wrapper').catch(() => {
         expect(eventStub).to.be.calledWith('Message');
         gueEvents.removeAllListeners();
       });
@@ -316,10 +316,10 @@ describe('GueTasks', () => {
       });
 
       return gueTasks.runTask('wrapper')
-      .then(()=> {
+      .then(() => {
         throw Error('Should not have gotten here');
       })
-      .catch(()=> {
+      .catch(() => {
         expect(actionStub).to.not.be.called;
       });
     });
