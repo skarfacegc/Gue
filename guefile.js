@@ -28,6 +28,10 @@ gue.task('lint', () => {
   return gue.shell('eslint {{files "allSrc"}}');
 });
 
+gue.task('lintFix', () => {
+  return gue.shell('eslint --fix {{files "allSrc"}}');
+});
+
 gue.task('yarn', () => {
   return gue.shell('yarn');
 });
