@@ -48,7 +48,6 @@
     "coveralls": "^2.13.1",
     "eslint": "^4.5.0",
     "eslint-config-google": "^0.9.1",
-    "jscs": "^3.0.7",
     "jsdoc-to-markdown": "^3.0.0",
     "markdown-spellcheck": "^1.0.0",
     "markdox": "^0.1.10",

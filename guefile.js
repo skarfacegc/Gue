@@ -25,11 +25,7 @@ gue.task('test', ['clean'], () => {
 });
 
 gue.task('lint', () => {
-  return gue.shell('jscs {{files "allSrc"}}');
-});
-
-gue.task('eslint', () => {
-  return gue.shell('eslint --fix {{files "allSrc"}}');
+  return gue.shell('eslint {{files "allSrc"}}');
 });
 
 gue.task('yarn', () => {
