@@ -1,22 +1,16 @@
-'use strict;'
-
-const chai = require('chai');
-const sinon = require('sinon');
-const sinonChai = require('sinon-chai');
-const expect = chai.expect;
-const sandbox = sinon.sandbox.create();
+'use strict;';
 
 const execa = require('execa');
 const snapshot = require('snap-shot');
 const tmp = require('tmp-promise');
 
-const testCwd = process.cwd();
-
-// Checks out the Gue-test repo
-// links the local copy of Gue (this repo)
-// runs gue default and returns stdout/stderr
-//
-// This return value will be snapshotted in the test
+/**
+ * Checks out the Gue-test repo
+ * links the local copy of Gue (this repo)
+ * runs gue default and returns stdout/stderr
+ *
+ * @return {promise} A promise to finish installing the test repo
+ */
 function runGueTest() {
   return tmp.dir()
     .then((dir) => {
@@ -29,7 +23,7 @@ function runGueTest() {
       '(export NODE_ENV=snapshot ;' +
       'yarn > ./foo.yarn 2>&1 ; ' +
       'yarn link gue > ./foo.link 2>&1 ; ' +
-      'gue snapshotTest || exit 0 && exit 1 )' ;
+      'gue snapshotTest || exit 0 && exit 1 )';
       return execa.shell(command);
     });
 }

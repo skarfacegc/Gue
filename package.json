@@ -39,7 +39,6 @@
     "lodash.uniq": "^4.5.0",
     "minimist": "^1.2.0",
     "multimatch": "^2.1.0",
-    "orchestrator": "^0.3.8",
     "pretty-ms": "^3.0.0",
     "trim-newlines": "^2.0.0"
   },
@@ -47,7 +46,8 @@
     "babel-core": "^6.25.0",
     "chai": "^4.1.1",
     "coveralls": "^2.13.1",
-    "jscs": "^3.0.7",
+    "eslint": "^4.5.0",
+    "eslint-config-google": "^0.9.1",
     "jsdoc-to-markdown": "^3.0.0",
     "markdown-spellcheck": "^1.0.0",
     "markdox": "^0.1.10",

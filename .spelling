@@ -102,3 +102,6 @@ endActionWithError
 gueTasks.runTaskParallel
 gueTask.taskFinishedWithError
 swallowError
+buildCmd
+registerEventHandlers
+gue.registerEventHandlers

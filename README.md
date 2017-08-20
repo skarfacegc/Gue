@@ -89,7 +89,8 @@ This will generate output as shown below
 
 <dl>
 <dt><a href="#Gue">Gue</a></dt>
-<dd></dd>
+<dd><p>Gue - The main class for the gue task runner</p>
+</dd>
 <dt><a href="#FileSet">FileSet</a></dt>
 <dd><p>Methods to handle sets of files in Gue</p>
 <p>These really should not be called directly</p>
@@ -105,9 +106,19 @@ lists of tasks).  Executing the task action lives here.</p>
 </dd>
 </dl>
 
+## Functions
+
+<dl>
+<dt><a href="#buildCmd">buildCmd(that, command)</a> ⇒ <code>handlebars</code></dt>
+<dd><p>buildCmd - Generates the handlebars template</p>
+</dd>
+</dl>
+
 <a name="Gue"></a>
 
 ## Gue
+Gue - The main class for the gue task runner
+
 <!-- don't display the scope information -->
 
 * [Gue](#Gue)
@@ -115,8 +126,8 @@ lists of tasks).  Executing the task action lives here.</p>
     * [.task(name, deps, func)](#Gue+task)
     * [.shell(command, value)](#Gue+shell) ⇒ <code>promise</code>
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
-    * [.watch(files, taskList)](#Gue+watch)
-    * [.autoWatch(fileSet)](#Gue+autoWatch)
+    * [.watch(glob, taskList)](#Gue+watch) ⇒ <code>Promise</code>
+    * [.autoWatch(fileSet)](#Gue+autoWatch) ⇒ <code>Promise</code>
     * [.setOption(name, value)](#Gue+setOption)
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
@@ -124,8 +135,9 @@ lists of tasks).  Executing the task action lives here.</p>
     * [.debugLog(message, taskname)](#Gue+debugLog)
     * [._shell(mode, command, values)](#Gue+_shell) ⇒ <code>promise</code>
     * [._autoWatch(fileSet)](#Gue+_autoWatch) ⇒ <code>Object</code>
-    * [._watch(files, taskList)](#Gue+_watch) ⇒ <code>object</code>
+    * [._watch(glob, taskList)](#Gue+_watch) ⇒ <code>object</code>
     * [._log(type, message, taskname, duration)](#Gue+_log)
+    * [.registerEventHandlers()](#Gue+registerEventHandlers)
 
 
 * * *
@@ -247,17 +259,19 @@ same as shell but doesn't print any output
 
 <a name="Gue+watch"></a>
 
-### gue.watch(files, taskList)
-watch = watch the specified files and run taskList when a change is detected
+### gue.watch(glob, taskList) ⇒ <code>Promise</code>
+watch = watch the specified files and run taskList when a change is
+detected
 
 This is just a passthrough to _watch.  Done to make it easier to
 maintain API compatibility.
 
 <!-- don't display the scope information -->
+**Returns**: <code>Promise</code> - A promise for this._watch  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| files | <code>glob</code> | [chokidar](https://github.com/paulmillr/chokidar)  compatible glob |
+| glob | <code>glob</code> | [chokidar](https://github.com/paulmillr/chokidar)  compatible glob |
 | taskList | <code>tasklist</code> | tasks to run when a file in files changes |
 
 **Example**  
@@ -273,11 +287,12 @@ gue.watch('tests/*.js', 'coverage');
 
 <a name="Gue+autoWatch"></a>
 
-### gue.autoWatch(fileSet)
+### gue.autoWatch(fileSet) ⇒ <code>Promise</code>
 autoWatch - Watch all files specified in the fileset, run the appropriate
 tasks when one of the files is changed
 
 <!-- don't display the scope information -->
+**Returns**: <code>Promise</code> - returns a promise for this._autoWatch  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -405,7 +420,7 @@ based on the files that have changed.
 
 <a name="Gue+_watch"></a>
 
-### gue._watch(files, taskList) ⇒ <code>object</code>
+### gue._watch(glob, taskList) ⇒ <code>object</code>
 Watch the specified files and run taskList when a change is detected
 
 <!-- don't display the scope information -->
@@ -413,7 +428,7 @@ Watch the specified files and run taskList when a change is detected
 
 | Param | Type | Description |
 | --- | --- | --- |
-| files | <code>glob</code> | [chokidar](https://github.com/paulmillr/chokidar)  compatible glob |
+| glob | <code>glob</code> | [chokidar](https://github.com/paulmillr/chokidar)  compatible glob |
 | taskList | <code>string</code> \| <code>Array.&lt;string&gt;</code> | tasks to run when a file in files changes |
 
 **Example**  
@@ -446,6 +461,18 @@ does the actual printing for ```log``` and ```errLog```
 | taskname | <code>string</code> | The name of the task |
 | duration | <code>int</code> | The task duration in ms |
 
+
+* * *
+
+<a name="Gue+registerEventHandlers"></a>
+
+### gue.registerEventHandlers()
+registerEventHandlers - Register the event handlers
+
+These mainly handle ensuring that logs are emitted
+and the exit code is set correctly
+
+<!-- don't display the scope information -->
 
 * * *
 
@@ -568,7 +595,7 @@ GueTasks - Methods that deal with lists of tasks
 
 * [GueTasks](#GueTasks)
     * [new GueTasks()](#new_GueTasks_new)
-    * [.addTask(name, dependencies, task)](#GueTasks+addTask) ⇒ <code>type</code>
+    * [.addTask(name, dependencies, action)](#GueTasks+addTask)
     * [.runTaskParallel(tasks, swallowError)](#GueTasks+runTaskParallel) ⇒ <code>promise</code>
     * [.runTask(taskName)](#GueTasks+runTask) ⇒ <code>promise</code>
 
@@ -586,7 +613,7 @@ constructor - Doesn't do anything interesting
 
 <a name="GueTasks+addTask"></a>
 
-### gueTasks.addTask(name, dependencies, task) ⇒ <code>type</code>
+### gueTasks.addTask(name, dependencies, action)
 addTask - Add a new task
 
 This just calls new GueTask and puts the result onto the task list
@@ -598,13 +625,12 @@ be a function
 You can just have dependencies without a task (for task group aliases)
 
 <!-- don't display the scope information -->
-**Returns**: <code>type</code> - nothing  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | name | <code>string</code> | Description |
 | dependencies | <code>array</code> \| <code>function</code> | A list of tasks (or the action function if there are no dependencies) |
-| task | <code>function</code> | The task to run |
+| action | <code>function</code> | The action to run after dependencies have been met |
 
 **Example**  
 ```js
@@ -680,7 +706,7 @@ lists of tasks).  Executing the task action lives here.
     * [.endAction()](#GueTask+endAction)
     * [.endActionWithError(message)](#GueTask+endActionWithError)
     * [.getActionDuration()](#GueTask+getActionDuration) ⇒ <code>integer</code>
-    * [.runAction()](#GueTask+runAction) ⇒
+    * [.runAction()](#GueTask+runAction) ⇒ <code>promise</code>
 
 
 * * *
@@ -824,13 +850,29 @@ getActionDuration - Returns how long the action ran
 
 <a name="GueTask+runAction"></a>
 
-### gueTask.runAction() ⇒
+### gueTask.runAction() ⇒ <code>promise</code>
 execute - executes the task's action
 
 This does not check/resolve dependencies
 
 <!-- don't display the scope information -->
-**Returns**: returns the result of the action  
+**Returns**: <code>promise</code> - returns a promise for the running action  
+
+* * *
+
+<a name="buildCmd"></a>
+
+## buildCmd(that, command) ⇒ <code>handlebars</code>
+buildCmd - Generates the handlebars template
+
+<!-- don't display the scope information -->
+**Returns**: <code>handlebars</code> - Handlebars template object  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| that | [<code>Gue</code>](#Gue) | The Gue object instance to work on |
+| command | <code>string</code> | The template string |
+
 
 * * *
 

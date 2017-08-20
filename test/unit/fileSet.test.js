@@ -1,10 +1,7 @@
 'use strict';
 
 const chai = require('chai');
-const sinon = require('sinon');
-const sinonChai = require('sinon-chai');
 const expect = chai.expect;
-const sandbox = sinon.sandbox.create();
 const FileSet = require('../../lib/fileSet');
 
 describe('lib/fileSet', () => {
@@ -23,7 +20,7 @@ describe('lib/fileSet', () => {
         name: 'foo',
         globs: ['LICENSE'],
         files: ['LICENSE'],
-        tasks: ['bar']
+        tasks: ['bar'],
       };
 
       expect(fileSetDef).to.deep.equal(testSetDef);
@@ -34,20 +31,20 @@ describe('lib/fileSet', () => {
       fileSet.add('foo', 'LICENSE', 'bar');
       fileSet.add('foo2', 'README.md', 'bar');
 
-      expect(fileSet.allFiles).to.deep.equal(['LICENSE','README.md']);
+      expect(fileSet.allFiles).to.deep.equal(['LICENSE', 'README.md']);
     });
 
     it('should update the glob map correctly', () => {
       const fileSet = new FileSet();
       fileSet.add('foo', 'README.md', 'bar');
-      fileSet.add('baz', 'README.md', ['bar','zoop']);
-      expect(fileSet.globMap['README.md']).to.deep.equal(['bar','zoop']);
+      fileSet.add('baz', 'README.md', ['bar', 'zoop']);
+      expect(fileSet.globMap['README.md']).to.deep.equal(['bar', 'zoop']);
     });
 
     it('should always save tasks as an array', () => {
       const fileSet = new FileSet();
       fileSet.add('foo', 'README.md', 'singleTask');
-      fileSet.add('bar', 'LICENSE', ['one','two']);
+      fileSet.add('bar', 'LICENSE', ['one', 'two']);
       expect(fileSet.fileSets.foo.tasks).to.be.an('array');
       expect(fileSet.fileSets.bar.tasks).to.be.an('array');
     });
@@ -61,10 +58,10 @@ describe('lib/fileSet', () => {
 
     it('should handle an array of globs', () => {
       const fileSet = new FileSet();
-      fileSet.add('foo', ['README.md','LICENSE'], 'myTask');
+      fileSet.add('foo', ['README.md', 'LICENSE'], 'myTask');
       expect(fileSet.globMap).to.deep.equal({
         'README.md': ['myTask'],
-        'LICENSE': ['myTask']
+        'LICENSE': ['myTask'],
       });
     });
   });
@@ -75,7 +72,7 @@ describe('lib/fileSet', () => {
       fileSet.add('foo', '*.js', 'starTask');
       fileSet.add('index', 'index.js', 'indexTask');
       expect(fileSet.getTasks('index.js')).to.deep
-        .equal(['starTask','indexTask']);
+        .equal(['starTask', 'indexTask']);
     });
 
     it('should return an empty list on no match', () => {
@@ -95,7 +92,8 @@ describe('lib/fileSet', () => {
       fileSet.add('foo', '*.js', ['myTask', 'yourtask']);
       fileSet.add('index', 'index.js', 'myTask');
 
-      expect(fileSet.getTasks('index.js')).to.deep.equal(['myTask','yourtask']);
+      expect(fileSet.getTasks('index.js')).to.deep
+        .equal(['myTask', 'yourtask']);
     });
 
     it('should take a list of files', () => {
@@ -104,18 +102,18 @@ describe('lib/fileSet', () => {
       fileSet.add('foo', 'README.md', 'ReadTask');
       fileSet.add('bar', 'LICENSE', 'LicTask');
 
-      expect(fileSet.getTasks(['README.md','LICENSE'])).to.deep
-        .equal(['ReadTask','LicTask']);
+      expect(fileSet.getTasks(['README.md', 'LICENSE'])).to.deep
+        .equal(['ReadTask', 'LicTask']);
     });
 
     it('should handle a single file matching multiple globs', () => {
       const fileSet = new FileSet();
 
-      fileSet.add('first', ['README.md'], ['task1','task2']);
+      fileSet.add('first', ['README.md'], ['task1', 'task2']);
       fileSet.add('second', 'README.m?', 'task3');
 
       expect(fileSet.getTasks(['README.md'])).to.deep
-        .equal(['task1','task2','task3']);
+        .equal(['task1', 'task2', 'task3']);
     });
   });
 
@@ -143,7 +141,7 @@ describe('lib/fileSet', () => {
       fileSet.add('foo', 'README.md', 'myTask');
       fileSet.add('bar', 'LICENSE', 'otherTask');
 
-      expect(fileSet.getAllFiles()).to.deep.equal(['README.md','LICENSE']);
+      expect(fileSet.getAllFiles()).to.deep.equal(['README.md', 'LICENSE']);
     });
   });
 });

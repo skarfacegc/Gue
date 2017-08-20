@@ -1,5 +1,4 @@
 'use strict';
-const Orchestrator = require('orchestrator');
 const execa = require('execa');
 const chalk = require('chalk');
 const trimNewlines = require('trim-newlines');
@@ -8,12 +7,13 @@ const chokidar = require('chokidar');
 const handlebars = require('handlebars');
 const beeper = require('beeper');
 const FileSet = require('./lib/fileSet');
-const util = require('./lib/Util');
 const GueTasks = require('./lib/GueTasks');
 const gueEvents = require('./lib/GueEvents');
 
+/**
+ * Gue - The main class for the gue task runner
+ */
 class Gue {
-
   /**
    * This doesn't take anything interesting.
    *
@@ -83,7 +83,7 @@ class Gue {
    *
    * @param {string} command The shell command to run
    * @param {object} value passed to handlebars render
-   * @returns {promise} Promise containing the
+   * @return {promise} Promise containing the
    * [execa](https://www.npmjs.com/package/execa) result
    *
    * @example
@@ -109,7 +109,7 @@ class Gue {
    * @param {literal} value An optional override of the values set with
    * setOption
    *
-   * @returns {promise} Promise containing the
+   * @return {promise} Promise containing the
    * [execa](https://www.npmjs.com/package/execa) result
    */
   silentShell(command, value) {
@@ -117,14 +117,17 @@ class Gue {
   }
 
   /**
-   * watch = watch the specified files and run taskList when a change is detected
+   * watch = watch the specified files and run taskList when a change is
+   * detected
    *
    * This is just a passthrough to _watch.  Done to make it easier to
    * maintain API compatibility.
    *
-   * @param {glob} files [chokidar](https://github.com/paulmillr/chokidar)
+   * @param {glob} glob [chokidar](https://github.com/paulmillr/chokidar)
    *  compatible glob
    * @param {tasklist} taskList  tasks to run when a file in files changes
+   *
+   * @return {Promise} A promise for this._watch
    *
    * @example
    * // Run lint and coverage tasks if a file matching src/*.js changes
@@ -145,12 +148,15 @@ class Gue {
    * autoWatch - Watch all files specified in the fileset, run the appropriate
    * tasks when one of the files is changed
    *
-   * @param {fileSet} fileSet the fileset object that contains the files to watch
+   * @param {fileSet} fileSet the fileset object that contains the files to
+   * watch
+   *
+   * @return {Promise} returns a promise for this._autoWatch
    *
    */
   autoWatch(fileSet) {
     this.log('Started. ^c to stop', 'autoWatch');
-    return new Promise(()=> {
+    return new Promise(() => {
       this._autoWatch(fileSet);
     });
   }
@@ -171,7 +177,7 @@ class Gue {
   /**
    * Return an array of the defined tasks
    *
-   * @returns {array} Array of the defined tasks
+   * @return {array} Array of the defined tasks
    */
   taskList() {
     return Object.keys(this.gueTasks.tasks);
@@ -235,11 +241,10 @@ class Gue {
    * @param {type} command The shell command/shell command template to run
    * @param {type} values  values to pass to the command template
    *
-   * @returns {promise} Promise containing the
+   * @return {promise} Promise containing the
    * [execa](https://www.npmjs.com/package/execa) result
    */
   _shell(mode, command, values) {
-
     const that = this;
 
     this.debugLog(command, 'debug');
@@ -247,8 +252,8 @@ class Gue {
     const shellOpts = {
       env: {
         FORCE_COLOR: 'true',
-        PATH: process.env.PATH
-      }
+        PATH: process.env.PATH,
+      },
     };
 
     const compiledCmd = buildCmd(that, command);
@@ -272,7 +277,6 @@ class Gue {
         }
         throw result;
       });
-
   }
 
   /**
@@ -281,11 +285,11 @@ class Gue {
    *
    * @param {Object} fileSet fileSet object
    *
-   * @returns {Object} chokidar watcher
+   * @return {Object} chokidar watcher
    */
   _autoWatch(fileSet) {
     const chokidarOpts = {
-      ignoreInitial: true
+      ignoreInitial: true,
     };
 
     const watcher = chokidar.watch(fileSet.getAllFiles(), chokidarOpts);
@@ -294,7 +298,7 @@ class Gue {
     // _watch.  Only way I could figure out how to extract it involved
     // passing two closures which seemed to be worse than repeating myself
     // a bit
-    watcher.on('all', (event, path)=> {
+    watcher.on('all', (event, path) => {
       const tasks = fileSet.getTasks(path);
       this.log(path + ' ' + event + ' running [' + tasks.join(',') + ']',
         'autoWatch');
@@ -304,7 +308,7 @@ class Gue {
       // during the run (as with jscs fix)
       watcher.close();
       this.gueTasks.runTaskParallel(tasks, true)
-      .catch(()=> {
+      .catch(() => {
         // don't let errors stop the restart
       })
       .then(() => {
@@ -318,10 +322,11 @@ class Gue {
   /**
    * Watch the specified files and run taskList when a change is detected
    *
-   * @param {glob} files [chokidar](https://github.com/paulmillr/chokidar)
+   * @param {glob} glob [chokidar](https://github.com/paulmillr/chokidar)
    *  compatible glob
-   * @param {(string|string[])} taskList  tasks to run when a file in files changes
-   * @returns {object} Returns the chokidar watcher
+   * @param {(string|string[])} taskList  tasks to run when a file in files
+   * changes
+   * @return {object} Returns the chokidar watcher
    * @example
    * // Run lint and coverage tasks if a file matching src/*.js changes
    * gue._watch('src/*.js', ['lint','coverage']);
@@ -332,7 +337,7 @@ class Gue {
    */
   _watch(glob, taskList) {
     const chokidarOpts = {
-      ignoreInitial: true
+      ignoreInitial: true,
     };
 
     const watcher = chokidar.watch(glob, chokidarOpts);
@@ -346,7 +351,7 @@ class Gue {
       // during the run (as with jscs fix)
       watcher.close();
       this.gueTasks.runTaskParallel(taskList, true)
-      .catch(()=> {
+      .catch(() => {
         // don't let errors stop the restart
       })
       .then(() => {
@@ -401,6 +406,13 @@ class Gue {
     console.log(composedMessage);
   }
 
+  /**
+   * registerEventHandlers - Register the event handlers
+   *
+   * These mainly handle ensuring that logs are emitted
+   * and the exit code is set correctly
+   *
+   */
   registerEventHandlers() {
     // Log task start
     gueEvents.on('GueTask.taskStarted', (task) => {
@@ -424,7 +436,6 @@ class Gue {
         task.getTaskDuration());
     });
   }
-
 }
 module.exports = new Gue();
 
@@ -432,6 +443,14 @@ module.exports = new Gue();
 // Some helpers
 //
 
+/**
+ * buildCmd - Generates the handlebars template
+ *
+ * @param {Gue} that    The Gue object instance to work on
+ * @param {string} command The template string
+ *
+ * @return {handlebars} Handlebars template object
+ */
 function buildCmd(that, command) {
   handlebars.registerHelper('files', (setName) => {
     return that.fileSet.getFiles(setName);
