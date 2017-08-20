@@ -1,7 +1,6 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-const sandbox = sinon.sandbox.create();
 const expect = chai.expect;
 const ChaiAsPromised = require('chai-as-promised');
 
@@ -49,7 +48,6 @@ describe('GueTasks', () => {
       .then(()=> {
         expect(aStub).to.be.called;
       });
-
     });
 
     it('should run all of the passed tasks', () => {
@@ -65,7 +63,7 @@ describe('GueTasks', () => {
         return bStub();
       });
 
-      return gueTasks.runTaskParallel(['a','b'])
+      return gueTasks.runTaskParallel(['a', 'b'])
       .then(()=> {
         expect(aStub).to.be.called;
         expect(bStub).to.be.called;
@@ -84,7 +82,7 @@ describe('GueTasks', () => {
         return rejectStub();
       });
 
-      return expect(gueTasks.runTaskParallel(['a','b'], true)).to.eventually
+      return expect(gueTasks.runTaskParallel(['a', 'b'], true)).to.eventually
         .be.fulfilled;
     });
 
@@ -103,7 +101,9 @@ describe('GueTasks', () => {
   describe('runTask', () => {
     it('should throw on missing taskNames', () => {
       const gueTasks = new GueTasks();
-      expect(()=> {gueTasks.runTask('badTask');}).to.throw();
+      expect(()=> {
+        gueTasks.runTask('badTask');
+      }).to.throw();
     });
 
     it('should emit taskStarted/taskFinished events', () => {
@@ -179,7 +179,7 @@ describe('GueTasks', () => {
       const cStub = sinon.stub().resolves().named('c');
       const dStub = sinon.stub().resolves().named('d');
 
-      gueTasks.addTask('wrapper', ['c','d'], () => {
+      gueTasks.addTask('wrapper', ['c', 'd'], () => {
         // console.log('run wrapper');
         return wrapperStub();
       });
@@ -187,7 +187,7 @@ describe('GueTasks', () => {
       gueTasks.addTask('a', () => {
         // Pause here to ensure that we're still getting
         // good task order
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
           setTimeout(() => {
             // console.log('run a');
             aStub();
@@ -201,7 +201,7 @@ describe('GueTasks', () => {
         return bStub();
       });
 
-      gueTasks.addTask('c', ['a','b'], () => {
+      gueTasks.addTask('c', ['a', 'b'], () => {
         // console.log('run c');
         return cStub();
       });
@@ -235,7 +235,7 @@ describe('GueTasks', () => {
 
       gueTasks.addTask('b', () => {
         // pause here to help ensure good task order
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve, reject) => {
           setTimeout(() => {
             resolve();
           }, 50);
