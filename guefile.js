@@ -7,6 +7,7 @@ fileSet.add('spellCheck', ['docs/*', 'index.js', 'lib/*.js', '.spelling'],
   'spell');
 fileSet.add('unitTests', ['test/unit/**/*.js'], 'test');
 fileSet.add('integrationTests', ['test/integration/**/*.js'], 'integration');
+fileSet.add('integrationRun', ['test/integration/**/*.test.js'], 'integration');
 fileSet.add('packageJson', 'package.json', 'rebuild');
 fileSet.add('clean', ['coverage', '.nyc_output']);
 fileSet.add('distclean', ['node_modules']);
@@ -59,12 +60,11 @@ gue.task('spell', ['buildDocs'], () => {
 });
 
 gue.task('integration', () => {
-  let command = 'mocha ' + fileSet.getGlob('integrationTests');
+  let command = 'mocha {{files "integrationRun"}}';
   return gue.shell(command);
 });
 
 gue.task('snapshot', () => {
-  let command = 'export UPDATE=1 && mocha ' +
-    fileSet.getGlob('integrationTests');
+  let command = 'export UPDATE=1 && mocha {{files "integrationRun"}}';
   return gue.shell(command);
 });
