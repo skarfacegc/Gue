@@ -569,7 +569,7 @@ GueTasks - Methods that deal with lists of tasks
 * [GueTasks](#GueTasks)
     * [new GueTasks()](#new_GueTasks_new)
     * [.addTask(name, dependencies, task)](#GueTasks+addTask) ⇒ <code>type</code>
-    * [.runTaskParallel(tasks)](#GueTasks+runTaskParallel) ⇒ <code>promise</code>
+    * [.runTaskParallel(tasks, swallowError)](#GueTasks+runTaskParallel) ⇒ <code>promise</code>
     * [.runTask(taskName)](#GueTasks+runTask) ⇒ <code>promise</code>
 
 
@@ -627,17 +627,19 @@ addTask('theirTask',['ourTask'], () =>{
 
 <a name="GueTasks+runTaskParallel"></a>
 
-### gueTasks.runTaskParallel(tasks) ⇒ <code>promise</code>
+### gueTasks.runTaskParallel(tasks, swallowError) ⇒ <code>promise</code>
 runTaskParallel - Run tasks in parallel
 
 This will run tasks concurrently. Each task's dependencies will
-still run sequentially.
+still run sequentially. If swallowError is true then a catch
+is added for each task that swallows the error
 
 <!-- don't display the scope information -->
 
-| Param | Type | Description |
-| --- | --- | --- |
-| tasks | <code>string</code> \| <code>array</code> | One or more tasks to run |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| tasks | <code>string</code> \| <code>array</code> |  | One or more tasks to run |
+| swallowError | <code>boolean</code> | <code>false</code> | Set to true to ignore rejected tasks |
 
 
 * * *

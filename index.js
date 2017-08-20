@@ -303,7 +303,7 @@ class Gue {
       // this fixes looping issues if files are modified
       // during the run (as with jscs fix)
       watcher.close();
-      this.gueTasks.runTaskParallel(tasks)
+      this.gueTasks.runTaskParallel(tasks, true)
       .catch(()=> {
         // don't let errors stop the restart
       })
@@ -345,7 +345,7 @@ class Gue {
       // this fixes looping issues if files are modified
       // during the run (as with jscs fix)
       watcher.close();
-      this.gueTasks.runTaskParallel(taskList)
+      this.gueTasks.runTaskParallel(taskList, true)
       .catch(()=> {
         // don't let errors stop the restart
       })
