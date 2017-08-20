@@ -2,13 +2,13 @@ const gue = require('./index.js');
 const fileSet = gue.fileSet;
 
 fileSet.add('allSrc', ['**/*.js'], 'lint');
-fileSet.add('src', ['*.js','lib/*.js','bin/*.js'], 'test');
-fileSet.add('spellCheck', ['docs/*', 'index.js','lib/*.js','.spelling'],
+fileSet.add('src', ['*.js', 'lib/*.js', 'bin/*.js'], 'test');
+fileSet.add('spellCheck', ['docs/*', 'index.js', 'lib/*.js', '.spelling'],
   'spell');
 fileSet.add('unitTests', ['test/unit/**/*.js'], 'test');
 fileSet.add('integrationTests', ['test/integration/**/*.js'], 'integration');
 fileSet.add('packageJson', 'package.json', 'rebuild');
-fileSet.add('clean', ['coverage','.nyc_output']);
+fileSet.add('clean', ['coverage', '.nyc_output']);
 fileSet.add('distclean', ['node_modules']);
 
 // gue.debug = true;
@@ -29,7 +29,7 @@ gue.task('lint', () => {
 });
 
 gue.task('eslint', () => {
-  return gue.shell('eslint index.js');
+  return gue.shell('eslint --fix {{files "allSrc"}}');
 });
 
 gue.task('yarn', () => {
