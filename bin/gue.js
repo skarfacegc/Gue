@@ -49,49 +49,17 @@ function invoke(env) {
     process.exit(0);
   }
 
-  //
-  // Setup orcestrator event listeners
-  //
-
-  // Log task start
-  gueInst.on('task_start', (event) => {
-    if (event.task !== 'default') {
-      gueInst.log('started', event.task, 'normal');
-    }
-  });
-
-  // Log task stop and task duration
-  gueInst.on('task_stop', (event) => {
-    if (event.task !== 'default') {
-      gueInst.log('finished in', event.task, event.duration);
-    }
-  });
-
-  // Print stderr and the task finish notification on error
-  gueInst.on('task_err', (event) => {
-    beeper(1);
-    gueInst.errLog('finished with error in', event.task, event.duration);
-  });
-
-  // If there was an error in any of the tasks set the exit code
-  gueInst.on('err', (event) => {
-    gueInst.exitCode = 1;
-  });
-
-  gueInst.on('task_not_found', (event) => {
-    gueInst.errLog('Task ' + event.task + ' not found', 'gue');
-    process.exit(1);
-  });
-
-  // setup process event listener so we can
-  // exit with the right code
-  process.once('exit', (code) => {
-    if (gueInst.exitCode === 1) {
-      process.exit(1);
-    }
-  });
+  // // setup process event listener so we can
+  // // exit with the right code
+  // process.once('exit', (code) => {
+  //   if (gueInst.exitCode === 1) {
+  //     process.exit(1);
+  //   }
+  // });
 
   // Now lets make do stuff
-  gueInst.start(actionList);
+  gueInst.gueTasks.runTaskParallel(actionList).catch(()=> {
+    process.exit(gueInst.exitCode);
+  });
 }
 //

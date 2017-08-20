@@ -11,26 +11,25 @@ fileSet.add('packageJson', 'package.json', 'rebuild');
 fileSet.add('clean', ['coverage','.nyc_output']);
 fileSet.add('distclean', ['node_modules']);
 
-gue.debug = true;
+// gue.debug = true;
+
+gue.task('rebuild', ['distclean', 'yarn', 'lint', 'test', 'integration']);
 
 gue.task('watch', () => {
-  gue.autoWatch(fileSet);
+  return gue.autoWatch(fileSet);
 });
 
 gue.task('test', ['clean'], () => {
   return gue.shell('nyc --reporter lcov --reporter text ' +
-  'mocha ' + fileSet.getFiles('unitTests'));
+  'mocha {{files "unitTests"}}');
 });
 
 gue.task('lint', () => {
   return gue.shell('jscs {{files "allSrc"}}');
 });
 
-gue.task('rebuild', ['distclean'], () => {
-  return gue.shell('yarn')
-    .then(() => {
-      return gue.start(['test','lint', 'integration']);
-    });
+gue.task('yarn', () => {
+  return gue.shell('yarn');
 });
 
 gue.task('clean', () => {
@@ -45,14 +44,14 @@ gue.task('buildDocs', () => {
   let command = '/bin/rm -f README.md';
   command += '&& jsdoc2md --example-lang js --template docs/readme.hbs ';
   command += '--partial docs/scope.hbs --separators ';
-  command += '--files index.js lib/fileSet.js';
+  command += '--files index.js lib/fileSet.js lib/GueTasks.js lib/GueTask.js';
   command += '> README.md';
 
   return gue.shell(command);
 });
 
 gue.task('spell', ['buildDocs'], () => {
-  return gue.shell('mdspell docs/readme.hbs README.md -n -a --en-us -r');
+  return gue.shell('mdspell README.md -n -a --en-us -r');
 });
 
 gue.task('integration', () => {

@@ -5,12 +5,15 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 const sandbox = sinon.sandbox.create();
-const gue = require('../../index');
+const ChaiAsPromised = require('chai-as-promised');
 const chalk = require('chalk');
 const chokidar = require('chokidar');
+
 const FileSet = require('../../lib/fileSet');
+const gue = require('../../index');
 
 chai.use(sinonChai);
+chai.use(ChaiAsPromised);
 
 describe('Gue', () => {
 
@@ -28,9 +31,9 @@ describe('Gue', () => {
     it('should successfully create a task', () => {
       gue.task('foo', ['bar'], () => {});
 
-      expect(gue.tasks).to.have.property('foo');
-      expect(gue.tasks.foo.dep).to.deep.equal(['bar']);
-      expect(gue.tasks.foo.name).to.equal('foo');
+      expect(gue.gueTasks.tasks).to.have.property('foo');
+      expect(gue.gueTasks.tasks.foo.dependencies).to.deep.equal(['bar']);
+      expect(gue.gueTasks.tasks.foo.name).to.equal('foo');
     });
   });
 
@@ -147,7 +150,7 @@ describe('Gue', () => {
       const fileSet = gue.fileSet;
       fileSet.add('globTest', '*.md');
 
-      gue._shell('silent', 'echo {{globs "globTest"}}')
+      gue._shell('silent', 'echo \'{{globs "globTest"}}\'')
         .then((data) => {
           expect(data.stdout).to.equal('*.md');
         });
@@ -261,25 +264,15 @@ describe('Gue', () => {
     });
 
     it('should run tasks when an event is emitted', () => {
-      const watcher = gue._watch('.', 'foo');
+      const watcher = gue._watch(__dirname, 'foo');
 
       // don't restart the watch loop
       watcher.close = () => {};
-      const startStub = sandbox.stub(gue, 'start');
+      const startStub = sandbox.stub(gue.gueTasks, 'runTaskParallel')
+        .resolves();
 
       watcher.emit('all');
       expect(startStub).to.be.calledWith('foo');
-    });
-
-    it('should restart the _watch correctly', () => {
-      const watcher = gue._watch('.', 'foo');
-
-      // don't restart the watch loop
-      watcher.close = () => {};
-      const startStub = sandbox.stub(gue, 'start').yields();
-      const _watchStub = sandbox.stub(gue, '_watch');
-      watcher.emit('all');
-      expect(_watchStub).to.be.calledWith('.', 'foo');
     });
   });
 
@@ -291,39 +284,24 @@ describe('Gue', () => {
     });
   });
 
-  describe('autoWatch', ()=> {
+  describe('_autoWatch', ()=> {
     it('should call chokidar correctly', () => {
       const fileSet = new FileSet();
       fileSet.add('setName', 'README.md', ['task1']);
       const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
         return {on: () => {}};
       });
-      gue.autoWatch(fileSet);
+      gue._autoWatch(fileSet);
       expect(watchStub).to.be.calledWith(['README.md']);
-    });
-
-    it('should restart correctly', () => {
-      const fileSet = new FileSet();
-      fileSet.add('setName', 'README.md', 'myTask');
-      fileSet.add('licSet', 'LICENSE', 'licTask');
-
-      const watcher = gue.autoWatch(fileSet);
-
-      // Don't restart the watcher
-      watcher.close = () => {};
-      sandbox.stub(gue, 'start').yields();
-
-      const autoWatchStub = sandbox.stub(gue, 'autoWatch');
-      watcher.emit('all');
-      expect(autoWatchStub).to.be.calledWith(fileSet);
     });
 
     it('should start the correct tasks', () => {
       const fileSet = new FileSet();
       fileSet.add('testSet', 'foo', ['tasks','yayTasks']);
 
-      const watcher = gue.autoWatch(fileSet);
-      const startStub = sandbox.stub(gue, 'start');
+      const watcher = gue._autoWatch(fileSet);
+      const startStub = sandbox.stub(gue.gueTasks, 'runTaskParallel')
+        .resolves();
 
       // We don't want the watch to restart
       sandbox.stub(gue, 'autoWatch');

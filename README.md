@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue) [![Coverage Status](https://coveralls.io/repos/github/skarfacegc/Gue/badge.svg)](https://coveralls.io/github/skarfacegc/Gue) [![dependencies Status](https://david-dm.org/skarfacegc/Gue/status.svg)](https://david-dm.org/skarfacegc/Gue)
+[![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue) [![Coverage Status](https://coveralls.io/repos/github/skarfacegc/Gue/badge.svg)](https://coveralls.io/github/skarfacegc/Gue) [![dependencies Status](https://david-dm.org/skarfacegc/Gue/status.svg)](https://david-dm.org/skarfacegc/Gue) [![Known Vulnerabilities](https://snyk.io/test/github/skarfacegc/gue/badge.svg)](https://snyk.io/test/github/skarfacegc/gue)
+
 
 
 [![NPM](https://nodei.co/npm/gue.png?downloads=true)](https://nodei.co/npm/gue/)
@@ -93,6 +94,15 @@ This will generate output as shown below
 <dd><p>Methods to handle sets of files in Gue</p>
 <p>These really should not be called directly</p>
 </dd>
+<dt><a href="#GueTasks">GueTasks</a></dt>
+<dd><p>GueTasks - Methods that deal with lists of tasks</p>
+</dd>
+<dt><a href="#GueTask">GueTask</a></dt>
+<dd><p>GueTask - Methods that deal with a single task
+since runTask needs to interact with the dependency tree
+that action is in the GueTasks module (since GueTasks deals with
+lists of tasks).  Executing the task action lives here.</p>
+</dd>
 </dl>
 
 <a name="Gue"></a>
@@ -106,12 +116,14 @@ This will generate output as shown below
     * [.shell(command, value)](#Gue+shell) ⇒ <code>promise</code>
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
     * [.watch(files, taskList)](#Gue+watch)
-    * [.autoWatch(fileSet)](#Gue+autoWatch) ⇒ <code>Object</code>
+    * [.autoWatch(fileSet)](#Gue+autoWatch)
+    * [.setOption(name, value)](#Gue+setOption)
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
     * [.debugLog(message, taskname)](#Gue+debugLog)
     * [._shell(mode, command, values)](#Gue+_shell) ⇒ <code>promise</code>
+    * [._autoWatch(fileSet)](#Gue+_autoWatch) ⇒ <code>Object</code>
     * [._watch(files, taskList)](#Gue+_watch) ⇒ <code>object</code>
     * [._log(type, message, taskname, duration)](#Gue+_log)
 
@@ -145,10 +157,7 @@ also specify a function to run.
 Tasks are just javascript.  You don't need to just use ```gue.shell```.
 
 
-- Tasks should return a promise or call the callback that is passed
-to the function.
-- Dependencies will run to completion prior to executing the current task.
-These tasks will run asynchronously (order is not guaranteed)
+- Tasks should return a promise.
 
 <!-- don't display the scope information -->
 
@@ -171,12 +180,6 @@ task('coverage', () =>{
 // Create a task that calls a linter task prior to coverage
 task('coverage', ['lint'], () =>{
   return gue.shell('nyc mocha tests/*.js')
-})
-
-// Example of using a callback
-task('nonPromise', (done) => {
-  plainFunction();
-  done();
 })
 ```
 
@@ -245,7 +248,7 @@ same as shell but doesn't print any output
 <a name="Gue+watch"></a>
 
 ### gue.watch(files, taskList)
-Watch the specified files and run taskList when a change is detected
+watch = watch the specified files and run taskList when a change is detected
 
 This is just a passthrough to _watch.  Done to make it easier to
 maintain API compatibility.
@@ -270,16 +273,31 @@ gue.watch('tests/*.js', 'coverage');
 
 <a name="Gue+autoWatch"></a>
 
-### gue.autoWatch(fileSet) ⇒ <code>Object</code>
-Uses the fileset object passed to figure out which tasks to run
-based on the files that have changed.
+### gue.autoWatch(fileSet)
+autoWatch - Watch all files specified in the fileset, run the appropriate
+tasks when one of the files is changed
 
 <!-- don't display the scope information -->
-**Returns**: <code>Object</code> - chokidar watcher  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| fileSet | <code>Object</code> | fileSet object |
+| fileSet | <code>fileSet</code> | the fileset object that contains the files to watch |
+
+
+* * *
+
+<a name="Gue+setOption"></a>
+
+### gue.setOption(name, value)
+Sets a name value binding for use in the lodash expansion
+in the shell commands
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | name of the value |
+| value | <code>literal</code> | the value itself |
 
 
 * * *
@@ -365,6 +383,22 @@ See the documentation for '''shell''' for more information
 | mode | <code>string</code> | 'print' or 'silent' |
 | command | <code>type</code> | The shell command/shell command template to run |
 | values | <code>type</code> | values to pass to the command template |
+
+
+* * *
+
+<a name="Gue+_autoWatch"></a>
+
+### gue._autoWatch(fileSet) ⇒ <code>Object</code>
+Uses the fileset object passed to figure out which tasks to run
+based on the files that have changed.
+
+<!-- don't display the scope information -->
+**Returns**: <code>Object</code> - chokidar watcher  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| fileSet | <code>Object</code> | fileSet object |
 
 
 * * *
@@ -522,6 +556,281 @@ Return the list of all files from all globs in all fileSets
 
 <!-- don't display the scope information -->
 **Returns**: <code>array</code> - List of all files  
+
+* * *
+
+<a name="GueTasks"></a>
+
+## GueTasks
+GueTasks - Methods that deal with lists of tasks
+
+<!-- don't display the scope information -->
+
+* [GueTasks](#GueTasks)
+    * [new GueTasks()](#new_GueTasks_new)
+    * [.addTask(name, dependencies, task)](#GueTasks+addTask) ⇒ <code>type</code>
+    * [.runTaskParallel(tasks, swallowError)](#GueTasks+runTaskParallel) ⇒ <code>promise</code>
+    * [.runTask(taskName)](#GueTasks+runTask) ⇒ <code>promise</code>
+
+
+* * *
+
+<a name="new_GueTasks_new"></a>
+
+### new GueTasks()
+constructor - Doesn't do anything interesting
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="GueTasks+addTask"></a>
+
+### gueTasks.addTask(name, dependencies, task) ⇒ <code>type</code>
+addTask - Add a new task
+
+This just calls new GueTask and puts the result onto the task list
+
+dependencies are optional, if only two arguments are passed
+then the 2nd argument is assumed to be the task itself and must
+be a function
+
+You can just have dependencies without a task (for task group aliases)
+
+<!-- don't display the scope information -->
+**Returns**: <code>type</code> - nothing  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | Description |
+| dependencies | <code>array</code> \| <code>function</code> | A list of tasks (or the action function if there are no dependencies) |
+| task | <code>function</code> | The task to run |
+
+**Example**  
+```js
+// Add a new task named myTask that runs console.log('foo') when executed
+addTask('myTask', () =>{
+  return Promise.resolve('foo')
+}
+
+// Add a new task named ourTask that runs myTask and yourTask
+addTask('ourTask', ['yourTask','myTask']);
+
+// Add a new task named theirTask that runs ourTask before running
+// return Promise.resolve('woot')
+addTask('theirTask',['ourTask'], () =>{
+  return Promise.resolve('woot');
+}
+```
+
+* * *
+
+<a name="GueTasks+runTaskParallel"></a>
+
+### gueTasks.runTaskParallel(tasks, swallowError) ⇒ <code>promise</code>
+runTaskParallel - Run tasks in parallel
+
+This will run tasks concurrently. Each task's dependencies will
+still run sequentially. If swallowError is true then a catch
+is added for each task that swallows the error
+
+<!-- don't display the scope information -->
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| tasks | <code>string</code> \| <code>array</code> |  | One or more tasks to run |
+| swallowError | <code>boolean</code> | <code>false</code> | Set to true to ignore rejected tasks |
+
+
+* * *
+
+<a name="GueTasks+runTask"></a>
+
+### gueTasks.runTask(taskName) ⇒ <code>promise</code>
+runTask - execute the action of a single task
+
+<!-- don't display the scope information -->
+**Returns**: <code>promise</code> - Resolved or rejected promise  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| taskName | <code>string</code> | The name of the task to execute |
+
+
+* * *
+
+<a name="GueTask"></a>
+
+## GueTask
+GueTask - Methods that deal with a single task
+since runTask needs to interact with the dependency tree
+that action is in the GueTasks module (since GueTasks deals with
+lists of tasks).  Executing the task action lives here.
+
+<!-- don't display the scope information -->
+
+* [GueTask](#GueTask)
+    * [new GueTask(name, dependencies, action)](#new_GueTask_new)
+    * [.hasDependencies()](#GueTask+hasDependencies) ⇒ <code>boolean</code>
+    * [.taskStarted()](#GueTask+taskStarted)
+    * [.taskFinished()](#GueTask+taskFinished)
+    * [.taskFinishedWithError(message)](#GueTask+taskFinishedWithError)
+    * [.getTaskDuration()](#GueTask+getTaskDuration) ⇒ <code>integer</code>
+    * [.startAction()](#GueTask+startAction)
+    * [.endAction()](#GueTask+endAction)
+    * [.endActionWithError(message)](#GueTask+endActionWithError)
+    * [.getActionDuration()](#GueTask+getActionDuration) ⇒ <code>integer</code>
+    * [.runAction()](#GueTask+runAction) ⇒
+
+
+* * *
+
+<a name="new_GueTask_new"></a>
+
+### new GueTask(name, dependencies, action)
+constructor - Create a new task with dependencies and actions.
+You must have either a dependency or an action.
+You may have both dependencies and an action
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>String</code> | Name of the task |
+| dependencies | <code>Array</code> \| <code>function</code> | Array of dependencies or the task action |
+| action | <code>function</code> | Task action (function) |
+
+**Example**  
+```js
+// creates a task named foo that runs tasks a and b prior to
+// running Promise.resolve()
+new GueTask('foo',['a','b'],() =>{
+  return Promise.resolve();
+});
+
+// Creates a task named foo2 that just executes promise.resolve
+new GueTask('foo2', () =>{
+  return Promise.resolve();
+}
+
+// Creates a task named foo3 that runs tasks a and b
+new GueTask('foo3', ['a','b'])
+```
+
+* * *
+
+<a name="GueTask+hasDependencies"></a>
+
+### gueTask.hasDependencies() ⇒ <code>boolean</code>
+hasDependencies - returns true if a task has dependencies
+
+<!-- don't display the scope information -->
+**Returns**: <code>boolean</code> - true if a task has dependencies  
+
+* * *
+
+<a name="GueTask+taskStarted"></a>
+
+### gueTask.taskStarted()
+beginTask - Marks the task as started
+
+handles any task start activities. Currently just
+sets the start time and sends the start message to
+gueEvents
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="GueTask+taskFinished"></a>
+
+### gueTask.taskFinished()
+endTask - Marks the task as done
+
+handles any task end activities. Currently just
+sets the end time and sends the end message to
+gueEvents
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="GueTask+taskFinishedWithError"></a>
+
+### gueTask.taskFinishedWithError(message)
+taskFinishedWithError - Marks a task as finished with an error
+emits the task failed event
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>string</code> | Error message |
+
+
+* * *
+
+<a name="GueTask+getTaskDuration"></a>
+
+### gueTask.getTaskDuration() ⇒ <code>integer</code>
+getTaskDuration - Returns how long the task ran
+
+<!-- don't display the scope information -->
+**Returns**: <code>integer</code> - Number of ms the task ran  
+
+* * *
+
+<a name="GueTask+startAction"></a>
+
+### gueTask.startAction()
+startAction - Handles execution start
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="GueTask+endAction"></a>
+
+### gueTask.endAction()
+endAction - Handles execute completion
+
+<!-- don't display the scope information -->
+
+* * *
+
+<a name="GueTask+endActionWithError"></a>
+
+### gueTask.endActionWithError(message)
+endActionWithError - end the action and emits an error
+
+<!-- don't display the scope information -->
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>string</code> | The error message |
+
+
+* * *
+
+<a name="GueTask+getActionDuration"></a>
+
+### gueTask.getActionDuration() ⇒ <code>integer</code>
+getActionDuration - Returns how long the action ran
+
+<!-- don't display the scope information -->
+**Returns**: <code>integer</code> - Number of ms the action ran  
+
+* * *
+
+<a name="GueTask+runAction"></a>
+
+### gueTask.runAction() ⇒
+execute - executes the task's action
+
+This does not check/resolve dependencies
+
+<!-- don't display the scope information -->
+**Returns**: returns the result of the action  
 
 * * *
 
