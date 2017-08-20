@@ -5,7 +5,6 @@
 const Liftoff = require('liftoff');
 const argv = require('minimist')(process.argv.slice(2));
 const chalk = require('chalk');
-const beeper = require('beeper');
 
 const gueCli = new Liftoff({
   name: 'gue',
@@ -20,8 +19,13 @@ gueCli.launch({
   require: argv.require,
 }, invoke);
 
+/**
+ * invoke - Setup and start running the requested task
+ * This is called by Liftoff.launch
+ *
+ * @param {object} env The liftoff environment
+ */
 function invoke(env) {
-
   if (!env.configPath) {
     console.error(chalk.red('No gulpfile found'));
     process.exit(1);
