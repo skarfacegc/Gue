@@ -89,7 +89,7 @@ This will generate output as shown below
 
 <dl>
 <dt><a href="#Gue">Gue</a></dt>
-<dd><p>Gue - The main class for the gue taskrunner</p>
+<dd><p>Gue - The main class for the gue task runner</p>
 </dd>
 <dt><a href="#FileSet">FileSet</a></dt>
 <dd><p>Methods to handle sets of files in Gue</p>
@@ -117,7 +117,7 @@ lists of tasks).  Executing the task action lives here.</p>
 <a name="Gue"></a>
 
 ## Gue
-Gue - The main class for the gue taskrunner
+Gue - The main class for the gue task runner
 
 <!-- don't display the scope information -->
 
@@ -292,7 +292,7 @@ autoWatch - Watch all files specified in the fileset, run the appropriate
 tasks when one of the files is changed
 
 <!-- don't display the scope information -->
-**Returns**: <code>Promise</code> - returns a promise for this._autowatch  
+**Returns**: <code>Promise</code> - returns a promise for this._autoWatch  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -595,7 +595,7 @@ GueTasks - Methods that deal with lists of tasks
 
 * [GueTasks](#GueTasks)
     * [new GueTasks()](#new_GueTasks_new)
-    * [.addTask(name, dependencies, task)](#GueTasks+addTask) ⇒ <code>type</code>
+    * [.addTask(name, dependencies, action)](#GueTasks+addTask)
     * [.runTaskParallel(tasks, swallowError)](#GueTasks+runTaskParallel) ⇒ <code>promise</code>
     * [.runTask(taskName)](#GueTasks+runTask) ⇒ <code>promise</code>
 
@@ -613,7 +613,7 @@ constructor - Doesn't do anything interesting
 
 <a name="GueTasks+addTask"></a>
 
-### gueTasks.addTask(name, dependencies, task) ⇒ <code>type</code>
+### gueTasks.addTask(name, dependencies, action)
 addTask - Add a new task
 
 This just calls new GueTask and puts the result onto the task list
@@ -625,13 +625,12 @@ be a function
 You can just have dependencies without a task (for task group aliases)
 
 <!-- don't display the scope information -->
-**Returns**: <code>type</code> - nothing  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | name | <code>string</code> | Description |
 | dependencies | <code>array</code> \| <code>function</code> | A list of tasks (or the action function if there are no dependencies) |
-| task | <code>function</code> | The task to run |
+| action | <code>function</code> | The action to run after dependencies have been met |
 
 **Example**  
 ```js
@@ -707,7 +706,7 @@ lists of tasks).  Executing the task action lives here.
     * [.endAction()](#GueTask+endAction)
     * [.endActionWithError(message)](#GueTask+endActionWithError)
     * [.getActionDuration()](#GueTask+getActionDuration) ⇒ <code>integer</code>
-    * [.runAction()](#GueTask+runAction) ⇒
+    * [.runAction()](#GueTask+runAction) ⇒ <code>promise</code>
 
 
 * * *
@@ -851,13 +850,13 @@ getActionDuration - Returns how long the action ran
 
 <a name="GueTask+runAction"></a>
 
-### gueTask.runAction() ⇒
+### gueTask.runAction() ⇒ <code>promise</code>
 execute - executes the task's action
 
 This does not check/resolve dependencies
 
 <!-- don't display the scope information -->
-**Returns**: returns the result of the action  
+**Returns**: <code>promise</code> - returns a promise for the running action  
 
 * * *
 

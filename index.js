@@ -11,7 +11,7 @@ const GueTasks = require('./lib/GueTasks');
 const gueEvents = require('./lib/GueEvents');
 
 /**
- * Gue - The main class for the gue taskrunner
+ * Gue - The main class for the gue task runner
  */
 class Gue {
   /**
@@ -151,7 +151,7 @@ class Gue {
    * @param {fileSet} fileSet the fileset object that contains the files to
    * watch
    *
-   * @return {Promise} returns a promise for this._autowatch
+   * @return {Promise} returns a promise for this._autoWatch
    *
    */
   autoWatch(fileSet) {
