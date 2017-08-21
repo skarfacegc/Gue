@@ -128,7 +128,6 @@ Gue - The main class for the gue task runner
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
     * [.watch(glob, taskList)](#Gue+watch) ⇒ <code>Promise</code>
     * [.autoWatch(fileSet)](#Gue+autoWatch) ⇒ <code>Promise</code>
-    * [.setOption(name, value)](#Gue+setOption)
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
@@ -252,7 +251,7 @@ same as shell but doesn't print any output
 | Param | Type | Description |
 | --- | --- | --- |
 | command | <code>string</code> | The shell command to run |
-| value | <code>literal</code> | An optional override of the values set with setOption |
+| value | <code>array</code> | Additional values that get passed to the template |
 
 
 * * *
@@ -297,22 +296,6 @@ tasks when one of the files is changed
 | Param | Type | Description |
 | --- | --- | --- |
 | fileSet | <code>fileSet</code> | the fileset object that contains the files to watch |
-
-
-* * *
-
-<a name="Gue+setOption"></a>
-
-### gue.setOption(name, value)
-Sets a name value binding for use in the lodash expansion
-in the shell commands
-
-<!-- don't display the scope information -->
-
-| Param | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | name of the value |
-| value | <code>literal</code> | the value itself |
 
 
 * * *
@@ -875,4 +858,3 @@ buildCmd - Generates the handlebars template
 
 
 * * *
-

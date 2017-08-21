@@ -106,8 +106,7 @@ class Gue {
    * same as shell but doesn't print any output
    *
    * @param {string} command The shell command to run
-   * @param {literal} value An optional override of the values set with
-   * setOption
+   * @param {array} value Additional values that get passed to the template
    *
    * @return {promise} Promise containing the
    * [execa](https://www.npmjs.com/package/execa) result
@@ -159,19 +158,6 @@ class Gue {
     return new Promise(() => {
       this._autoWatch(fileSet);
     });
-  }
-
-  /**
-   * Sets a name value binding for use in the lodash expansion
-   * in the shell commands
-   *
-   *
-   * @param {string} name  name of the value
-   * @param {literal} value the value itself
-   *
-   */
-  setOption(name, value) {
-    this.options[name] = value;
   }
 
   /**
