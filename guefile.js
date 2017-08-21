@@ -14,10 +14,16 @@ fileSet.add('distclean', ['node_modules']);
 
 // gue.debug = true;
 
-gue.task('rebuild', ['distclean', 'yarn', 'lint', 'test', 'integration']);
-
 gue.task('watch', () => {
   return gue.autoWatch(fileSet);
+});
+
+//
+// Tests
+//
+
+gue.task('lint', () => {
+  return gue.shell('eslint {{files "allSrc"}}');
 });
 
 gue.task('test', ['clean'], () => {
@@ -25,17 +31,14 @@ gue.task('test', ['clean'], () => {
   'mocha {{files "unitTests"}}');
 });
 
-gue.task('lint', () => {
-  return gue.shell('eslint {{files "allSrc"}}');
+gue.task('integration', () => {
+  let command = 'mocha {{files "integrationRun"}}';
+  return gue.shell(command);
 });
 
-gue.task('lintFix', () => {
-  return gue.shell('eslint --fix {{files "allSrc"}}');
-});
-
-gue.task('yarn', () => {
-  return gue.shell('yarn');
-});
+//
+// Cleaners
+//
 
 gue.task('clean', () => {
   return gue.shell('rm -rf ' + fileSet.getGlob('clean'));
@@ -43,6 +46,24 @@ gue.task('clean', () => {
 
 gue.task('distclean', ['clean'], () => {
   return gue.shell('rm -rf ' + fileSet.getGlob('distclean'));
+});
+
+//
+// Build
+//
+gue.task('rebuild', ['distclean', 'yarn', 'lint', 'test', 'integration',
+  'spell']);
+
+gue.task('yarn', () => {
+  return gue.shell('yarn');
+});
+
+//
+// Docs
+//
+
+gue.task('spell', ['buildDocs'], () => {
+  return gue.shell('mdspell README.md -n -a --en-us -r');
 });
 
 gue.task('buildDocs', () => {
@@ -55,16 +76,17 @@ gue.task('buildDocs', () => {
   return gue.shell(command);
 });
 
-gue.task('spell', ['buildDocs'], () => {
-  return gue.shell('mdspell README.md -n -a --en-us -r');
-});
+//
+// Utility tasks
+//
 
-gue.task('integration', () => {
-  let command = 'mocha {{files "integrationRun"}}';
-  return gue.shell(command);
-});
-
+// Update the snapshots for the snapshot tests
 gue.task('snapshot', () => {
   let command = 'export UPDATE=1 && mocha {{files "integrationRun"}}';
   return gue.shell(command);
+});
+
+// run estlint with --fix
+gue.task('lintFix', () => {
+  return gue.shell('eslint --fix {{files "allSrc"}}');
 });
