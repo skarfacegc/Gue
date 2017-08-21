@@ -11,6 +11,7 @@ module.exports = {
   'rules': {
     'no-multiple-empty-lines': ['error',{'max': 1}],
     'arrow-spacing': ['error'],
-    'no-console': ['off']
+    'no-console': ['off'],
+    'indent': ['warn', 2,{'MemberExpression': 1}]
   }
 };

@@ -151,9 +151,9 @@ describe('Gue', () => {
       return gue._shell('silent', 'echo {{foo}}', {
         foo: 'woot',
       })
-      .then((data) => {
-        expect(data.stdout).to.equal('woot');
-      });
+        .then((data) => {
+          expect(data.stdout).to.equal('woot');
+        });
     });
 
     it('should handle command failures', (done) => {

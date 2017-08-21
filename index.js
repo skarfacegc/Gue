@@ -294,12 +294,12 @@ class Gue {
       // during the run (as with jscs fix)
       watcher.close();
       this.gueTasks.runTaskParallel(tasks, true)
-      .catch(() => {
+        .catch(() => {
         // don't let errors stop the restart
-      })
-      .then(() => {
-        this._autoWatch(fileSet);
-      });
+        })
+        .then(() => {
+          this._autoWatch(fileSet);
+        });
     });
 
     return watcher;
@@ -337,12 +337,12 @@ class Gue {
       // during the run (as with jscs fix)
       watcher.close();
       this.gueTasks.runTaskParallel(taskList, true)
-      .catch(() => {
+        .catch(() => {
         // don't let errors stop the restart
-      })
-      .then(() => {
-        this._watch(glob, taskList);
-      });
+        })
+        .then(() => {
+          this._watch(glob, taskList);
+        });
     });
 
     return watcher;

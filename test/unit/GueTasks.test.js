@@ -45,9 +45,9 @@ describe('GueTasks', () => {
       });
 
       return gueTasks.runTaskParallel('a')
-      .then(() => {
-        expect(aStub).to.be.called;
-      });
+        .then(() => {
+          expect(aStub).to.be.called;
+        });
     });
 
     it('should run all of the passed tasks', () => {
@@ -64,10 +64,10 @@ describe('GueTasks', () => {
       });
 
       return gueTasks.runTaskParallel(['a', 'b'])
-      .then(() => {
-        expect(aStub).to.be.called;
-        expect(bStub).to.be.called;
-      });
+        .then(() => {
+          expect(aStub).to.be.called;
+          expect(bStub).to.be.called;
+        });
     });
 
     it('should ignore errors when swallowError is true', () => {
@@ -164,10 +164,10 @@ describe('GueTasks', () => {
       });
 
       return gueTasks.runTask('failed')
-      .catch(() => {
-        expect(eventStub).to.be.calledWith('Message');
-        gueEvents.removeAllListeners();
-      });
+        .catch(() => {
+          expect(eventStub).to.be.calledWith('Message');
+          gueEvents.removeAllListeners();
+        });
     });
 
     it('should run a task with dependencies correctly', () => {
@@ -316,12 +316,12 @@ describe('GueTasks', () => {
       });
 
       return gueTasks.runTask('wrapper')
-      .then(() => {
-        throw Error('Should not have gotten here');
-      })
-      .catch(() => {
-        expect(actionStub).to.not.be.called;
-      });
+        .then(() => {
+          throw Error('Should not have gotten here');
+        })
+        .catch(() => {
+          expect(actionStub).to.not.be.called;
+        });
     });
   });
 });
