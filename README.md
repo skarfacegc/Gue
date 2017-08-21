@@ -14,6 +14,8 @@ choice. Gue is a thin wrapper on
 command method and some built in logging.
 
 ### Motivation
+
+[![Join the chat at https://gitter.im/Gue-runner/Lobby](https://badges.gitter.im/Gue-runner/Lobby.svg)](https://gitter.im/Gue-runner/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 A recent change to a plugin I used in another task runner broke my code coverage
 task. This caused me to start looking at alternatives. The one that made the
 most sense was to just use npm scripts, since the command line examples
