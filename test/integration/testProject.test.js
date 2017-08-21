@@ -4,9 +4,6 @@ const chai = require('chai');
 const expect = chai.expect;
 const execa = require('execa');
 const snapshot = require('snap-shot');
-const sinon = require('sinon');
-
-const GueTask = require('../../lib/GueTask');
 
 let runList = [];
 

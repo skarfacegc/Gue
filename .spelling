@@ -12,7 +12,6 @@ deps
 func
 silentShell
 taskList
-setOption
 taskname
 errLog
 _shell

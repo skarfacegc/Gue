@@ -36,13 +36,6 @@ describe('Gue', () => {
     });
   });
 
-  describe('setOption', () => {
-    it('should add an option', () => {
-      gue.setOption('foo', 'bar');
-      expect(gue.options.foo).to.equal('bar');
-    });
-  });
-
   describe('_log', () => {
     it('should not decorate in clean mode', () => {
       const logStub = sandbox.stub(console, 'log');
