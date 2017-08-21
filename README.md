@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue) [![Coverage Status](https://coveralls.io/repos/github/skarfacegc/Gue/badge.svg)](https://coveralls.io/github/skarfacegc/Gue) [![dependencies Status](https://david-dm.org/skarfacegc/Gue/status.svg)](https://david-dm.org/skarfacegc/Gue) [![Known Vulnerabilities](https://snyk.io/test/github/skarfacegc/gue/badge.svg)](https://snyk.io/test/github/skarfacegc/gue)
+[![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue) [![Coverage Status](https://coveralls.io/repos/github/skarfacegc/Gue/badge.svg)](https://coveralls.io/github/skarfacegc/Gue) [![dependencies Status](https://david-dm.org/skarfacegc/Gue/status.svg)](https://david-dm.org/skarfacegc/Gue) [![Known Vulnerabilities](https://snyk.io/test/github/skarfacegc/gue/badge.svg)](https://snyk.io/test/github/skarfacegc/gue) [![Giter](https://badges.gitter.im/Gue-runner/Lobby.svg)](https://gitter.im/Gue-runner/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
 
 
 
@@ -14,6 +14,8 @@ choice. Gue is a thin wrapper on
 command method and some built in logging.
 
 ### Motivation
+
+
 A recent change to a plugin I used in another task runner broke my code coverage
 task. This caused me to start looking at alternatives. The one that made the
 most sense was to just use npm scripts, since the command line examples
