@@ -5,6 +5,7 @@
 const Liftoff = require('liftoff');
 const argv = require('minimist')(process.argv.slice(2));
 const chalk = require('chalk');
+const beeper = require('beeper');
 
 const gueCli = new Liftoff({
   name: 'gue',
@@ -53,17 +54,10 @@ function invoke(env) {
     process.exit(0);
   }
 
-  // // setup process event listener so we can
-  // // exit with the right code
-  // process.once('exit', (code) => {
-  //   if (gueInst.exitCode === 1) {
-  //     process.exit(1);
-  //   }
-  // });
-
   // Now lets make do stuff
-  gueInst.gueTasks.runTaskParallel(actionList).catch(() => {
-    process.exit(gueInst.exitCode);
-  });
+  gueInst.gueTasks.runTaskParallel(actionList)
+    .catch(() => {
+      beeper(1);
+    });
 }
 //

@@ -21,7 +21,6 @@ class Gue {
    * const gue = require('gue');
    */
   constructor() {
-    this.exitCode = 0;
     this.options = {};
     this.fileSet = new FileSet();
     this.gueTasks = new GueTasks();
@@ -255,8 +254,6 @@ class Gue {
         return result;
       })
       .catch((result) => {
-        beeper(1);
-        this.exitCode = 1;
         if (mode === 'print') {
           this.errLog(trimNewlines(result.stderr));
           this.log(trimNewlines(result.stdout));
@@ -416,8 +413,8 @@ class Gue {
 
     // Print stderr and the task finish notification on error
     gueEvents.on('GueTask.taskFinished.error', (task, message) => {
+      process.exitCode = 1;
       beeper(1);
-      this.exitCode = 1;
       this.errLog('finished with error in', task.name,
         task.getTaskDuration());
     });

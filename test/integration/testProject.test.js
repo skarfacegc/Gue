@@ -4,6 +4,7 @@ const chai = require('chai');
 const expect = chai.expect;
 const execa = require('execa');
 const snapshot = require('snap-shot');
+const trimNewlines = require('trim-newlines');
 
 let runList = [];
 
@@ -39,12 +40,18 @@ describe('Integration Tests', () => {
       + 'test/integration/sampleTests/succeed.guefile.js succeed')
       .then((result) => {
         return expect(result.code).to.equal(0);
+      })
+      .catch((result) => {
+        return expect(result.code).to.not.equal(1);
       });
   });
 
   it('should set the exit code to 1 on failure', () => {
     return execa.shell('./bin/gue.js --config '
       + 'test/integration/sampleTests/nestedFail.guefile.js fail')
+      .then((result) => {
+        return expect(result.code).to.not.equal(0);
+      })
       .catch((result) => {
         return expect(result.code).to.equal(1);
       });
@@ -56,10 +63,10 @@ describe('Integration Tests', () => {
         return execa.shell('export NODE_ENV=snapshot && '+element.fn)
           .then(
             (result) => {
-              return snapshot(result.stdout);
+              return snapshot(trimNewlines(result.stdout));
             },
             (result) => {
-              return snapshot(result.stdout);
+              return snapshot(trimNewlines(result.stdout));
             }
           );
       });
