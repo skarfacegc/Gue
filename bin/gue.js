@@ -56,7 +56,8 @@ function invoke(env) {
 
   // Now lets make do stuff
   gueInst.gueTasks.runTaskParallel(actionList)
-    .catch(() => {
+    .catch((val) => {
+      gueInst.errLog(val, 'gue');
       beeper(1);
     });
 }

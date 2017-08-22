@@ -101,9 +101,7 @@ describe('GueTasks', () => {
   describe('runTask', () => {
     it('should throw on missing taskNames', () => {
       const gueTasks = new GueTasks();
-      expect(() => {
-        gueTasks.runTask('badTask');
-      }).to.throw();
+      return expect(gueTasks.runTask('badTask')).to.eventually.be.rejected;
     });
 
     it('should emit taskStarted/taskFinished events', () => {
