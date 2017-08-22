@@ -143,19 +143,19 @@ class Gue {
   }
 
   /**
-   * autoWatch - Watch all files specified in the fileset, run the appropriate
+   * smartWatch - Watch all files specified in the fileset, run the appropriate
    * tasks when one of the files is changed
    *
    * @param {fileSet} fileSet the fileset object that contains the files to
    * watch
    *
-   * @return {Promise} returns a promise for this._autoWatch
+   * @return {Promise} returns a promise for this._smartWatch
    *
    */
-  autoWatch(fileSet) {
-    this.log('Started. ^c to stop', 'autoWatch');
+  smartWatch(fileSet) {
+    this.log('Started. ^c to stop', 'smartWatch');
     return new Promise(() => {
-      this._autoWatch(fileSet);
+      this._smartWatch(fileSet);
     });
   }
 
@@ -270,7 +270,7 @@ class Gue {
    *
    * @return {Object} chokidar watcher
    */
-  _autoWatch(fileSet) {
+  _smartWatch(fileSet) {
     const chokidarOpts = {
       ignoreInitial: true,
     };
@@ -284,7 +284,7 @@ class Gue {
     watcher.on('all', (event, path) => {
       const tasks = fileSet.getTasks(path);
       this.log(path + ' ' + event + ' running [' + tasks.join(',') + ']',
-        'autoWatch');
+        'smartWatch');
 
       // Stop the watch, then restart after tasks have run
       // this fixes looping issues if files are modified
@@ -295,7 +295,7 @@ class Gue {
         // don't let errors stop the restart
         })
         .then(() => {
-          this._autoWatch(fileSet);
+          this._smartWatch(fileSet);
         });
     });
 

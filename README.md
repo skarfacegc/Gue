@@ -127,13 +127,13 @@ Gue - The main class for the gue task runner
     * [.shell(command, value)](#Gue+shell) ⇒ <code>promise</code>
     * [.silentShell(command, value)](#Gue+silentShell) ⇒ <code>promise</code>
     * [.watch(glob, taskList)](#Gue+watch) ⇒ <code>Promise</code>
-    * [.autoWatch(fileSet)](#Gue+autoWatch) ⇒ <code>Promise</code>
+    * [.smartWatch(fileSet)](#Gue+smartWatch) ⇒ <code>Promise</code>
     * [.taskList()](#Gue+taskList) ⇒ <code>array</code>
     * [.log(message, taskname, duration)](#Gue+log)
     * [.errLog(message, taskname, duration)](#Gue+errLog)
     * [.debugLog(message, taskname)](#Gue+debugLog)
     * [._shell(mode, command, values)](#Gue+_shell) ⇒ <code>promise</code>
-    * [._autoWatch(fileSet)](#Gue+_autoWatch) ⇒ <code>Object</code>
+    * [._smartWatch(fileSet)](#Gue+_smartWatch) ⇒ <code>Object</code>
     * [._watch(glob, taskList)](#Gue+_watch) ⇒ <code>object</code>
     * [._log(type, message, taskname, duration)](#Gue+_log)
     * [.registerEventHandlers()](#Gue+registerEventHandlers)
@@ -284,14 +284,14 @@ gue.watch('tests/*.js', 'coverage');
 
 * * *
 
-<a name="Gue+autoWatch"></a>
+<a name="Gue+smartWatch"></a>
 
-### gue.autoWatch(fileSet) ⇒ <code>Promise</code>
-autoWatch - Watch all files specified in the fileset, run the appropriate
+### gue.smartWatch(fileSet) ⇒ <code>Promise</code>
+smartWatch - Watch all files specified in the fileset, run the appropriate
 tasks when one of the files is changed
 
 <!-- don't display the scope information -->
-**Returns**: <code>Promise</code> - returns a promise for this._autoWatch  
+**Returns**: <code>Promise</code> - returns a promise for this._smartWatch  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -385,9 +385,9 @@ See the documentation for '''shell''' for more information
 
 * * *
 
-<a name="Gue+_autoWatch"></a>
+<a name="Gue+_smartWatch"></a>
 
-### gue._autoWatch(fileSet) ⇒ <code>Object</code>
+### gue._smartWatch(fileSet) ⇒ <code>Object</code>
 Uses the fileset object passed to figure out which tasks to run
 based on the files that have changed.
 

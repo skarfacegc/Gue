@@ -53,8 +53,8 @@ fileSet.getGlob
 fileSet.getAllFiles
 fileSets
 _watchHandler
-autoWatch
-gue.autoWatch
+smartWatch
+gue.smartWatch
 debugLog
 gue.debugLog
 GueTasks
@@ -93,7 +93,7 @@ taskStarted
 taskFinished
 gueTask.taskStarted
 gueTask.taskFinished
-_autoWatch
+_smartWatch
 runTaskParallel
 taskFinishedWithError
 gueTask.endActionWithError

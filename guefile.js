@@ -15,7 +15,7 @@ fileSet.add('distclean', ['node_modules']);
 // gue.debug = true;
 
 gue.task('watch', () => {
-  return gue.autoWatch(fileSet);
+  return gue.smartWatch(fileSet);
 });
 
 //

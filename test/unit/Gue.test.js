@@ -275,14 +275,14 @@ describe('Gue', () => {
     });
   });
 
-  describe('_autoWatch', () => {
+  describe('_smartWatch', () => {
     it('should call chokidar correctly', () => {
       const fileSet = new FileSet();
       fileSet.add('setName', 'README.md', ['task1']);
       const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
         return {on: () => {}};
       });
-      gue._autoWatch(fileSet);
+      gue._smartWatch(fileSet);
       expect(watchStub).to.be.calledWith(['README.md']);
     });
 
@@ -290,12 +290,12 @@ describe('Gue', () => {
       const fileSet = new FileSet();
       fileSet.add('testSet', 'foo', ['tasks', 'yayTasks']);
 
-      const watcher = gue._autoWatch(fileSet);
+      const watcher = gue._smartWatch(fileSet);
       const startStub = sandbox.stub(gue.gueTasks, 'runTaskParallel')
         .resolves();
 
       // We don't want the watch to restart
-      sandbox.stub(gue, 'autoWatch');
+      sandbox.stub(gue, 'smartWatch');
       watcher.close = () => {};
 
       watcher.emit('all', 'change', 'foo');
