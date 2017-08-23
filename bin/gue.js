@@ -20,8 +20,13 @@ gueCli.launch({
   require: argv.require,
 }, invoke);
 
+/**
+ * invoke - Setup and start running the requested task
+ * This is called by Liftoff.launch
+ *
+ * @param {object} env The liftoff environment
+ */
 function invoke(env) {
-
   if (!env.configPath) {
     console.error(chalk.red('No gulpfile found'));
     process.exit(1);
@@ -49,44 +54,11 @@ function invoke(env) {
     process.exit(0);
   }
 
-  //
-  // Setup orcestrator event listeners
-  //
-
-  // Log task start
-  gueInst.on('task_start', (event) => {
-    if (event.task !== 'default') {
-      gueInst.log('started', event.task, 'normal');
-    }
-  });
-
-  // Log task stop and task duration
-  gueInst.on('task_stop', (event) => {
-    if (event.task !== 'default') {
-      gueInst.log('finished in', event.task, event.duration);
-    }
-  });
-
-  // Print stderr and the task finish notification on error
-  gueInst.on('task_err', (event) => {
-    beeper(1);
-    gueInst.errLog('finished with error in', event.task, event.duration);
-  });
-
-  // If there was an error in any of the tasks set the exit code
-  gueInst.on('err', (event) => {
-    gueInst.exitCode = 1;
-  });
-
-  // setup process event listener so we can
-  // exit with the right code
-  process.once('exit', (code) => {
-    if (gueInst.exitCode === 1) {
-      process.exit(1);
-    }
-  });
-
   // Now lets make do stuff
-  gueInst.start(actionList);
+  gueInst.gueTasks.runTaskParallel(actionList)
+    .catch((val) => {
+      gueInst.errLog(val, 'gue');
+      beeper(1);
+    });
 }
 //

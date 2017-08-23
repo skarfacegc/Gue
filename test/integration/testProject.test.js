@@ -1,44 +1,75 @@
-'use strict;'
+'use strict;';
 
 const chai = require('chai');
-const sinon = require('sinon');
-const sinonChai = require('sinon-chai');
 const expect = chai.expect;
-const sandbox = sinon.sandbox.create();
-
 const execa = require('execa');
 const snapshot = require('snap-shot');
-const tmp = require('tmp-promise');
+const trimNewlines = require('trim-newlines');
 
-const testCwd = process.cwd();
+let runList = [];
 
-// Checks out the Gue-test repo
-// links the local copy of Gue (this repo)
-// runs gue default and returns stdout/stderr
-//
-// This return value will be snapshotted in the test
-function runGueTest() {
-  return tmp.dir()
-    .then((dir) => {
-      let command =
-      'cd ' + dir.path + ' && ' +
-      'git clone -q ' +
-        'https://github.com/skarfacegc/Gue-test.git' + ' && ' +
-      'cd Gue-test && ' +
-      '(export NODE_ENV=snapshot ;' +
-      'yarn > ./foo.yarn 2>&1 ; ' +
-      'npm link ' + testCwd + ' > ./foo.link 2>&1 ; ' +
-      'gue snapshotTest || exit 0 && exit 1 )' ;
-      return execa.shell(command);
-    });
-}
+// Buld the list of integration tests to snapshot
+runList.push({
+  name: 'simple fail test',
+  fn: './bin/gue.js --config test/integration/sampleTests/fail.guefile.js fail',
+});
 
-describe('Gue-test repo tests', function() {
-  this.timeout(0);
-  it('should run gue snapshotTest successfully', () => {
-    return runGueTest().then((result) => {
-      result.cmd = '';
-      return snapshot(result.stdout);
+runList.push({
+  name: 'simple succeed test',
+  fn: './bin/gue.js '
+    +'--config test/integration/sampleTests/succeed.guefile.js succeed',
+});
+
+runList.push({
+  name: 'nested succeed test',
+  fn: './bin/gue.js '
+     +'--config test/integration/sampleTests/nestedSucceed.guefile.js'
+     + ' succeed',
+});
+
+runList.push({
+  name: 'nested fail test',
+  fn: './bin/gue.js '
+    + '--config test/integration/sampleTests/nestedFail.guefile.js fail',
+});
+
+// Check the snapshots for each of the guefiles above
+describe('Integration Tests', () => {
+  it('should set the exit code to 0 on success', () => {
+    return execa.shell('./bin/gue.js --config '
+      + 'test/integration/sampleTests/succeed.guefile.js succeed')
+      .then((result) => {
+        return expect(result.code).to.equal(0);
+      })
+      .catch((result) => {
+        return expect(result.code).to.not.equal(1);
+      });
+  });
+
+  it('should set the exit code to 1 on failure', () => {
+    return execa.shell('./bin/gue.js --config '
+      + 'test/integration/sampleTests/nestedFail.guefile.js fail')
+      .then((result) => {
+        return expect(result.code).to.not.equal(0);
+      })
+      .catch((result) => {
+        return expect(result.code).to.equal(1);
+      });
+  });
+
+  describe('Snapshot Tests', () => {
+    runList.forEach((element) => {
+      it(element.name + ' should match snapshot', () => {
+        return execa.shell('export NODE_ENV=snapshot && '+element.fn)
+          .then(
+            (result) => {
+              return snapshot(trimNewlines(result.stdout));
+            },
+            (result) => {
+              return snapshot(trimNewlines(result.stdout));
+            }
+          );
+      });
     });
   });
 });
