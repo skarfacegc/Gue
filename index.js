@@ -440,7 +440,7 @@ function buildCmd(that, command) {
   });
 
   handlebars.registerHelper('globs', (setName) => {
-    return that.fileSet.getGlob(setName);
+    return that.fileSet.getGlobs(setName);
   });
 
   return handlebars.compile(command);

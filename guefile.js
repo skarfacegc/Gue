@@ -12,7 +12,7 @@ fileSet.add('packageJson', 'package.json', 'rebuild');
 fileSet.add('clean', ['coverage', '.nyc_output']);
 fileSet.add('distclean', ['node_modules']);
 
-// gue.debug = true;
+gue.debug = true;
 
 gue.task('watch', () => {
   return gue.smartWatch(fileSet);
@@ -23,7 +23,7 @@ gue.task('watch', () => {
 //
 
 gue.task('lint', () => {
-  return gue.shell('eslint {{files "allSrc"}}');
+  return gue.shell('eslint {{globs "allSrc"}}');
 });
 
 gue.task('test', ['clean'], () => {
@@ -32,7 +32,7 @@ gue.task('test', ['clean'], () => {
 });
 
 gue.task('integration', () => {
-  let command = 'mocha {{files "integrationRun"}}';
+  let command = 'mocha {{globs "integrationRun"}}';
   return gue.shell(command);
 });
 
@@ -41,11 +41,11 @@ gue.task('integration', () => {
 //
 
 gue.task('clean', () => {
-  return gue.shell('rm -rf ' + fileSet.getGlob('clean'));
+  return gue.shell('rm -rf {{globs "clean"}}');
 });
 
 gue.task('distclean', ['clean'], () => {
-  return gue.shell('rm -rf ' + fileSet.getGlob('distclean'));
+  return gue.shell('rm -rf {{globs "distclean"}}');
 });
 
 //

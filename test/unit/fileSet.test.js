@@ -131,7 +131,7 @@ describe('lib/fileSet', () => {
       const fileSet = new FileSet();
       fileSet.add('foo', 'README.md', 'myTask');
 
-      expect(fileSet.getGlob('foo')).to.deep.equal('README.md');
+      expect(fileSet.getGlobs('foo')).to.deep.equal('README.md');
     });
   });
 

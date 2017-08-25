@@ -1,39 +1,25 @@
-[![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue) [![Coverage Status](https://coveralls.io/repos/github/skarfacegc/Gue/badge.svg)](https://coveralls.io/github/skarfacegc/Gue) [![dependencies Status](https://david-dm.org/skarfacegc/Gue/status.svg)](https://david-dm.org/skarfacegc/Gue) [![Known Vulnerabilities](https://snyk.io/test/github/skarfacegc/gue/badge.svg)](https://snyk.io/test/github/skarfacegc/gue)
-
-
+[![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue) [![Coverage Status](https://coveralls.io/repos/github/skarfacegc/Gue/badge.svg)](https://coveralls.io/github/skarfacegc/Gue) [![dependencies Status](https://david-dm.org/skarfacegc/Gue/status.svg)](https://david-dm.org/skarfacegc/Gue)
 
 [![NPM](https://nodei.co/npm/gue.png?downloads=true)](https://nodei.co/npm/gue/)
 
-- [CLI Documentation](#CLI)
-- [API Documentation](#Gue)
+# Gue
+Gue (pronounced goo) is a task runner for node. Rather than relying on plugins
+Gue provides a built in way to easily run shell commands. Gue also provides
+automatic watching using the fileSets feature.
 
-Gue (_pronounced goo_) is task runner that is focused on organizing and running
-shell commands. Gue is a thin wrapper on
-[orchestrator](https://www.npmjs.com/package/orchestrator) with a fancy shell
-command, a build in watcher, and some basic logging.
+<!-- toc -->
 
-### Motivation
-A recent change to a plugin I used in another task runner broke my code coverage
-task. This caused me to start looking at alternatives. Just using npm scripts
-made a ton of sense since most tools have a well documented CLI. I was also
-spending more time than I wanted to trying to map command line options into
-the plugin I was using.  I liked shell commands, but I also liked the task
-composition and re-use found in some of the other tools.
-</map>
+## Installation
+You can install gue globally with ```npm install -g gue``` and/or locally
+with ```npm install -D gue```.  If installed in both places the global gue
+will automatically use the locally installed gue (courtesy of [liftoff](https://www.npmjs.com/package/liftoff)).
 
-## Documentation
-<a name='CLI'></a>
-### CLI
+## Usage
+When you run gue it looks for ```guefile.js``` at the top level of your
+project directory. The guefile is a module that contains your task
+definitions and fileSets.
 
-
-The gue CLI looks for ```guefile.js``` at the project root.  All tasks defined
-in the guefile are run relative to the project root (where your package.json
-lives).  The time taken by each task is logged when the task finishes.  Gue will
-exit with 1 if any of the tasks fail.
-
-You can install gue globally with ```npm install -g gue``` and locally with
-```npm install --save-deps gue```.  The global ```gue``` command will use the
-version of gue in the local ```node_modules``` if available.
+### CLI Example
 ```shell
 # run the task named 'default'
 % gue
@@ -41,7 +27,8 @@ version of gue in the local ```node_modules``` if available.
 # Run the coverage task
 % gue coverage
 
-# Run the coverage task then the lint task
+# Run the coverage task and the lint task
+# These tasks will start at the same time
 % gue coverage lint
 
 # List the tasks defined in guefile.js
@@ -51,40 +38,132 @@ version of gue in the local ```node_modules``` if available.
 % gue --config=foo.js
 ```
 
-#### guefile.js example
-
-[Gue-test](https://github.com/skarfacegc/Gue-test) is a sample project using Gue.
-
-```javascript
-// sample guefile.js
+## Example guefile.js
+```js
 const gue = require('gue');
+fileSet = gue.fileSet;
 
-// Set the value for 'files'
-gue.setOption('testFiles', 'test/**/*.test.js');
+fileSet.add('allSrc', '**/*.js', 'lint');
+fileSet.add('src', ['*.js','lib/*.js','bin/*.js'], 'test');
+fileSet.add('unitTests', 'test/**/*.test.js', 'test');
 
-// Set the default task
-gue.task('default', ['coverage','fail']);
+// Run lint and test if no other tasks are specified
+gue.task('default', ['lint','test']);
 
-// Run code coverage using files as specified by
-// setOption above
-gue.task('coverage', () => {
-  return gue.shell('nyc mocha {{testFiles}}');
+// Magic watching!
+// Run the tasks for each fileSet whose glob matches the changed file
+// the tasklist is de-duped
+gue.task('watch', () =>{
+  gue.smartWatch(fileSet);
 });
 
-// This task will fail
-gue.task('fail', () => {
-  return gue.shell('typo');
+// Run unit tests and capture code coverage
+gue.task('test', () => {
+  return gue.shell('nyc --reporter lcov --reporter text ' +
+  'mocha ' + fileSet.getFiles('unitTests'));
 });
 
-// A watch task
-gue.task('watch', () => {
-  gue.watch(gue.options.testFiles, 'coverage');
+// Run the linter
+gue.task('lint', () => {
+  return gue.shell('jscs ' + fileSet.getFiles('allSrc'));
 });
 ```
-This will generate output as shown below
 
-![Run Example](http://i.imgur.com/f8J5toD.png?1)
-<!-- jsdoc2md gets inserted below -->
+
+
+### Tasks
+Tasks define the actions you want to perform. A task consists of:
+- a name
+- an optional list of dependencies to run before running this task
+- an optional function that is the code to be executed
+- you must provide a dependency list or a function
+
+**Notes:**
+- Dependencies will execute in the order that they are listed
+
+
+#### Task examples
+```js
+
+// if % gue is run without any arguments, run a and b tasks
+gue.task('default', ['a']);
+
+gue.task('a', ['b'], ()=>{
+  return promiseMethod(args);
+})
+
+gue.task('b', () =>{
+  return new Promise((resolve, reject)=>{
+    setTimeout(resolve, 10);
+  })
+})
+```
+
+
+### File Sets
+File sets are used by ```smartWatch``` to automatically run tasks based on
+changed (updated, added, deleted, etc) files. File sets let you think in terms
+of what needs to happen when a file changes, rather than just focusing on
+tasks. They can help minimize task dependencies for convenience  and use task
+dependencies for actual dependencies.
+
+File sets are defined with a name, a list of globs, and an optional task name
+to execute if a file change is detected by ```smartWatch```. The globs are
+processed with [multimatch](https://www.npmjs.com/package/multimatch).
+
+The FileSet object provides two methods that can be called in your task actions.
+
+- ```fileSet.getGlobs(setName)``` returns the globs that you specified. This is
+preferred to getFiles as you can overflow the shell command line length if your
+glob matches many files.
+- ```fileSet.getFiles(setName)``` returns a list of every file that matches
+the glob provided in the fileSet. This may be preferable as
+[multimatch](https://www.npmjs.com/package/multimatch) can be more expressive
+than normal shell globs
+
+
+
+**Notes**
+- ```node_modules``` and ```coverage``` directories are automatically excluded
+from all globs
+- ```gue.getGlobs``` is preferred over ```gue.getFiles``` due to potential
+issues with shell command line length (when calling the shell).  However,
+ allows for non shell
+compatible globs.
+- Globs are resolved using [multimatch](https://www.npmjs.com/package/multimatch)
+
+#### File Set Example
+```js
+
+const gue = require('gue');
+const fileSet = gue.fileSet;
+
+fileSet.add('allSrc', ['**/*.js'], 'lint');
+fileSet.add('libs', ['lib/**/*.js'], 'test');
+fileSet.add('src', ['src/**/*.js', 'index.js'], 'test');
+
+gue.task('watch', ()=>{
+  gue.smartWatch(fileSet);
+})
+
+// When using smartWatch the linter will run on any .js change
+gue.task('lint', () =>{
+    return gue.shell('jscs \{\{globs "allSrc"\}\});
+});
+
+// We generally want our linter to run with the tests, but it's not a
+// true dependency. Rather than making test depend on lint, we'll let
+// the fileSet match take care of linting for us
+gue.task('test', () => {
+  return gue.shell('nyc --reporter lcov --reporter text ' +
+  'mocha \{\{files "unitTests"\}\}));
+});
+
+```
+
+### Shell Commands
+<!-- TODO: Doc this when the shell commands are re-worked -->
+
 ## Classes
 
 <dl>
@@ -472,7 +551,7 @@ These really should not be called directly
     * [new FileSet()](#new_FileSet_new)
     * [.add(name, globArg, tasks)](#FileSet+add) ⇒ <code>object</code>
     * [.getTasks(fileArg)](#FileSet+getTasks) ⇒ <code>array</code>
-    * [.getGlob(setName)](#FileSet+getGlob) ⇒ <code>string</code>
+    * [.getGlobs(setName)](#FileSet+getGlobs) ⇒ <code>string</code>
     * [.getFiles(setName)](#FileSet+getFiles) ⇒ <code>string</code>
     * [.getAllFiles()](#FileSet+getAllFiles) ⇒ <code>array</code>
 
@@ -523,10 +602,10 @@ Return the list of tasks associated with the passed file
 
 * * *
 
-<a name="FileSet+getGlob"></a>
+<a name="FileSet+getGlobs"></a>
 
-### fileSet.getGlob(setName) ⇒ <code>string</code>
-Gets the glob for a given fileSet
+### fileSet.getGlobs(setName) ⇒ <code>string</code>
+Gets the globs for a given fileSet
 
 This is useful to get the glob for a specific set of tests etc
 

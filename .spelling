@@ -45,11 +45,11 @@ getFiles
 fileSet.getFiles
 fileArg
 globArg
-getGlob
+getGlobs
 setName
 getAllFiles
 multimatch
-fileSet.getGlob
+fileSet.getGlobs
 fileSet.getAllFiles
 fileSets
 _watchHandler
