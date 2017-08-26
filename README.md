@@ -11,7 +11,7 @@ automatic watching using the fileSets feature.
 
 ## Installation
 You can install gue globally with ```npm install -g gue``` and/or locally
-with ```npm install -D gue```.  If installed in both places the global gue
+with ```npm install -D gue```. If installed in both places the global gue
 will automatically use the locally installed gue (courtesy of [liftoff](https://www.npmjs.com/package/liftoff)).
 
 ## Usage
@@ -69,8 +69,6 @@ gue.task('lint', () => {
 });
 ```
 
-
-
 ### Tasks
 Tasks define the actions you want to perform. A task consists of:
 - a name
@@ -126,11 +124,6 @@ than normal shell globs
 **Notes**
 - ```node_modules``` and ```coverage``` directories are automatically excluded
 from all globs
-- ```gue.getGlobs``` is preferred over ```gue.getFiles``` due to potential
-issues with shell command line length (when calling the shell).  However,
- allows for non shell
-compatible globs.
-- Globs are resolved using [multimatch](https://www.npmjs.com/package/multimatch)
 
 #### File Set Example
 ```js
@@ -148,21 +141,37 @@ gue.task('watch', ()=>{
 
 // When using smartWatch the linter will run on any .js change
 gue.task('lint', () =>{
-    return gue.shell('jscs \{\{globs "allSrc"\}\});
+    return gue.shell('jscs ' + fileSet.getFiles('allSrc'));
 });
 
 // We generally want our linter to run with the tests, but it's not a
 // true dependency. Rather than making test depend on lint, we'll let
 // the fileSet match take care of linting for us
-gue.task('test', () => {
-  return gue.shell('nyc --reporter lcov --reporter text ' +
-  'mocha \{\{files "unitTests"\}\}));
-});
 
 ```
 
 ### Shell Commands
-<!-- TODO: Doc this when the shell commands are re-worked -->
+Gue provides support for shell commands that work well with FileSets.
+Shell commands are executed with
+[execa.shell](https://github.com/sindresorhus/execa). The command string is
+a [handlebars](http://handlebarsjs.com/) template. There are two built in
+helpers ```\{\{globs "fileSet"\}\}``` and ```\{\{files "fileSet"\}\}``` that
+match ```fileSet.getFiles('name')``` and ```fileSet.getGlobs('name')```. This
+allows the guefile to centrally define sets of files that are automatically
+reflected in the relevant shell commands.
+
+
+**Notes**
+- ```[project directory]/node_modules/bin``` is automatically
+added to ```$PATH```.  ```[project directory]``` is the directory that contains
+the guefile
+- ```gue.shell()``` prints stdout and stderr (in red)
+- ```gue.silentShell()``` suppresses printing
+
+### Shell command example
+```js
+gue.fileSet.add('exampleSet', 'README.*');
+```
 
 ## Classes
 
@@ -458,8 +467,8 @@ See the documentation for '''shell''' for more information
 | Param | Type | Description |
 | --- | --- | --- |
 | mode | <code>string</code> | 'print' or 'silent' |
-| command | <code>type</code> | The shell command/shell command template to run |
-| values | <code>type</code> | values to pass to the command template |
+| command | <code>string</code> | The shell command/shell command template to run |
+| values | <code>object</code> | values to pass to the command template |
 
 
 * * *
