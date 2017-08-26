@@ -11,6 +11,8 @@ fileSet.add('integrationRun', ['test/integration/**/*.test.js'], 'integration');
 fileSet.add('packageJson', 'package.json', 'rebuild');
 fileSet.add('clean', ['coverage', '.nyc_output']);
 fileSet.add('distclean', ['node_modules']);
+fileSet.add('spellCheck', ['index.js', 'lib/**/*.js', "bin/gue.js",
+  "test/**/*.js", "docSrc/readme.hbs"]);
 
 gue.debug = true;
 
@@ -62,8 +64,8 @@ gue.task('yarn', () => {
 // Docs
 //
 
-gue.task('spell', ['buildDocs'], () => {
-  return gue.shell('mdspell README.md -n -a --en-us -r');
+gue.task('spell', () => {
+  return gue.shell('cspell -c cspell.json {{globs "spellCheck"}}');
 });
 
 gue.task('buildDocs', () => {

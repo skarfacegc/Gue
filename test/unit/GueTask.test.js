@@ -298,7 +298,7 @@ describe('GueTask', () => {
       return expect(gueTask.runAction()).to.be.fulfilled;
     });
 
-    it('should propogate rejected promises', () => {
+    it('should propagate rejected promises', () => {
       const gueTask = new GueTask('foo', () => {
         return Promise.reject('failed');
       });

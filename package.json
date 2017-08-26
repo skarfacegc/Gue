@@ -45,6 +45,7 @@
     "babel-core": "^6.25.0",
     "chai": "^4.1.1",
     "coveralls": "^2.13.1",
+    "cspell": "^1.9.3",
     "eslint": "^4.5.0",
     "eslint-config-google": "^0.9.1",
     "jsdoc-to-markdown": "^3.0.0",
