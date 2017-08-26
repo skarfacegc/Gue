@@ -223,8 +223,8 @@ class Gue {
    * See the documentation for '''shell''' for more information
    *
    * @param {string} mode    'print' or 'silent'
-   * @param {type} command The shell command/shell command template to run
-   * @param {type} values  values to pass to the command template
+   * @param {string} command The shell command/shell command template to run
+   * @param {object} values  values to pass to the command template
    *
    * @return {promise} Promise containing the
    * [execa](https://www.npmjs.com/package/execa) result
