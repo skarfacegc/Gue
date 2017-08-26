@@ -1,7 +1,4 @@
-[![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue) [![Coverage Status](https://coveralls.io/repos/github/skarfacegc/Gue/badge.svg)](https://coveralls.io/github/skarfacegc/Gue) [![dependencies Status](https://david-dm.org/skarfacegc/Gue/status.svg)](https://david-dm.org/skarfacegc/Gue)
-
-[![NPM](https://nodei.co/npm/gue.png?downloads=true)](https://nodei.co/npm/gue/)
-
+{{>badges}}{{{{raw-helper}}}}
 # Gue
 Gue (pronounced goo) is a task runner for node. Rather than relying on plugins
 Gue provides a built in way to easily run shell commands. Gue also provides
@@ -147,13 +144,10 @@ gue.task('lint', () =>{
 // We generally want our linter to run with the tests, but it's not a
 // true dependency. Rather than making test depend on lint, we'll let
 // the fileSet match take care of linting for us
-{{{{raw-helper}}}}
 gue.task('test', () => {
   return gue.shell('nyc --reporter lcov --reporter text ' +
       'mocha {{globs "unitTests"}}'));
 });
-{{{{/raw-helper}}}}
-
 ```
 
 ### Shell Commands
@@ -161,7 +155,7 @@ Gue provides support for shell commands that work well with FileSets.
 Shell commands are executed with
 [execa.shell](https://github.com/sindresorhus/execa). The command string is
 a [handlebars](http://handlebarsjs.com/) template. There are two built in
-helpers ```\{\{globs "fileSet"\}\}``` and ```\{\{files "fileSet"\}\}``` that
+helpers ```{{globs "fileSet"}}``` and ```{{files "fileSet"}}``` that
 match ```fileSet.getFiles('name')``` and ```fileSet.getGlobs('name')```. This
 allows the guefile to centrally define sets of files that are automatically
 reflected in the relevant shell commands.
@@ -177,7 +171,7 @@ the guefile
 ### Shell command example
 ```js
 gue.fileSet.add('exampleSet', 'README.*');
-{{{{raw-helper}}}}
+
 // README.md
 gue.shell('echo {{files "exampleSet"}}');
 
@@ -186,7 +180,5 @@ gue.shell('echo {{globs "exampleSet"}}');
 
 // woot
 gue.shell('echo {{myString}}', {myString: 'woot'});
-{{{{/raw-helper}}}}
 ```
-
-{{>main}}
+{{{{/raw-helper}}}}
