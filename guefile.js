@@ -13,6 +13,7 @@ fileSet.add('clean', ['coverage', '.nyc_output']);
 fileSet.add('distclean', ['node_modules']);
 fileSet.add('spellCheck', ['index.js', 'lib/**/*.js', "bin/gue.js",
   "test/**/*.js", "docSrc/readme.hbs"]);
+fileSet.add('readme', ['docSrc/readme.hbs']);
 
 gue.debug = true;
 
@@ -67,6 +68,10 @@ gue.task('yarn', () => {
 gue.task('spell', () => {
   return gue.shell('cspell -c cspell.json {{globs "spellCheck"}}');
 });
+
+gue.task('buildReadme', () =>{
+  return gue.shell('node docSrc/buildReadme.js --badges > README.md');
+})
 
 gue.task('buildDocs', () => {
   let command = '/bin/rm -f README.md';
