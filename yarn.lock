@@ -1950,6 +1950,10 @@ jsdoc-api@^3.0.0:
     temp-path "^1.0.0"
     walk-back "^2.0.1"
 
+jsdoc-oblivion@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/jsdoc-oblivion/-/jsdoc-oblivion-0.0.9.tgz#b525e7dd8dc3ba4dfcc61bb26e191750ccc91324"
+
 jsdoc-parse@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/jsdoc-parse/-/jsdoc-parse-3.0.0.tgz#271531d88f19df2520b1632a7f6c989441a87fde"
