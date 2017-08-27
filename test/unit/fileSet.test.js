@@ -37,8 +37,8 @@ describe('lib/fileSet', () => {
     it('should update the glob map correctly', () => {
       const fileSet = new FileSet();
       fileSet.add('foo', 'README.md', 'bar');
-      fileSet.add('baz', 'README.md', ['bar', 'zoop']);
-      expect(fileSet.globMap['README.md']).to.deep.equal(['bar', 'zoop']);
+      fileSet.add('baz', 'README.md', ['bar', 'zop']);
+      expect(fileSet.globMap['README.md']).to.deep.equal(['bar', 'zop']);
     });
 
     it('should always save tasks as an array', () => {
@@ -131,7 +131,7 @@ describe('lib/fileSet', () => {
       const fileSet = new FileSet();
       fileSet.add('foo', 'README.md', 'myTask');
 
-      expect(fileSet.getGlob('foo')).to.deep.equal('README.md');
+      expect(fileSet.getGlobs('foo')).to.deep.equal('README.md');
     });
   });
 

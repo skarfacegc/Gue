@@ -86,7 +86,7 @@ describe('GueTasks', () => {
         .be.fulfilled;
     });
 
-    it('should propogate errors when swallowError is false', () => {
+    it('should propagate errors when swallowError is false', () => {
       const gueTasks = new GueTasks();
       const rejectStub = sinon.stub().rejects();
 

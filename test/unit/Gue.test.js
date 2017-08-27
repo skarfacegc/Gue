@@ -167,7 +167,7 @@ describe('Gue', () => {
         });
     });
 
-    it('should not print on successs when called in silent mode', (done) => {
+    it('should not print on success when called in silent mode', (done) => {
       const logStub = sandbox.stub();
       gue.log = logStub;
       gue._shell('silent', 'echo foo')

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=yes, width=device-width">
+  <title>Gue — Source: lib/fileSet.js</title>
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  <!--[if lt IE 9]>
+  <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+  <link type="text/css" rel="stylesheet" href="styles/site.oblivion.css">
+</head>
+<body>
+<div class="container-fluid">
+  <div class="navbar navbar-fixed-top navbar-inverse">
+    <div class="navbar-inner">
+      <a class="brand" href="index.html">Gue</a>
+      <ul class="nav">
+        
+        <li class="dropdown">
+          <a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+            class="caret"></b></a>
+
+          <ul class="dropdown-menu ">
+            
+            <li>
+              <a href="FileSet.html">FileSet</a>
+            </li>
+            
+            <li>
+              <a href="Gue.html">Gue</a>
+            </li>
+            
+            <li>
+              <a href="GueTask.html">GueTask</a>
+            </li>
+            
+            <li>
+              <a href="GueTasks.html">GueTasks</a>
+            </li>
+            
+
+          </ul>
+        </li>
+        
+        <li class="dropdown">
+          <a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b
+            class="caret"></b></a>
+
+          <ul class="dropdown-menu ">
+            
+            <li>
+              <a href="global.html#buildCmd">buildCmd</a>
+            </li>
+            
+
+          </ul>
+        </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  <div class="row-fluid">
+
+    
+
+    
+      <div class="span12">
+        
+        <div id="main">
+          
+
+
+		<h1 class="page-title">Source: lib/fileSet.js</h1>
+    
+<section>
+  <article>
+    <pre
+      class="sunlight-highlight-javascript linenums">'use strict;';
+
+const globby = require('globby');
+const multimatch = require('multimatch');
+const isArray = require('lodash.isarray');
+const uniq = require('lodash.uniq');
+const util = require('../lib/Util');
+
+/**
+ * Methods to handle sets of files in Gue
+ *
+ * These really should not be called directly
+ */
+class FileSet {
+  /**
+   * Create a new FileSet object instance
+   *
+   * @return {object} FileSet Object
+   */
+  constructor() {
+    this.fileSets = {};
+    this.globMap = {}; // This is used to resolve a filename to a taskList
+    this.allFiles = [];
+
+    // defaultGlob is applied when returning file lists
+    this.defaultGlob = ['**', '!node_modules/**', '!coverage/**'];
+    return this;
+  }
+
+  /**
+   * Add a new file set.
+   *
+   * Adds a file set named ```name``` that groups files selected by ```glob```
+   * Associates the list of tasks with that set of files.
+   *
+   * @param {string} name  Name of the fileset
+   * @param {(glob|globs)} globArg [multimatch](https://www.npmjs.com/package/multimatch)
+   *     compatible glob
+   * @param {array} tasks List of tasks to associate with this glob
+   *
+   * @return {object} The fileset
+   */
+  add(name, globArg, tasks) {
+    let retObj = {};
+    retObj.name = name;
+    retObj.files = globby.sync(globArg);
+    retObj.globs = util.toArray(globArg);
+
+    // if tasks is an array use it, otherwise
+    // push it onto tasks (so that tasks is always an array)
+    retObj.tasks = [];
+    if (isArray(tasks)) {
+      retObj.tasks = tasks;
+    } else {
+      retObj.tasks.push(tasks);
+    }
+
+    this.fileSets[name] = retObj;
+
+    retObj.globs.forEach((glob) => {
+      // Init the globMap array if it doesn't exist
+      if (!isArray(this.globMap[glob])) {
+        this.globMap[glob] = retObj.tasks;
+      } else {
+        this.globMap[glob] = uniq(this.globMap[glob].concat(retObj.tasks));
+      }
+    });
+
+    // Add the newly matched files to the allFiles array
+    this.allFiles = uniq(this.allFiles.concat(retObj.files));
+
+    return retObj;
+  }
+
+  /**
+   * Return the list of tasks associated with the passed file
+   *
+   * @param {(filename|filenames[])} fileArg The file(s) to find tasks for
+   *
+   * @return {array} list of reduced tasks that match the file
+   */
+  getTasks(fileArg) {
+    let retList = [];
+    let fileList = [];
+
+    if (isArray(fileArg)) {
+      fileList = fileArg;
+    } else {
+      fileList.push(fileArg);
+    }
+
+    fileList.forEach((file) => {
+      if (file &amp;&amp; file !== undefined) {
+        // Loop through the globs in globMap and build a list
+        // of the tasks that match the fileSet name in the globMap
+        Object.keys(this.globMap).forEach((element) => {
+          const result = multimatch(file, element);
+          if (result &amp;&amp; result.length > 0) {
+            retList = retList
+              .concat(this.globMap[element]);
+          }
+        });
+      }
+    });
+
+    return uniq(retList);
+  }
+
+  /**
+   * Gets the globs for a given fileSet
+   *
+   * This is useful to get the glob for a specific set of tests etc
+   *
+   * WARNING: multimatch globs are not always shell compatible.
+   * you may want to use getFiles unless you have lots of files that
+   * match the glob.
+   *
+   * @param {string} setName The name of the file set with the glob you want
+   *
+   * @return {string} space separated list of globs
+   */
+  getGlobs(setName) {
+    return this.fileSets[setName].globs.join(' ');
+  }
+
+  /**
+   * Get a list of the files matching the glob for the pass set name
+   *
+   * @param {string} setName Name of the fileSet
+   *
+   * @return {string} Space separated list of files
+   */
+  getFiles(setName) {
+    const fileList = globby.sync(this.fileSets[setName].globs);
+    const cleanedList = multimatch(fileList, this.defaultGlob);
+    return cleanedList.join(' ');
+  }
+
+  /**
+   * Return the list of all files from all globs in all fileSets
+   *
+   * @return {array} List of all files
+   */
+  getAllFiles() {
+    return multimatch(this.allFiles, this.defaultGlob);
+  }
+}
+
+module.exports = FileSet;
+</pre>
+  </article>
+</section>
+
+
+
+
+
+        </div>
+
+        <div class="clearfix"></div>
+        <footer>
+          
+          
+    <span class="copyright">
+    Copyright © 2017
+    </span>
+          <br />
+          
+    <span class="jsdoc-message">
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc" target="_blank">JSDoc 3.6.0</a>
+    on 2017-08-27T15:18:48-04:00
+    </span>
+        </footer>
+      </div>
+
+      <br clear="both">
+    </div>
+
+  </div>
+  <!--<script src="scripts/sunlight.js"></script>-->
+  <script src="scripts/docstrap.lib.js"></script>
+  <script src="scripts/bootstrap-dropdown.js"></script>
+  <script src="scripts/toc.js"></script>
+
+  <script>
+    $( function () {
+      $( "[id*='$']" ).each( function () {
+        var $this = $( this );
+
+        $this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+      } );
+
+      $( "#toc" ).toc( {
+        anchorName  : function ( i, heading, prefix ) {
+          return $( heading ).attr( "id" ) || ( prefix + i );
+        },
+        selectors   : "h1,h2,h3,h4",
+        showAndHide : false,
+        scrollTo    : "100px"
+      } );
+
+      $( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+      $( "#main span[id^='toc']" ).addClass( "toc-shim" );
+      $( '.dropdown-toggle' ).dropdown();
+//      $( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
+
+      $( ".tutorial-section pre, .readme-section pre" ).each( function () {
+        var $this = $( this );
+
+        var example = $this.find( "code" );
+        exampleText = example.html();
+        var lang = /{@lang (.*?)}/.exec( exampleText );
+        if ( lang && lang[1] ) {
+          exampleText = exampleText.replace( lang[0], "" );
+          example.html( exampleText );
+          lang = lang[1];
+        } else {
+          lang = "javascript";
+        }
+
+        if ( lang ) {
+
+          $this
+            .addClass( "sunlight-highlight-" + lang )
+            .addClass( "linenums" )
+            .html( example.html() );
+
+        }
+      } );
+
+      Sunlight.highlightAll( {
+        lineNumbers : true,
+        showMenu : true,
+        enableDoclinks : true
+      } );
+    } );
+   </script>
+
+
+
+  <!--Navigation and Symbol Display-->
+  
+
+
+  <!--Google Analytics-->
+  
+
+</body>
+</html>

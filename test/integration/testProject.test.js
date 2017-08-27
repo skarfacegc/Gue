@@ -8,7 +8,7 @@ const trimNewlines = require('trim-newlines');
 
 let runList = [];
 
-// Buld the list of integration tests to snapshot
+// Build the list of integration tests to snapshot
 runList.push({
   name: 'simple fail test',
   fn: './bin/gue.js --config test/integration/sampleTests/fail.guefile.js fail',

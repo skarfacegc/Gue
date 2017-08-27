@@ -1,0 +1,8 @@
+{
+  "language": "en",
+  "allowCompoundWords": true,
+  "dictionaries": ["gue"],
+  "dictionaryDefinitions": [
+    {"name": "gue", "path": "./.spelling"}
+  ]
+}
