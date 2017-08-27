@@ -9,7 +9,10 @@ automatic watching using the fileSets feature.
 ## Installation
 You can install gue globally with ```npm install -g gue``` and/or locally
 with ```npm install -D gue```. If installed in both places the global gue
-will automatically use the locally installed gue (courtesy of [liftoff](https://www.npmjs.com/package/liftoff)).
+will automatically use the locally installed gue
+(courtesy of [liftoff](https://www.npmjs.com/package/liftoff)).
+
+Gue is developed using yarn so you can use yarn rather than npm to install.
 
 ## Usage
 When you run gue it looks for ```guefile.js``` at the top level of your
@@ -17,7 +20,7 @@ project directory. The guefile is a module that contains your task
 definitions and fileSets.
 
 ### CLI Example
-```shell
+```sh
 # run the task named 'default'
 % gue
 
@@ -35,7 +38,7 @@ definitions and fileSets.
 % gue --config=foo.js
 ```
 
-## Example guefile.js
+### Example guefile.js
 ```js
 const gue = require('gue');
 fileSet = gue.fileSet;
@@ -66,7 +69,7 @@ gue.task('lint', () => {
 });
 ```
 
-### Tasks
+## Tasks
 Tasks define the actions you want to perform. A task consists of:
 - a name
 - an optional list of dependencies to run before running this task
@@ -77,7 +80,7 @@ Tasks define the actions you want to perform. A task consists of:
 - Dependencies will execute in the order that they are listed
 
 
-#### Task examples
+### Task examples
 ```js
 
 // if % gue is run without any arguments, run a and b tasks
@@ -95,9 +98,10 @@ gue.task('b', () =>{
 ```
 
 
-### File Sets
-File sets are used by ```smartWatch``` to automatically run tasks based on
-changed (updated, added, deleted, etc) files. File sets let you think in terms
+## File Sets
+File sets are a way to name a set of files that can be used in tasks.  File sets
+also let you associate a task with the list of files so that ```smartWatch```
+knows what task to run when a file changes. File sets let you think in terms
 of what needs to happen when a file changes, rather than just focusing on
 tasks. They can help minimize task dependencies for convenience  and use task
 dependencies for actual dependencies.
@@ -122,7 +126,7 @@ than normal shell globs
 - ```node_modules``` and ```coverage``` directories are automatically excluded
 from all globs
 
-#### File Set Example
+### File Set Example
 ```js
 
 const gue = require('gue');
@@ -150,12 +154,12 @@ gue.task('test', () => {
 });
 ```
 
-### Shell Commands
+## Shell Commands
 Gue provides support for shell commands that work well with FileSets.
 Shell commands are executed with
 [execa.shell](https://github.com/sindresorhus/execa). The command string is
 a [handlebars](http://handlebarsjs.com/) template. There are two built in
-helpers ```{{globs "fileSet"}}``` and ```{{files "fileSet"}}``` that
+helpers ```{{globs "name"}}``` and ```{{files "name"}}``` that
 match ```fileSet.getFiles('name')``` and ```fileSet.getGlobs('name')```. This
 allows the guefile to centrally define sets of files that are automatically
 reflected in the relevant shell commands.
@@ -170,15 +174,51 @@ the guefile
 
 ### Shell command example
 ```js
-gue.fileSet.add('exampleSet', 'README.*');
+gue.fileSet.add('exampleSet', ['README.*']);
 
 // README.md
 gue.shell('echo {{files "exampleSet"}}');
 
-// *.md
+// README.*
 gue.shell('echo {{globs "exampleSet"}}');
 
 // woot
 gue.shell('echo {{myString}}', {myString: 'woot'});
 ```
+
+## Smart Watch
+Smart watch works like a regular watch but works with file sets to determine
+which task(s) to run when a file changes. When you define a file set you can
+provide an optional task name, the task is executed by smart watch when
+a file that matches the fileset changes
+
+**Notes**
+- The task(s) for each different file set run in parallel
+- The task(s) in a given file set run in the order they are defined
+
+### smartWatch example
+```js
+
+// When gue watch is run
+// the lint task and the test task are executed when test/unit.test.js is
+// changed
+// The test task only is run when lib/myLib.js is changed
+
+gue.fileSet.add('allSrc', ['**/*.js'], 'lint');
+gue.fileSet.add('tests', ['test/**/*.test.js'], 'test');
+
+gue.task('watch', ()=>{
+  return gue.smartWatch(fileSet);
+});
+
+gue.task('lint', ()=>{
+  return gue.shell('eslint {{globs "allSrc"}}');
+});
+
+gue.task('test', () =>{
+  return gue.shell('mocha {{globs "tests"}}');
+});
+
+```
+
 {{{{/raw-helper}}}}

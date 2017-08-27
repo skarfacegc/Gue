@@ -110,11 +110,13 @@ automatic watching using the fileSets feature.</p>
 <!-- toc -->
 <h2>Installation</h2><p>You can install gue globally with <code>npm install -g gue</code> and/or locally
 with <code>npm install -D gue</code>. If installed in both places the global gue
-will automatically use the locally installed gue (courtesy of <a href="https://www.npmjs.com/package/liftoff">liftoff</a>).</p>
+will automatically use the locally installed gue
+(courtesy of <a href="https://www.npmjs.com/package/liftoff">liftoff</a>).</p>
+<p>Gue is developed using yarn so you can use yarn rather than npm to install.</p>
 <h2>Usage</h2><p>When you run gue it looks for <code>guefile.js</code> at the top level of your
 project directory. The guefile is a module that contains your task
 definitions and fileSets.</p>
-<h3>CLI Example</h3><pre class="prettyprint source lang-shell"><code># run the task named 'default'
+<h3>CLI Example</h3><pre class="prettyprint source lang-sh"><code># run the task named 'default'
 % gue
 
 # Run the coverage task
@@ -128,7 +130,7 @@ definitions and fileSets.</p>
 % gue -l
 
 # Specify an alternate config
-% gue --config=foo.js</code></pre><h2>Example guefile.js</h2><pre class="prettyprint source lang-js"><code>const gue = require('gue');
+% gue --config=foo.js</code></pre><h3>Example guefile.js</h3><pre class="prettyprint source lang-js"><code>const gue = require('gue');
 fileSet = gue.fileSet;
 
 fileSet.add('allSrc', '**/*.js', 'lint');
@@ -154,7 +156,7 @@ gue.task('test', () => {
 // Run the linter
 gue.task('lint', () => {
   return gue.shell('jscs ' + fileSet.getFiles('allSrc'));
-});</code></pre><h3>Tasks</h3><p>Tasks define the actions you want to perform. A task consists of:</p>
+});</code></pre><h2>Tasks</h2><p>Tasks define the actions you want to perform. A task consists of:</p>
 <ul>
 <li>a name</li>
 <li>an optional list of dependencies to run before running this task</li>
@@ -165,7 +167,7 @@ gue.task('lint', () => {
 <ul>
 <li>Dependencies will execute in the order that they are listed</li>
 </ul>
-<h4>Task examples</h4><pre class="prettyprint source lang-js"><code>
+<h3>Task examples</h3><pre class="prettyprint source lang-js"><code>
 // if % gue is run without any arguments, run a and b tasks
 gue.task('default', ['a']);
 
@@ -177,8 +179,9 @@ gue.task('b', () =>{
   return new Promise((resolve, reject)=>{
     setTimeout(resolve, 10);
   })
-})</code></pre><h3>File Sets</h3><p>File sets are used by <code>smartWatch</code> to automatically run tasks based on
-changed (updated, added, deleted, etc) files. File sets let you think in terms
+})</code></pre><h2>File Sets</h2><p>File sets are a way to name a set of files that can be used in tasks.  File sets
+also let you associate a task with the list of files so that <code>smartWatch</code>
+knows what task to run when a file changes. File sets let you think in terms
 of what needs to happen when a file changes, rather than just focusing on
 tasks. They can help minimize task dependencies for convenience  and use task
 dependencies for actual dependencies.</p>
@@ -200,7 +203,7 @@ than normal shell globs</li>
 <li><code>node_modules</code> and <code>coverage</code> directories are automatically excluded
 from all globs</li>
 </ul>
-<h4>File Set Example</h4><pre class="prettyprint source lang-js"><code>
+<h3>File Set Example</h3><pre class="prettyprint source lang-js"><code>
 const gue = require('gue');
 const fileSet = gue.fileSet;
 
@@ -223,11 +226,11 @@ gue.task('lint', () =>{
 gue.task('test', () => {
   return gue.shell('nyc --reporter lcov --reporter text ' +
       'mocha {{globs &quot;unitTests&quot;}}'));
-});</code></pre><h3>Shell Commands</h3><p>Gue provides support for shell commands that work well with FileSets.
+});</code></pre><h2>Shell Commands</h2><p>Gue provides support for shell commands that work well with FileSets.
 Shell commands are executed with
 <a href="https://github.com/sindresorhus/execa">execa.shell</a>. The command string is
 a <a href="http://handlebarsjs.com/">handlebars</a> template. There are two built in
-helpers <code>{{globs &quot;fileSet&quot;}}</code> and <code>{{files &quot;fileSet&quot;}}</code> that
+helpers <code>{{globs &quot;name&quot;}}</code> and <code>{{files &quot;name&quot;}}</code> that
 match <code>fileSet.getFiles('name')</code> and <code>fileSet.getGlobs('name')</code>. This
 allows the guefile to centrally define sets of files that are automatically
 reflected in the relevant shell commands.</p>
@@ -239,16 +242,44 @@ the guefile</li>
 <li><code>gue.shell()</code> prints stdout and stderr (in red)</li>
 <li><code>gue.silentShell()</code> suppresses printing</li>
 </ul>
-<h3>Shell command example</h3><pre class="prettyprint source lang-js"><code>gue.fileSet.add('exampleSet', 'README.*');
+<h3>Shell command example</h3><pre class="prettyprint source lang-js"><code>gue.fileSet.add('exampleSet', ['README.*']);
 
 // README.md
 gue.shell('echo {{files &quot;exampleSet&quot;}}');
 
-// *.md
+// README.*
 gue.shell('echo {{globs &quot;exampleSet&quot;}}');
 
 // woot
-gue.shell('echo {{myString}}', {myString: 'woot'});</code></pre></article>
+gue.shell('echo {{myString}}', {myString: 'woot'});</code></pre><h2>Smart Watch</h2><p>Smart watch works like a regular watch but works with file sets to determine
+which task(s) to run when a file changes. When you define a file set you can
+provide an optional task name, the task is executed by smart watch when
+a file that matches the fileset changes</p>
+<p><strong>Notes</strong></p>
+<ul>
+<li>The task(s) for each different file set run in parallel</li>
+<li>The task(s) in a given file set run in the order they are defined</li>
+</ul>
+<h3>smartWatch example</h3><pre class="prettyprint source lang-js"><code>
+// When gue watch is run
+// the lint task and the test task are executed when test/unit.test.js is
+// changed
+// The test task only is run when lib/myLib.js is changed
+
+gue.fileSet.add('allSrc', ['**/*.js'], 'lint');
+gue.fileSet.add('tests', ['test/**/*.test.js'], 'test');
+
+gue.task('watch', ()=>{
+  return gue.smartWatch(fileSet);
+});
+
+gue.task('lint', ()=>{
+  return gue.shell('eslint {{globs &quot;allSrc&quot;}}');
+});
+
+gue.task('test', () =>{
+  return gue.shell('mocha {{globs &quot;tests&quot;}}');
+});</code></pre></article>
     </section>
 
 
@@ -270,7 +301,7 @@ gue.shell('echo {{myString}}', {myString: 'woot'});</code></pre></article>
           
     <span class="jsdoc-message">
     Documentation generated by <a href="https://github.com/jsdoc3/jsdoc" target="_blank">JSDoc 3.6.0</a>
-    on 2017-08-26T14:03:33-04:00
+    on 2017-08-27T14:17:33-04:00
     </span>
         </footer>
       </div>
