@@ -3,8 +3,9 @@ Gue (pronounced goo) is a task runner for node. Rather than relying on plugins
 Gue provides a built in way to easily run shell commands. Gue also provides
 automatic watching using the fileSets feature.
 
-Version: 0.9.0 <br />API Documentation: **FIXME link** <br />
+[API documentation for version 0.9.0](https://skarfacegc.github.io/Gue/0.9.0)
 
+[Source](https://github.com/skarfacegc/Gue/)
 ## Installation
 You can install gue globally with ```npm install -g gue``` and/or locally
 with ```npm install -D gue```. If installed in both places the global gue

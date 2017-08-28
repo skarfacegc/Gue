@@ -12,8 +12,17 @@ if (argv.badges) {
   badges = '';
 }
 
+// Add the github link if requested
+let githubLink = '';
+if (argv.githubLink) {
+  githubLink = '[Source](https://github.com/skarfacegc/Gue/)';
+} else {
+  githubLink = '';
+}
+
 // Setup helpers and partials
 hbs.registerPartial('badges', badges);
+hbs.registerPartial('githubLink', githubLink);
 hbs.registerHelper('raw-helper', (options) => {
   return options.fn();
 });

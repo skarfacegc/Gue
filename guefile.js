@@ -85,7 +85,7 @@ gue.task('buildReadme', () => {
 });
 
 gue.task('buildApiDocs', ['docClean'], () => {
-  return gue.shell('node docSrc/buildReadme.js > docs/readme.md && '
+  return gue.shell('node docSrc/buildReadme.js --githubLink >docs/readme.md && '
     + 'jsdoc -R docs/readme.md -c jsdoc.json -r '
     + '-t node_modules/jsdoc-oblivion/template -d docs/ {{globs "jsdocSrc"}}');
 });
