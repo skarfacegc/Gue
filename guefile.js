@@ -17,7 +17,7 @@ fileSet.add('clean', ['coverage', '.nyc_output']);
 fileSet.add('distclean', ['node_modules']);
 
 // Documentation
-fileSet.add('docs', ['docs/']);
+fileSet.add('docs', ['docs/' + packageJson.version]);
 fileSet.add('jsdocSrc', ['lib/', 'index.js']);
 fileSet.add('spellCheck', ['index.js', 'lib/**/*.js', 'bin/gue.js',
   'test/**/*.js', 'docSrc/readme.hbs']);
@@ -59,8 +59,7 @@ gue.task('distclean', ['clean'], () => {
 });
 
 gue.task('docClean', () => {
-  return gue.shell('rm -rf {{globs "docs"}}/{{version}}',
-    {version: packageJson.version});
+  return gue.shell('rm -rf {{globs "docs"}}');
 });
 
 //
@@ -92,11 +91,17 @@ gue.task('buildApiDocs', ['docClean'], () => {
     + 'jsdoc -R docs/{{version}}/readme.md -c jsdoc.json -r '
     + '-t node_modules/jsdoc-oblivion/template -d docs/{{version}} '
     +' {{globs "jsdocSrc"}}',
-    {version: packageJson.version}
+  {version: packageJson.version}
   );
 });
 
-gue.task('buildDocs', ['spell', 'buildReadme', 'buildApiDocs']);
+gue.task('buildApiDocsTOC', () => {
+  return gue.shell('rm docs/index.html && '
+    +'node docSrc/buildDocToc.js > docs/index.html');
+});
+
+gue.task('buildDocs', ['spell', 'buildReadme', 'buildApiDocs',
+  'buildApiDocsTOC']);
 //
 // Utility tasks
 //
