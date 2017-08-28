@@ -1,10 +1,10 @@
-{{>badges}}{{{{raw-helper}}}}
+{{>badges}}
 # Gue
 Gue (pronounced goo) is a task runner for node. Rather than relying on plugins
 Gue provides a built in way to easily run shell commands. Gue also provides
 automatic watching using the fileSets feature.
 
-<!-- toc -->
+Version: {{version}} <br />API Documentation: **FIXME link** <br />
 
 ## Installation
 You can install gue globally with ```npm install -g gue``` and/or locally
@@ -127,8 +127,8 @@ than normal shell globs
 from all globs
 
 ### File Set Example
+{{{{raw-helper}}}}
 ```js
-
 const gue = require('gue');
 const fileSet = gue.fileSet;
 
@@ -153,13 +153,16 @@ gue.task('test', () => {
       'mocha {{globs "unitTests"}}'));
 });
 ```
+{{{{/raw-helper}}}}
 
 ## Shell Commands
 Gue provides support for shell commands that work well with FileSets.
 Shell commands are executed with
 [execa.shell](https://github.com/sindresorhus/execa). The command string is
 a [handlebars](http://handlebarsjs.com/) template. There are two built in
+{{{{raw-helper}}}}
 helpers ```{{globs "name"}}``` and ```{{files "name"}}``` that
+{{{{/raw-helper}}}}
 match ```fileSet.getFiles('name')``` and ```fileSet.getGlobs('name')```. This
 allows the guefile to centrally define sets of files that are automatically
 reflected in the relevant shell commands.
@@ -173,6 +176,7 @@ the guefile
 - ```gue.silentShell()``` suppresses printing
 
 ### Shell command example
+{{{{raw-helper}}}}
 ```js
 gue.fileSet.add('exampleSet', ['README.*']);
 
@@ -185,6 +189,7 @@ gue.shell('echo {{globs "exampleSet"}}');
 // woot
 gue.shell('echo {{myString}}', {myString: 'woot'});
 ```
+{{{{/raw-helper}}}}
 
 ## Smart Watch
 Smart watch works like a regular watch but works with file sets to determine
@@ -197,16 +202,17 @@ a file that matches the fileset changes
 - The task(s) in a given file set run in the order they are defined
 
 ### smartWatch example
+{{{{raw-helper}}}}
 ```js
 
-// When gue watch is run
-// the lint task and the test task are executed when test/unit.test.js is
-// changed
-// The test task only is run when lib/myLib.js is changed
 
+// Run the linter when any of our source files change
 gue.fileSet.add('allSrc', ['**/*.js'], 'lint');
+
+// Run tests whenever any of our test files change
 gue.fileSet.add('tests', ['test/**/*.test.js'], 'test');
 
+// the smartWatch task
 gue.task('watch', ()=>{
   return gue.smartWatch(fileSet);
 });
@@ -220,5 +226,4 @@ gue.task('test', () =>{
 });
 
 ```
-
 {{{{/raw-helper}}}}

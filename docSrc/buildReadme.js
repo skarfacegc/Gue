@@ -1,6 +1,7 @@
 const fs = require('fs');
 const hbs = require('handlebars');
 const argv = require('minimist')(process.argv.slice(2));
+const packageJson = require('../package.json');
 
 // Load assets from disk
 const readme = fs.readFileSync(__dirname + '/readme.hbs', 'utf8');
@@ -17,4 +18,4 @@ hbs.registerHelper('raw-helper', (options) => {
   return options.fn();
 });
 
-console.log(hbs.compile(readme)());
+console.log(hbs.compile(readme)({'version': packageJson.version}));

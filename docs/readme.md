@@ -1,10 +1,9 @@
-
 # Gue
 Gue (pronounced goo) is a task runner for node. Rather than relying on plugins
 Gue provides a built in way to easily run shell commands. Gue also provides
 automatic watching using the fileSets feature.
 
-<!-- toc -->
+Version: 0.9.0 <br />API Documentation: **FIXME link** <br />
 
 ## Installation
 You can install gue globally with ```npm install -g gue``` and/or locally
@@ -128,7 +127,6 @@ from all globs
 
 ### File Set Example
 ```js
-
 const gue = require('gue');
 const fileSet = gue.fileSet;
 
@@ -199,14 +197,14 @@ a file that matches the fileset changes
 ### smartWatch example
 ```js
 
-// When gue watch is run
-// the lint task and the test task are executed when test/unit.test.js is
-// changed
-// The test task only is run when lib/myLib.js is changed
 
+// Run the linter when any of our source files change
 gue.fileSet.add('allSrc', ['**/*.js'], 'lint');
+
+// Run tests whenever any of our test files change
 gue.fileSet.add('tests', ['test/**/*.test.js'], 'test');
 
+// the smartWatch task
 gue.task('watch', ()=>{
   return gue.smartWatch(fileSet);
 });
@@ -220,5 +218,4 @@ gue.task('test', () =>{
 });
 
 ```
-
 
