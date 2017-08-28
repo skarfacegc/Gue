@@ -1,5 +1,6 @@
 const gue = require('./index.js');
 const fileSet = gue.fileSet;
+const packageJson = require('./package.json');
 
 // Tests and source files
 fileSet.add('allSrc', ['**/*.js'], 'lint');
@@ -16,12 +17,12 @@ fileSet.add('clean', ['coverage', '.nyc_output']);
 fileSet.add('distclean', ['node_modules']);
 
 // Documentation
-fileSet.add('docs', ['docs/*']);
+fileSet.add('docs', ['docs/']);
 fileSet.add('jsdocSrc', ['lib/', 'index.js']);
 fileSet.add('spellCheck', ['index.js', 'lib/**/*.js', 'bin/gue.js',
   'test/**/*.js', 'docSrc/readme.hbs']);
 
-// gue.debug = true;
+gue.debug = true;
 
 gue.task('watch', () => {
   return gue.smartWatch(fileSet);
@@ -58,7 +59,8 @@ gue.task('distclean', ['clean'], () => {
 });
 
 gue.task('docClean', () => {
-  return gue.shell('rm -rf {{globs "docs"}}');
+  return gue.shell('rm -rf {{globs "docs"}}/{{version}}',
+    {version: packageJson.version});
 });
 
 //
@@ -85,9 +87,13 @@ gue.task('buildReadme', () => {
 });
 
 gue.task('buildApiDocs', ['docClean'], () => {
-  return gue.shell('node docSrc/buildReadme.js --githubLink >docs/readme.md && '
-    + 'jsdoc -R docs/readme.md -c jsdoc.json -r '
-    + '-t node_modules/jsdoc-oblivion/template -d docs/ {{globs "jsdocSrc"}}');
+  return gue.shell('mkdir -p docs/{{version}} && '
+    + 'node docSrc/buildReadme.js --githubLink >docs/{{version}}/readme.md && '
+    + 'jsdoc -R docs/{{version}}/readme.md -c jsdoc.json -r '
+    + '-t node_modules/jsdoc-oblivion/template -d docs/{{version}} '
+    +' {{globs "jsdocSrc"}}',
+    {version: packageJson.version}
+  );
 });
 
 gue.task('buildDocs', ['spell', 'buildReadme', 'buildApiDocs']);
