@@ -5,14 +5,17 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 const sandbox = sinon.sandbox.create();
-const gue = require('../index');
+const ChaiAsPromised = require('chai-as-promised');
 const chalk = require('chalk');
 const chokidar = require('chokidar');
 
+const FileSet = require('../../lib/fileSet');
+const gue = require('../../index');
+
 chai.use(sinonChai);
+chai.use(ChaiAsPromised);
 
 describe('Gue', () => {
-
   afterEach(() => {
     sandbox.restore();
   });
@@ -27,16 +30,9 @@ describe('Gue', () => {
     it('should successfully create a task', () => {
       gue.task('foo', ['bar'], () => {});
 
-      expect(gue.tasks).to.have.property('foo');
-      expect(gue.tasks.foo.dep).to.deep.equal(['bar']);
-      expect(gue.tasks.foo.name).to.equal('foo');
-    });
-  });
-
-  describe('setOption', () => {
-    it('should add an option', () => {
-      gue.setOption('foo', 'bar');
-      expect(gue.options.foo).to.equal('bar');
+      expect(gue.gueTasks.tasks).to.have.property('foo');
+      expect(gue.gueTasks.tasks.foo.dependencies).to.deep.equal(['bar']);
+      expect(gue.gueTasks.tasks.foo.name).to.equal('foo');
     });
   });
 
@@ -44,44 +40,47 @@ describe('Gue', () => {
     it('should not decorate in clean mode', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('clean', 'Hello');
-      sandbox.restore();
       expect(logStub).to.be.calledWith('Hello');
     });
 
     it('should not decorate if an invalid mode is passed', () => {
       const logStub = sandbox.stub(console, 'log');
       gue._log('', 'Hello');
-      sandbox.restore();
       expect(logStub).to.be.calledWith('Hello');
     });
 
     it('should correctly color the taskname and message', () => {
-      var compareString = chalk.bold.green('[taskname] ');
+      let compareString = chalk.bold.green('[taskname] ');
       compareString += chalk.cyan('foo');
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('normal', 'foo', 'taskname');
-      sandbox.restore();
       expect(logStub).to.be.calledWith(compareString);
     });
 
     it('should print a colored duration if provided', () => {
-      var compareString = chalk.bold.green('[taskname] ');
+      let compareString = chalk.bold.green('[taskname] ');
       compareString += chalk.cyan('foo');
       compareString += ' ' + chalk.white('1ms');
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('normal', 'foo', 'taskname', 1);
-      sandbox.restore();
       expect(logStub).to.be.calledWith(compareString);
     });
 
     it('should correctly color errors', () => {
-      var compareString = chalk.red('foo');
+      let compareString = chalk.red('foo');
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('error', 'foo');
-      sandbox.restore();
+      expect(logStub).to.be.calledWith(compareString);
+    });
+
+    it('should correctly color debug messages', () => {
+      let compareString = chalk.yellow('foo');
+
+      const logStub = sandbox.stub(console, 'log');
+      gue._log('debug', 'foo');
       expect(logStub).to.be.calledWith(compareString);
     });
   });
@@ -108,27 +107,58 @@ describe('Gue', () => {
     });
   });
 
+  describe('debugLog', () => {
+    it('should call _log correctly', () => {
+      const _logStub = sandbox.stub(gue, '_log');
+
+      gue.debug = true;
+      gue.debugLog('err');
+      gue.debug = false;
+
+      expect(_logStub).to.be.calledWith('debug', 'err');
+    });
+
+    it('should not log if debug is false', () => {
+      const _logStub = sandbox.stub(gue, '_log');
+      gue.debug = false;
+      gue.debugLog('err');
+      expect(_logStub).to.not.be.called;
+    });
+  });
+
   describe('_shell', () => {
-    it('should run the command with replacement', () => {
-      gue.setOption('test', 'TestString');
-      return gue._shell('silent', 'echo {{test}}')
-      .then((data)=> {
-        expect(data.stdout).to.equal('TestString');
-      });
+    it('should expand fileSet files', () => {
+      const fileSet = gue.fileSet;
+      fileSet.add('testSet', '*README.md*');
+
+      gue._shell('silent', 'echo {{files "testSet"}}')
+        .then((data) => {
+          expect(data.stdout).to.equal('README.md');
+        });
+    });
+
+    it('should expand fileSet globs', () => {
+      const fileSet = gue.fileSet;
+      fileSet.add('globTest', '*.md');
+
+      gue._shell('silent', 'echo \'{{globs "globTest"}}\'')
+        .then((data) => {
+          expect(data.stdout).to.equal('*.md');
+        });
     });
 
     it('should run a command with passed replacement', () => {
       return gue._shell('silent', 'echo {{foo}}', {
-        foo: 'woot'
+        foo: 'woot',
       })
-      .then((data) => {
-        expect(data.stdout).to.equal('woot');
-      });
+        .then((data) => {
+          expect(data.stdout).to.equal('woot');
+        });
     });
 
     it('should handle command failures', (done) => {
       gue._shell('silent', 'badcommand')
-        .then(()=> {
+        .then(() => {
           done(new Error('Should not have succeeded'));
         })
         .catch((err) => {
@@ -137,7 +167,7 @@ describe('Gue', () => {
         });
     });
 
-    it('should not print on successs when called in silent mode', (done) => {
+    it('should not print on success when called in silent mode', (done) => {
       const logStub = sandbox.stub();
       gue.log = logStub;
       gue._shell('silent', 'echo foo')
@@ -217,28 +247,23 @@ describe('Gue', () => {
 
   describe('_watch', () => {
     it('should call chokidar correctly and start the correct tasks', () => {
-      const watchStub = sandbox.stub(chokidar, 'watch').callsFake(()=> {
-        return {on: () => {}};  // replace the on event handler
+      const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
+        return {on: () => {}}; // replace the on event handler
       });
       gue._watch(['foo'], ['bar']);
       expect(watchStub).to.be.calledWith(['foo']);
     });
 
     it('should run tasks when an event is emitted', () => {
-      const watcher = gue._watch('.', 'foo');
+      const watcher = gue._watch(__dirname, 'foo');
+
+      // don't restart the watch loop
       watcher.close = () => {};
-      const startStub = sandbox.stub(gue, 'start');
+      const startStub = sandbox.stub(gue.gueTasks, 'runTaskParallel')
+        .resolves();
+
       watcher.emit('all');
       expect(startStub).to.be.calledWith('foo');
-    });
-
-    it('should restart the _watch correctly', () => {
-      const watcher = gue._watch('.', 'foo');
-      watcher.close = () => {};
-      const startStub = sandbox.stub(gue, 'start').yields();
-      const _watchStub = sandbox.stub(gue, '_watch');
-      watcher.emit('all');
-      expect(_watchStub).to.be.calledWith('.', 'foo');
     });
   });
 
@@ -247,6 +272,34 @@ describe('Gue', () => {
       const _watchStub = sandbox.stub(gue, '_watch');
       gue.watch('.', 'bar');
       expect(_watchStub).to.be.calledWith('.', 'bar');
+    });
+  });
+
+  describe('_smartWatch', () => {
+    it('should call chokidar correctly', () => {
+      const fileSet = new FileSet();
+      fileSet.add('setName', 'README.md', ['task1']);
+      const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
+        return {on: () => {}};
+      });
+      gue._smartWatch(fileSet);
+      expect(watchStub).to.be.calledWith(['README.md']);
+    });
+
+    it('should start the correct tasks', () => {
+      const fileSet = new FileSet();
+      fileSet.add('testSet', 'foo', ['tasks', 'yayTasks']);
+
+      const watcher = gue._smartWatch(fileSet);
+      const startStub = sandbox.stub(gue.gueTasks, 'runTaskParallel')
+        .resolves();
+
+      // We don't want the watch to restart
+      sandbox.stub(gue, 'smartWatch');
+      watcher.close = () => {};
+
+      watcher.emit('all', 'change', 'foo');
+      expect(startStub).to.be.calledWith(['tasks', 'yayTasks']);
     });
   });
 });
