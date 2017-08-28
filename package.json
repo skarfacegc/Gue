@@ -42,7 +42,6 @@
     "trim-newlines": "^2.0.0"
   },
   "devDependencies": {
-    "babel-core": "^6.25.0",
     "chai": "^4.1.1",
     "coveralls": "^2.13.1",
     "cspell": "^1.9.3",
