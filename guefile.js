@@ -22,7 +22,7 @@ fileSet.add('jsdocSrc', ['lib/', 'index.js']);
 fileSet.add('spellCheck', ['index.js', 'lib/**/*.js', 'bin/gue.js',
   'test/**/*.js', 'docSrc/readme.hbs']);
 
-gue.debug = true;
+// gue.debug = true;
 
 gue.task('watch', () => {
   return gue.smartWatch(fileSet);
