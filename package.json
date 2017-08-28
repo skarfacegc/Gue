@@ -42,6 +42,7 @@
     "trim-newlines": "^2.0.0"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
     "chai": "^4.1.1",
     "coveralls": "^2.13.1",
     "cspell": "^1.9.3",
@@ -53,8 +54,8 @@
     "markdox": "^0.1.10",
     "mocha": "^3.5.0",
     "nyc": "^11.1.0",
-    "sinon": "^3.2.0",
-    "sinon-chai": "^2.12.0",
+    "sinon": "^3.2.1",
+    "sinon-chai": "^2.13.0",
     "snap-shot": "^2.17.0",
     "tmp-promise": "^1.0.3"
   }
