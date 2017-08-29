@@ -5,26 +5,22 @@ const packageJson = require('../package.json');
 
 // Load assets from disk
 const readme = fs.readFileSync(__dirname + '/readme.hbs', 'utf8');
-let badges = '';
-if (argv.badges) {
-  badges = fs.readFileSync(__dirname + '/badges.hbs', 'utf8');
-} else {
-  badges = '';
-}
-
-// Add the github link if requested
-let githubLink = '';
-if (argv.githubLink) {
-  githubLink = '[Source](https://github.com/skarfacegc/Gue/)';
-} else {
-  githubLink = '';
-}
-
-// Setup helpers and partials
+let badges = fs.readFileSync(__dirname + '/badges.hbs', 'utf8');
 hbs.registerPartial('badges', badges);
+
+// define the github link
+let githubLink = '[Source](https://github.com/skarfacegc/Gue/)';
 hbs.registerPartial('githubLink', githubLink);
+
+// define the docs link
+let docLink = '[API Documentation for ' + packageJson.version + ']'+
+  '(https://skarfacegc.github.io/Gue/' + packageJson.version + ')';
+hbs.registerPartial('docLink', docLink);
+
+const docsContext = argv.docsContext;
+
 hbs.registerHelper('raw-helper', (options) => {
   return options.fn();
 });
 
-console.log(hbs.compile(readme)({'version': packageJson.version}));
+console.log(hbs.compile(readme)({'docsContext': docsContext}));

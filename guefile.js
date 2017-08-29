@@ -82,12 +82,12 @@ gue.task('spell', () => {
 
 gue.task('buildReadme', () => {
   return gue.shell('rm -f README.md && '
-    + 'node docSrc/buildReadme.js --badges > README.md');
+    + 'node docSrc/buildReadme.js > README.md');
 });
 
 gue.task('buildApiDocs', ['docClean'], () => {
   return gue.shell('mkdir -p docs/{{version}} && '
-    + 'node docSrc/buildReadme.js --githubLink >docs/{{version}}/readme.md && '
+    + 'node docSrc/buildReadme.js --docsContext >docs/{{version}}/readme.md && '
     + 'jsdoc -R docs/{{version}}/readme.md -c jsdoc.json -r '
     + '-t node_modules/jsdoc-oblivion/template -d docs/{{version}} '
     +' {{globs "jsdocSrc"}}',
