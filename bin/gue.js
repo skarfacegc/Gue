@@ -28,7 +28,7 @@ gueCli.launch({
  */
 function invoke(env) {
   if (!env.configPath) {
-    console.error(chalk.red('No gulpfile found'));
+    console.error(chalk.red('No guefile found'));
     process.exit(1);
   }
 
