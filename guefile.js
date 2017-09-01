@@ -3,7 +3,8 @@ const fileSet = gue.fileSet;
 const packageJson = require('./package.json');
 
 // Tests and source files
-fileSet.add('allSrc', ['**/*.js'], 'lint');
+fileSet.add('allSrc', ['lib/**/*.js', 'index.js','test/**/*.js','bin/gue.js'],
+  'lint', 'guefile.js');
 fileSet.add('src', ['*.js', 'lib/*.js', 'bin/*.js'], 'test');
 fileSet.add('unitTests', ['test/unit/**/*.js'], 'test');
 fileSet.add('integrationTests', ['test/integration/**/*.test.js'],

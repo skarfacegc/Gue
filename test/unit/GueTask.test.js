@@ -302,8 +302,9 @@ describe('GueTask', () => {
       const gueTask = new GueTask('foo', () => {
         return Promise.reject('failed');
       });
-      return expect(gueTask.runAction()).to
-        .eventually.be.rejectedWith('failed');
+      return expect(gueTask.runAction()).to.eventually.be.rejectedWith(
+        'failed'
+      );
     });
 
     it('should emit an error if the task fails', () => {
@@ -313,7 +314,7 @@ describe('GueTask', () => {
 
       gueTask.runAction().catch(() => {});
 
-      gueEvents.on('GueTask.runAction.error', (val) => {
+      gueEvents.on('GueTask.runAction.error', val => {
         expect(val).to.eventually.equal('failed');
       });
 

@@ -20,7 +20,7 @@ describe('lib/fileSet', () => {
         name: 'foo',
         globs: ['LICENSE'],
         files: ['LICENSE'],
-        tasks: ['bar'],
+        tasks: ['bar']
       };
 
       expect(fileSetDef).to.deep.equal(testSetDef);
@@ -61,7 +61,7 @@ describe('lib/fileSet', () => {
       fileSet.add('foo', ['README.md', 'LICENSE'], 'myTask');
       expect(fileSet.globMap).to.deep.equal({
         'README.md': ['myTask'],
-        'LICENSE': ['myTask'],
+        LICENSE: ['myTask']
       });
     });
   });
@@ -71,8 +71,10 @@ describe('lib/fileSet', () => {
       const fileSet = new FileSet();
       fileSet.add('foo', '*.js', 'starTask');
       fileSet.add('index', 'index.js', 'indexTask');
-      expect(fileSet.getTasks('index.js')).to.deep
-        .equal(['starTask', 'indexTask']);
+      expect(fileSet.getTasks('index.js')).to.deep.equal([
+        'starTask',
+        'indexTask'
+      ]);
     });
 
     it('should return an empty list on no match', () => {
@@ -92,8 +94,10 @@ describe('lib/fileSet', () => {
       fileSet.add('foo', '*.js', ['myTask', 'yourtask']);
       fileSet.add('index', 'index.js', 'myTask');
 
-      expect(fileSet.getTasks('index.js')).to.deep
-        .equal(['myTask', 'yourtask']);
+      expect(fileSet.getTasks('index.js')).to.deep.equal([
+        'myTask',
+        'yourtask'
+      ]);
     });
 
     it('should take a list of files', () => {
@@ -102,8 +106,10 @@ describe('lib/fileSet', () => {
       fileSet.add('foo', 'README.md', 'ReadTask');
       fileSet.add('bar', 'LICENSE', 'LicTask');
 
-      expect(fileSet.getTasks(['README.md', 'LICENSE'])).to.deep
-        .equal(['ReadTask', 'LicTask']);
+      expect(fileSet.getTasks(['README.md', 'LICENSE'])).to.deep.equal([
+        'ReadTask',
+        'LicTask'
+      ]);
     });
 
     it('should handle a single file matching multiple globs', () => {
@@ -112,8 +118,11 @@ describe('lib/fileSet', () => {
       fileSet.add('first', ['README.md'], ['task1', 'task2']);
       fileSet.add('second', 'README.m?', 'task3');
 
-      expect(fileSet.getTasks(['README.md'])).to.deep
-        .equal(['task1', 'task2', 'task3']);
+      expect(fileSet.getTasks(['README.md'])).to.deep.equal([
+        'task1',
+        'task2',
+        'task3'
+      ]);
     });
   });
 

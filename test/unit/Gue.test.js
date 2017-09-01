@@ -131,92 +131,95 @@ describe('Gue', () => {
       const fileSet = gue.fileSet;
       fileSet.add('testSet', '*README.md*');
 
-      gue._shell('silent', 'echo {{files "testSet"}}')
-        .then((data) => {
-          expect(data.stdout).to.equal('README.md');
-        });
+      gue._shell('silent', 'echo {{files "testSet"}}').then(data => {
+        expect(data.stdout).to.equal('README.md');
+      });
     });
 
     it('should expand fileSet globs', () => {
       const fileSet = gue.fileSet;
       fileSet.add('globTest', '*.md');
 
-      gue._shell('silent', 'echo \'{{globs "globTest"}}\'')
-        .then((data) => {
-          expect(data.stdout).to.equal('*.md');
-        });
+      gue._shell('silent', 'echo \'{{globs "globTest"}}\'').then(data => {
+        expect(data.stdout).to.equal('*.md');
+      });
     });
 
     it('should run a command with passed replacement', () => {
-      return gue._shell('silent', 'echo {{foo}}', {
-        foo: 'woot',
-      })
-        .then((data) => {
+      return gue
+        ._shell('silent', 'echo {{foo}}', {
+          foo: 'woot'
+        })
+        .then(data => {
           expect(data.stdout).to.equal('woot');
         });
     });
 
-    it('should handle command failures', (done) => {
-      gue._shell('silent', 'badcommand')
+    it('should handle command failures', done => {
+      gue
+        ._shell('silent', 'badcommand')
         .then(() => {
           done(new Error('Should not have succeeded'));
         })
-        .catch((err) => {
+        .catch(err => {
           expect(err.stderr).to.contain('badcommand');
           done();
         });
     });
 
-    it('should not print on success when called in silent mode', (done) => {
+    it('should not print on success when called in silent mode', done => {
       const logStub = sandbox.stub();
       gue.log = logStub;
-      gue._shell('silent', 'echo foo')
-        .then((data) => {
+      gue
+        ._shell('silent', 'echo foo')
+        .then(data => {
           expect(logStub).to.not.be.called;
           done();
         })
-        .catch((data) => {
+        .catch(data => {
           done(new Error('Should not have gotten here'));
         });
     });
 
-    it('should not print on failure when called in silent mode', (done) => {
+    it('should not print on failure when called in silent mode', done => {
       const logStub = sandbox.stub();
       gue.log = logStub;
-      gue._shell('silent', 'bad command')
-        .then((data) => {
+      gue
+        ._shell('silent', 'bad command')
+        .then(data => {
           done(new Error('Should not have gotten here'));
         })
-        .catch((data) => {
+        .catch(data => {
           expect(logStub).to.not.be.called;
           done();
         });
     });
 
-    it('should print on success when called in print mode', (done) => {
+    it('should print on success when called in print mode', done => {
       const logStub = sandbox.stub();
       gue.log = logStub;
-      gue._shell('print', 'echo foo')
-        .then((data) => {
+      gue
+        ._shell('print', 'echo foo')
+        .then(data => {
           expect(logStub).to.be.calledWith('foo');
           done();
         })
-        .catch((data) => {
+        .catch(data => {
           done(new Error('Should not have gotten here'));
         });
     });
 
-    it('should print on failure when called in print mode', (done) => {
+    it('should print on failure when called in print mode', done => {
       const logStub = sandbox.stub();
       sandbox.stub(console, 'log');
       gue.errLog = logStub;
-      gue._shell('print', 'badcommand')
-        .then((data) => {
+      gue
+        ._shell('print', 'badcommand')
+        .then(data => {
           done(new Error('Should not have gotten here'));
         })
-        .catch((data) => {
-          expect(logStub).to.be
-            .calledWithMatch(/badcommand.*not found/);
+        .catch(data => {
+          expect(logStub).to.be.calledWithMatch(/badcommand.*not found/);
           done();
         });
     });
@@ -248,7 +251,7 @@ describe('Gue', () => {
   describe('_watch', () => {
     it('should call chokidar correctly and start the correct tasks', () => {
       const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
-        return {on: () => {}}; // replace the on event handler
+        return { on: () => {} }; // replace the on event handler
       });
       gue._watch(['foo'], ['bar']);
       expect(watchStub).to.be.calledWith(['foo']);
@@ -259,7 +262,8 @@ describe('Gue', () => {
 
       // don't restart the watch loop
       watcher.close = () => {};
-      const startStub = sandbox.stub(gue.gueTasks, 'runTaskParallel')
+      const startStub = sandbox
+        .stub(gue.gueTasks, 'runTaskParallel')
         .resolves();
 
       watcher.emit('all');
@@ -280,7 +284,7 @@ describe('Gue', () => {
       const fileSet = new FileSet();
       fileSet.add('setName', 'README.md', ['task1']);
       const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
-        return {on: () => {}};
+        return { on: () => {} };
       });
       gue._smartWatch(fileSet);
       expect(watchStub).to.be.calledWith(['README.md']);
@@ -291,7 +295,8 @@ describe('Gue', () => {
       fileSet.add('testSet', 'foo', ['tasks', 'yayTasks']);
 
       const watcher = gue._smartWatch(fileSet);
-      const startStub = sandbox.stub(gue.gueTasks, 'runTaskParallel')
+      const startStub = sandbox
+        .stub(gue.gueTasks, 'runTaskParallel')
         .resolves();
 
       // We don't want the watch to restart

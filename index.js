@@ -237,23 +237,24 @@ class Gue {
     const shellOpts = {
       env: {
         FORCE_COLOR: 'true',
-        PATH: process.env.PATH,
-      },
+        PATH: process.env.PATH
+      }
     };
 
     const compiledCmd = buildCmd(that, command);
 
     this.debugLog(compiledCmd(values), 'debug');
 
-    return execa.shell(compiledCmd(values), shellOpts)
-      .then((result) => {
+    return execa
+      .shell(compiledCmd(values), shellOpts)
+      .then(result => {
         if (mode === 'print') {
           this.errLog(trimNewlines(result.stderr));
           this.log(trimNewlines(result.stdout));
         }
         return result;
       })
-      .catch((result) => {
+      .catch(result => {
         if (mode === 'print') {
           this.errLog(trimNewlines(result.stderr));
           this.log(trimNewlines(result.stdout));
@@ -272,7 +273,7 @@ class Gue {
    */
   _smartWatch(fileSet) {
     const chokidarOpts = {
-      ignoreInitial: true,
+      ignoreInitial: true
     };
 
     const watcher = chokidar.watch(fileSet.getAllFiles(), chokidarOpts);
@@ -283,16 +284,19 @@ class Gue {
     // a bit
     watcher.on('all', (event, path) => {
       const tasks = fileSet.getTasks(path);
-      this.log(path + ' ' + event + ' running [' + tasks.join(',') + ']',
-        'smartWatch');
+      this.log(
+        path + ' ' + event + ' running [' + tasks.join(',') + ']',
+        'smartWatch'
+      );
 
       // Stop the watch, then restart after tasks have run
       // this fixes looping issues if files are modified
       // during the run (as with jscs fix)
       watcher.close();
-      this.gueTasks.runTaskParallel(tasks, true)
+      this.gueTasks
+        .runTaskParallel(tasks, true)
         .catch(() => {
-        // don't let errors stop the restart
+          // don't let errors stop the restart
         })
         .then(() => {
           this._smartWatch(fileSet);
@@ -320,7 +324,7 @@ class Gue {
    */
   _watch(glob, taskList) {
     const chokidarOpts = {
-      ignoreInitial: true,
+      ignoreInitial: true
     };
 
     const watcher = chokidar.watch(glob, chokidarOpts);
@@ -333,9 +337,10 @@ class Gue {
       // this fixes looping issues if files are modified
       // during the run (as with jscs fix)
       watcher.close();
-      this.gueTasks.runTaskParallel(taskList, true)
+      this.gueTasks
+        .runTaskParallel(taskList, true)
         .catch(() => {
-        // don't let errors stop the restart
+          // don't let errors stop the restart
         })
         .then(() => {
           this._watch(glob, taskList);
@@ -382,8 +387,11 @@ class Gue {
       composedMessage += message;
     }
 
-    if (duration !== undefined && duration > 0.0 &&
-        process.env.NODE_ENV !== 'snapshot') {
+    if (
+      duration !== undefined &&
+      duration > 0.0 &&
+      process.env.NODE_ENV !== 'snapshot'
+    ) {
       composedMessage += ' ' + chalk.white(prettyMs(duration));
     }
     console.log(composedMessage);
@@ -398,14 +406,14 @@ class Gue {
    */
   registerEventHandlers() {
     // Log task start
-    gueEvents.on('GueTask.taskStarted', (task) => {
+    gueEvents.on('GueTask.taskStarted', task => {
       if (task.name !== 'default') {
         this.log('started', task.name, 'normal');
       }
     });
 
     // Log task stop and task duration
-    gueEvents.on('GueTask.taskFinished', (task) => {
+    gueEvents.on('GueTask.taskFinished', task => {
       if (task.name !== 'default') {
         this.log('finished in', task.name, task.getTaskDuration());
       }
@@ -415,8 +423,7 @@ class Gue {
     gueEvents.on('GueTask.taskFinished.error', (task, message) => {
       process.exitCode = 1;
       beeper(1);
-      this.errLog('finished with error in', task.name,
-        task.getTaskDuration());
+      this.errLog('finished with error in', task.name, task.getTaskDuration());
     });
   }
 }
@@ -435,11 +442,11 @@ module.exports = new Gue();
  * @return {handlebars} Handlebars template object
  */
 function buildCmd(that, command) {
-  handlebars.registerHelper('files', (setName) => {
+  handlebars.registerHelper('files', setName => {
     return that.fileSet.getFiles(setName);
   });
 
-  handlebars.registerHelper('globs', (setName) => {
+  handlebars.registerHelper('globs', setName => {
     return that.fileSet.getGlobs(setName);
   });
 

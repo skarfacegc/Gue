@@ -11,14 +11,17 @@ const gueCli = new Liftoff({
   name: 'gue',
   processTitle: 'gue',
   moduleName: 'gue',
-  configName: 'guefile',
+  configName: 'guefile'
 });
 
-gueCli.launch({
-  cwd: argv.cwd,
-  configPath: argv.config,
-  require: argv.require,
-}, invoke);
+gueCli.launch(
+  {
+    cwd: argv.cwd,
+    configPath: argv.config,
+    require: argv.require
+  },
+  invoke
+);
 
 /**
  * invoke - Setup and start running the requested task
@@ -41,8 +44,7 @@ function invoke(env) {
   // add node_modules/.bin to the path.
   // this should be relative to the project root
   // if liftoff is working correctly.  :)
-  process.env.PATH = env.configBase + '/node_modules/.bin:' +
-    process.env.PATH;
+  process.env.PATH = env.configBase + '/node_modules/.bin:' + process.env.PATH;
 
   // Change directory to configBase to make sure everything
   // is relative to the project root
@@ -55,10 +57,9 @@ function invoke(env) {
   }
 
   // Now lets make do stuff
-  gueInst.gueTasks.runTaskParallel(actionList)
-    .catch((val) => {
-      gueInst.errLog(val, 'gue');
-      beeper(1);
-    });
+  gueInst.gueTasks.runTaskParallel(actionList).catch(val => {
+    gueInst.errLog(val, 'gue');
+    beeper(1);
+  });
 }
 //

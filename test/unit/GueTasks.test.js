@@ -44,10 +44,9 @@ describe('GueTasks', () => {
         return aStub();
       });
 
-      return gueTasks.runTaskParallel('a')
-        .then(() => {
-          expect(aStub).to.be.called;
-        });
+      return gueTasks.runTaskParallel('a').then(() => {
+        expect(aStub).to.be.called;
+      });
     });
 
     it('should run all of the passed tasks', () => {
@@ -63,11 +62,10 @@ describe('GueTasks', () => {
         return bStub();
       });
 
-      return gueTasks.runTaskParallel(['a', 'b'])
-        .then(() => {
-          expect(aStub).to.be.called;
-          expect(bStub).to.be.called;
-        });
+      return gueTasks.runTaskParallel(['a', 'b']).then(() => {
+        expect(aStub).to.be.called;
+        expect(bStub).to.be.called;
+      });
     });
 
     it('should ignore errors when swallowError is true', () => {
@@ -82,8 +80,8 @@ describe('GueTasks', () => {
         return rejectStub();
       });
 
-      return expect(gueTasks.runTaskParallel(['a', 'b'], true)).to.eventually
-        .be.fulfilled;
+      return expect(gueTasks.runTaskParallel(['a', 'b'], true)).to.eventually.be
+        .fulfilled;
     });
 
     it('should propagate errors when swallowError is false', () => {
@@ -161,21 +159,35 @@ describe('GueTasks', () => {
         return Promise.reject('Message');
       });
 
-      return gueTasks.runTask('failed')
-        .catch(() => {
-          expect(eventStub).to.be.calledWith('Message');
-          gueEvents.removeAllListeners();
-        });
+      return gueTasks.runTask('failed').catch(() => {
+        expect(eventStub).to.be.calledWith('Message');
+        gueEvents.removeAllListeners();
+      });
     });
 
     it('should run a task with dependencies correctly', () => {
       const gueTasks = new GueTasks();
 
-      const wrapperStub = sinon.stub().resolves().named('wrapper');
-      const aStub = sinon.stub().resolves().named('a');
-      const bStub = sinon.stub().resolves().named('b');
-      const cStub = sinon.stub().resolves().named('c');
-      const dStub = sinon.stub().resolves().named('d');
+      const wrapperStub = sinon
+        .stub()
+        .resolves()
+        .named('wrapper');
+      const aStub = sinon
+        .stub()
+        .resolves()
+        .named('a');
+      const bStub = sinon
+        .stub()
+        .resolves()
+        .named('b');
+      const cStub = sinon
+        .stub()
+        .resolves()
+        .named('c');
+      const dStub = sinon
+        .stub()
+        .resolves()
+        .named('d');
 
       gueTasks.addTask('wrapper', ['c', 'd'], () => {
         // console.log('run wrapper');
@@ -240,7 +252,7 @@ describe('GueTasks', () => {
         });
       });
 
-      gueEvents.on('GueTask.taskStarted', (val) => {
+      gueEvents.on('GueTask.taskStarted', val => {
         if (val.name === 'a') {
           aStartStub();
         } else {
@@ -248,7 +260,7 @@ describe('GueTasks', () => {
         }
       });
 
-      gueEvents.on('GueTask.taskFinished', (val) => {
+      gueEvents.on('GueTask.taskFinished', val => {
         if (val.name === 'a') {
           aFinishStub();
         } else {
@@ -261,8 +273,12 @@ describe('GueTasks', () => {
         expect(bStartStub).to.be.calledOnce;
         expect(aFinishStub).to.be.calledOnce;
         expect(bFinishStub).to.be.calledOnce;
-        sinon.assert.callOrder(aStartStub,
-          bStartStub, bFinishStub, aFinishStub);
+        sinon.assert.callOrder(
+          aStartStub,
+          bStartStub,
+          bFinishStub,
+          aFinishStub
+        );
       });
     });
 
@@ -313,7 +329,8 @@ describe('GueTasks', () => {
         return Promise.reject();
       });
 
-      return gueTasks.runTask('wrapper')
+      return gueTasks
+        .runTask('wrapper')
         .then(() => {
           throw Error('Should not have gotten here');
         })
