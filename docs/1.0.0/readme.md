@@ -1,8 +1,4 @@
-  [![Build Status](https://travis-ci.org/skarfacegc/Gue.svg?branch=master)](https://travis-ci.org/skarfacegc/Gue) [![Coverage Status](https://coveralls.io/repos/github/skarfacegc/Gue/badge.svg)](https://coveralls.io/github/skarfacegc/Gue) [![dependencies Status](https://david-dm.org/skarfacegc/Gue/status.svg)](https://david-dm.org/skarfacegc/Gue) [![Known Vulnerabilities](https://snyk.io/test/github/skarfacegc/gue/badge.svg)](https://snyk.io/test/github/skarfacegc/gue)
-  
-  [![NPM](https://nodei.co/npm/gue.png?downloads=true)](https://nodei.co/npm/gue/)
-
-  [API Documentation for 1.0.0](https://skarfacegc.github.io/Gue/1.0.0)
+  [Source](https://github.com/skarfacegc/Gue/)
 # Gue
 Gue (pronounced goo) is a task runner for node. Rather than relying on plugins
 Gue provides a built in way to easily run shell commands. Gue also provides
