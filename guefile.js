@@ -3,12 +3,19 @@ const fileSet = gue.fileSet;
 const packageJson = require('./package.json');
 
 // Tests and source files
-fileSet.add('allSrc', ['lib/**/*.js', 'index.js','test/**/*.js','bin/gue.js'],
-  'lint', 'guefile.js');
+fileSet.add(
+  'allSrc',
+  ['lib/**/*.js', 'index.js', 'test/**/*.js', 'bin/gue.js'],
+  'lint',
+  'guefile.js'
+);
 fileSet.add('src', ['*.js', 'lib/*.js', 'bin/*.js'], 'test');
 fileSet.add('unitTests', ['test/unit/**/*.js'], 'test');
-fileSet.add('integrationTests', ['test/integration/**/*.test.js'],
-  'integration');
+fileSet.add(
+  'integrationTests',
+  ['test/integration/**/*.test.js'],
+  'integration'
+);
 
 // Rebuild trigger
 fileSet.add('packageJson', 'package.json', 'rebuild');
@@ -20,8 +27,13 @@ fileSet.add('distclean', ['node_modules']);
 // Documentation
 fileSet.add('docs', ['docs/' + packageJson.version]);
 fileSet.add('jsdocSrc', ['lib/', 'index.js']);
-fileSet.add('spellCheck', ['index.js', 'lib/**/*.js', 'bin/gue.js',
-  'test/**/*.js', 'docSrc/readme.hbs']);
+fileSet.add('spellCheck', [
+  'index.js',
+  'lib/**/*.js',
+  'bin/gue.js',
+  'test/**/*.js',
+  'docSrc/readme.hbs'
+]);
 
 // gue.debug = true;
 
@@ -38,8 +50,9 @@ gue.task('lint', () => {
 });
 
 gue.task('test', ['clean'], () => {
-  return gue.shell('nyc --reporter lcov --reporter text ' +
-  'mocha {{files "unitTests"}}');
+  return gue.shell(
+    'nyc --reporter lcov --reporter text ' + 'mocha {{files "unitTests"}}'
+  );
 });
 
 gue.task('integration', () => {
@@ -66,8 +79,14 @@ gue.task('docClean', () => {
 //
 // Build
 //
-gue.task('rebuild', ['distclean', 'yarn', 'lint', 'test', 'integration',
-  'buildDocs']);
+gue.task('rebuild', [
+  'distclean',
+  'yarn',
+  'lint',
+  'test',
+  'integration',
+  'buildDocs'
+]);
 
 gue.task('yarn', () => {
   return gue.shell('yarn');
@@ -82,27 +101,34 @@ gue.task('spell', () => {
 });
 
 gue.task('buildReadme', () => {
-  return gue.shell('rm -f README.md && '
-    + 'node docSrc/buildReadme.js > README.md');
+  return gue.shell(
+    'rm -f README.md && ' + 'node docSrc/buildReadme.js > README.md'
+  );
 });
 
 gue.task('buildApiDocs', ['docClean'], () => {
-  return gue.shell('mkdir -p docs/{{version}} && '
-    + 'node docSrc/buildReadme.js --docsContext >docs/{{version}}/readme.md && '
-    + 'jsdoc -R docs/{{version}}/readme.md -c jsdoc.json -r '
-    + '-t node_modules/jsdoc-oblivion/template -d docs/{{version}} '
-    +' {{globs "jsdocSrc"}}',
-  {version: packageJson.version}
+  return gue.shell(
+    'mkdir -p docs/{{version}} && ' +
+      'node docSrc/buildReadme.js --docsContext >docs/{{version}}/readme.md && ' +
+      'jsdoc -R docs/{{version}}/readme.md -c jsdoc.json -r ' +
+      '-t node_modules/jsdoc-oblivion/template -d docs/{{version}} ' +
+      ' {{globs "jsdocSrc"}}',
+    { version: packageJson.version }
   );
 });
 
 gue.task('buildApiDocsTOC', () => {
-  return gue.shell('rm docs/index.html && '
-    +'node docSrc/buildDocToc.js > docs/index.html');
+  return gue.shell(
+    'rm docs/index.html && ' + 'node docSrc/buildDocToc.js > docs/index.html'
+  );
 });
 
-gue.task('buildDocs', ['spell', 'buildReadme', 'buildApiDocs',
-  'buildApiDocsTOC']);
+gue.task('buildDocs', [
+  'spell',
+  'buildReadme',
+  'buildApiDocs',
+  'buildApiDocsTOC'
+]);
 //
 // Utility tasks
 //
