@@ -249,19 +249,18 @@ describe('Gue', () => {
   });
 
   describe('_watch', () => {
+    const watchOnce = true;
     it('should call chokidar correctly and start the correct tasks', () => {
       const watchStub = sandbox.stub(chokidar, 'watch').callsFake(() => {
         return { on: () => {} }; // replace the on event handler
       });
-      gue._watch(['foo'], ['bar']);
+      gue._watch(['foo'], ['bar'], watchOnce);
       expect(watchStub).to.be.calledWith(['foo']);
     });
 
     it('should run tasks when an event is emitted', () => {
-      const watcher = gue._watch(__dirname, 'foo');
+      const watcher = gue._watch(__dirname, 'foo', watchOnce);
 
-      // don't restart the watch loop
-      watcher.close = () => {};
       const startStub = sandbox
         .stub(gue.gueTasks, 'runTaskParallel')
         .resolves();

@@ -313,6 +313,8 @@ class Gue {
    *  compatible glob
    * @param {(string|string[])} taskList  tasks to run when a file in files
    * changes
+   * @param {boolean} dontRestart set to true to stop watching after the first
+   * change event
    * @return {object} Returns the chokidar watcher
    * @example
    * // Run lint and coverage tasks if a file matching src/*.js changes
@@ -322,7 +324,7 @@ class Gue {
    * gue._watch('tests/*.js', 'coverage');
    *
    */
-  _watch(glob, taskList) {
+  _watch(glob, taskList, dontRestart) {
     const chokidarOpts = {
       ignoreInitial: true
     };
@@ -343,7 +345,9 @@ class Gue {
           // don't let errors stop the restart
         })
         .then(() => {
-          this._watch(glob, taskList);
+          if (!dontRestart) {
+            this._watch(glob, taskList);
+          }
         });
     });
 
