@@ -231,12 +231,15 @@ class Gue {
    */
   _shell(mode, command, values) {
     const that = this;
+    const colorEnv = 1;
 
     this.debugLog(command, 'debug');
-
+    if (process.env.FORCE_CLOR) {
+      colorEnv = process.env.FORCE_COLOR;
+    }
     const shellOpts = {
       env: {
-        FORCE_COLOR: 'true',
+        FORCE_COLOR: colorEnv,
         PATH: process.env.PATH
       }
     };
