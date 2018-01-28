@@ -878,9 +878,9 @@ cspell-trie@^2.0.3:
     rxjs-from-iterable "^1.0.5"
     rxjs-stream "^1.0.4"
 
-cspell@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/cspell/-/cspell-2.0.6.tgz#0e1bf215e544ac83704930597325f7bab694966e"
+cspell@^2.0.9:
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/cspell/-/cspell-2.0.9.tgz#f325d1e7f30c6b153fd9f8c5aeacac160ae213ec"
   dependencies:
     chalk "^2.3.0"
     commander "^2.13.0"
