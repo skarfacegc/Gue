@@ -231,7 +231,7 @@ class Gue {
    */
   _shell(mode, command, values) {
     const that = this;
-    const colorEnv = 1;
+    let colorEnv = 1;
 
     this.debugLog(command, 'debug');
     if (process.env.FORCE_CLOR) {
