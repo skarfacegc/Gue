@@ -34,4 +34,13 @@ describe('GueChangeTracker', () => {
       expect(gueChangeTracker.dbFile).to.equal('.cache');
     });
   });
+
+  describe('sumFile', () => {
+    it('should correctly sum a file', () => {
+      const gueChangeTracker = new GueChangeTracker();
+      gueChangeTracker.sumFile('test/testFiles/sumTest.txt').then(hash => {
+        expect(hash).to.equal('351a55969d14ab49dd0175d5b0621cf2908d0818');
+      });
+    });
+  });
 });
