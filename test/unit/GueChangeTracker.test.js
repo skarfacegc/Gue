@@ -38,9 +38,15 @@ describe('GueChangeTracker', () => {
   describe('sumFile', () => {
     it('should correctly sum a file', () => {
       const gueChangeTracker = new GueChangeTracker();
-      gueChangeTracker.sumFile('test/testFiles/sumTest.txt').then(hash => {
-        expect(hash).to.equal('351a55969d14ab49dd0175d5b0621cf2908d0818');
-      });
+      return expect(
+        gueChangeTracker.sumFile('test/testFiles/sumTest.txt')
+      ).to.eventually.equal('351a55969d14ab49dd0175d5b0621cf2908d0818');
+    });
+
+    it('should correctly handle a missing file', () => {
+      const gueChangeTracker = new GueChangeTracker();
+      return expect(gueChangeTracker.sumFile('test/testFiles/MISSINGFILE.txt'))
+        .to.be.rejected;
     });
   });
 });
