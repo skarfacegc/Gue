@@ -46,7 +46,26 @@ describe('GueChangeTracker', () => {
     it('should correctly handle a missing file', () => {
       const gueChangeTracker = new GueChangeTracker();
       return expect(gueChangeTracker.sumFile('test/testFiles/MISSINGFILE.txt'))
-        .to.be.rejected;
+        .to.eventually.be.rejected;
+    });
+  });
+
+  describe('checkFileSum', () => {
+    it('should correctly sum a file', () => {
+      const gueChangeTracker = new GueChangeTracker();
+      return expect(
+        gueChangeTracker.checkFileSum(
+          'test/testFiles/sumTest.txt',
+          '351a55969d14ab49dd0175d5b0621cf2908d0818'
+        )
+      ).to.eventually.be.true;
+    });
+
+    it('should correctly handle a missing file', () => {
+      const gueChangeTracker = new GueChangeTracker();
+      return expect(
+        gueChangeTracker.checkFileSum('test/testFiles/MISSINGFILE.txt', '')
+      ).to.eventually.be.false;
     });
   });
 });
