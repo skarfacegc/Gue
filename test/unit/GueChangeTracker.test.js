@@ -68,4 +68,29 @@ describe('GueChangeTracker', () => {
       ).to.eventually.be.false;
     });
   });
+
+  describe('sumFileset', () => {
+    it('should sum the files correctly', () => {
+      const fileSet = new FileSet();
+      const testSet = {
+        'test/testFiles/file1.txt': '3390a7671bb760a86e2bcc0bc6f4224d6f96ec86',
+        '3390a7671bb760a86e2bcc0bc6f4224d6f96ec86': 'test/testFiles/file1.txt',
+        'test/testFiles/sumTest.txt':
+          '351a55969d14ab49dd0175d5b0621cf2908d0818',
+        '351a55969d14ab49dd0175d5b0621cf2908d0818':
+          'test/testFiles/sumTest.txt',
+        'test/testFiles/testSubDir/testfile2.txt':
+          'cb594b3ca57cc91cb5b22410b8be97a463f8954b',
+        cb594b3ca57cc91cb5b22410b8be97a463f8954b:
+          'test/testFiles/testSubDir/testfile2.txt'
+      };
+
+      fileSet.add('testSet', 'test/testFiles/**/*', 'bar');
+
+      const gueChangeTracker = new GueChangeTracker(fileSet);
+      return expect(gueChangeTracker.sumFileset()).to.eventually.deep.equal(
+        testSet
+      );
+    });
+  });
 });
