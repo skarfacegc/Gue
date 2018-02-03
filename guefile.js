@@ -79,14 +79,7 @@ gue.task('docClean', () => {
 //
 // Build
 //
-gue.task('rebuild', [
-  'distclean',
-  'yarn',
-  'lint',
-  'test',
-  'integration',
-  'buildDocs'
-]);
+gue.task('rebuild', ['distclean', 'yarn', 'lint', 'test', 'integration']);
 
 gue.task('yarn', () => {
   return gue.shell('yarn');
