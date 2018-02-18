@@ -234,7 +234,7 @@ class Gue {
     let colorEnv = 1;
 
     this.debugLog(command, 'debug');
-    if (process.env.FORCE_CLOR) {
+    if (process.env.FORCE_COLOR) {
       colorEnv = process.env.FORCE_COLOR;
     }
     const shellOpts = {
