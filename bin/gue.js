@@ -31,7 +31,7 @@ gueCli.launch(
  */
 function invoke(env) {
   if (!env.configPath) {
-    console.error(chalk.red('No guefile found'));
+    console.log(chalk.red('No guefile found'));
     process.exit(1);
   }
 

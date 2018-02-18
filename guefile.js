@@ -135,7 +135,7 @@ gue.task('buildDocs', [
 
 // Update the snapshots for the snapshot tests
 gue.task('snapshot', () => {
-  let command = 'export UPDATE=1 && mocha {{files "integrationRun"}}';
+  let command = 'export UPDATE=1 && mocha {{files "integrationTests"}}';
   return gue.shell(command);
 });
 

@@ -36,6 +36,12 @@ runList.push({
     '--config test/integration/sampleTests/nestedFail.guefile.js fail'
 });
 
+runList.push({
+  name: 'missing config file fail',
+  fn:
+    './bin/gue.js ' + '--config test/integration/sampleTests/missing.guefile.js'
+});
+
 // Check the snapshots for each of the guefiles above
 describe('Integration Tests', () => {
   it('should set the exit code to 0 on success', () => {

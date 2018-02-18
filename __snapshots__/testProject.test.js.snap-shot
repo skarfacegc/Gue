@@ -6,3 +6,5 @@ exports['2aa37a5df49beeed462d01413475e174d24e844895bd5d420a0ec1765bb412a9 3'] = 
 
 exports['2aa37a5df49beeed462d01413475e174d24e844895bd5d420a0ec1765bb412a9 4'] = "\u001b[1m\u001b[32m[fail] \u001b[39m\u001b[22m\u001b[36mstarted\u001b[39m\n\u001b[1m\u001b[32m[a] \u001b[39m\u001b[22m\u001b[36mstarted\u001b[39m\n\u001b[1m\u001b[32m[a] \u001b[39m\u001b[22m\u001b[31mfinished with error in\u001b[39m\n\u001b[1m\u001b[32m[fail] \u001b[39m\u001b[22m\u001b[31mfinished with error in\u001b[39m"
 
+exports['2aa37a5df49beeed462d01413475e174d24e844895bd5d420a0ec1765bb412a9 5'] = "\u001b[31mNo guefile found\u001b[39m"
+
