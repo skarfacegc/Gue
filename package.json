@@ -4,7 +4,7 @@
   "description": "A task runner with shell powers",
   "main": "index.js",
   "scripts": {
-    "test": "node ./bin/gue.js test integration",
+    "test": "node ./bin/gue.js lint spell coverage",
     "clean": "node ./bin/gue.js clean",
     "docs": "node ./bin/gue.js docs"
   },
