@@ -21,7 +21,7 @@ fileSet.add(
 fileSet.add('packageJson', 'package.json', 'rebuild');
 
 // Cleaners
-fileSet.add('clean', ['coverage', '.nyc_output']);
+fileSet.add('clean', ['coverage', '.nyc_output', '.coverage_tmp']);
 fileSet.add('distclean', ['node_modules']);
 
 // Documentation
@@ -49,17 +49,30 @@ gue.task('lint', () => {
   return gue.shell('eslint {{globs "allSrc"}}');
 });
 
-gue.task('test', ['clean'], () => {
+gue.task('test', () => {
   return gue.shell(
-    'nyc --reporter lcov --reporter text ' + 'mocha {{files "unitTests"}}'
+    'nyc --reporter lcov --no-clean --silent --temp-directory=./.coverage_tmp ' +
+      'mocha {{files "unitTests"}}'
   );
 });
 
 gue.task('integration', () => {
-  let command = 'mocha {{globs "integrationTests"}}';
-  return gue.shell(command);
+  return gue.shell(
+    'nyc --reporter lcov --no-clean --silent --temp-directory=./.coverage_tmp ' +
+      'mocha {{globs "integrationTests"}}'
+  );
 });
 
+// Run all the tests and print the coverage report
+gue.task('coverage', ['clean', 'test', 'integration', 'cov_report']);
+
+// Print coverage information
+// It's up to the tests to record their coverage data in .coverage_tmp
+gue.task('cov_report', () => {
+  return gue.shell(
+    'nyc  --temp-directory=./.coverage_tmp --reporter text --reporter lcov report'
+  );
+});
 //
 // Cleaners
 //
@@ -79,7 +92,7 @@ gue.task('docClean', () => {
 //
 // Build
 //
-gue.task('rebuild', ['distclean', 'yarn', 'lint', 'test', 'integration']);
+gue.task('rebuild', ['distclean', 'yarn', 'lint', 'spell', 'coverage']);
 
 gue.task('yarn', () => {
   return gue.shell('yarn');
