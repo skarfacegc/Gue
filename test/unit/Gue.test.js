@@ -69,7 +69,7 @@ describe('Gue', () => {
     });
 
     it('should correctly color errors', () => {
-      let compareString = chalk.red('foo');
+      const compareString = chalk.red('foo');
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('error', 'foo');
@@ -77,7 +77,7 @@ describe('Gue', () => {
     });
 
     it('should correctly color debug messages', () => {
-      let compareString = chalk.yellow('foo');
+      const compareString = chalk.yellow('foo');
 
       const logStub = sandbox.stub(console, 'log');
       gue._log('debug', 'foo');
