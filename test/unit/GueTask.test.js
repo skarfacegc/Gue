@@ -95,7 +95,7 @@ describe('GueTask', () => {
     });
 
     it('should set the start time correctly', () => {
-      let fakeClock = sinon.useFakeTimers(500);
+      const fakeClock = sinon.useFakeTimers(500);
       const gueTask = new GueTask('foo', () => {
         Promise.resolve();
       });

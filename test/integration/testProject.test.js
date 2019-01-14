@@ -6,7 +6,7 @@ const execa = require('execa');
 const snapshot = require('snap-shot');
 const trimNewlines = require('trim-newlines');
 
-let runList = [];
+const runList = [];
 
 // Build the list of integration tests to snapshot
 runList.push({
