@@ -5,9 +5,8 @@ const packageJson = require('./package.json');
 // Tests and source files
 fileSet.add(
   'allSrc',
-  ['lib/**/*.js', 'index.js', 'test/**/*.js', 'bin/gue.js'],
-  'lint',
-  'guefile.js'
+  ['lib/**/*.js', 'index.js', 'test/**/*.js', 'bin/gue.js', 'guefile.js'],
+  'lint'
 );
 fileSet.add('src', ['*.js', 'lib/*.js', 'bin/*.js'], 'test');
 fileSet.add('unitTests', ['test/unit/**/*.js'], 'test');
@@ -141,7 +140,7 @@ gue.task('buildDocs', [
 
 // Update the snapshots for the snapshot tests
 gue.task('snapshot', () => {
-  let command = 'export UPDATE=1 && mocha {{files "integrationTests"}}';
+  const command = 'export UPDATE=1 && mocha {{files "integrationTests"}}';
   return gue.shell(command);
 });
 
