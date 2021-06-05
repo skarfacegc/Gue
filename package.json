@@ -39,7 +39,7 @@
     "minimist": "^1.2.0",
     "multimatch": "^2.1.0",
     "pretty-ms": "^3.0.0",
-    "trim-newlines": "^2.0.0"
+    "trim-newlines": "^3.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
